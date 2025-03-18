@@ -6,9 +6,10 @@
 
 typedef enum Results: int {
     _SUCCESS = 0,
+    _SUCCESS_BUT_WO_OTP = 1,
     _NO_INP_FILE = -1,
     _NO_OTP_FILE = -2,
-    _TOO_FEW_ARGS = 1
+    _TOO_FEW_ARGS = -3
 } _results;
 
 /**

@@ -5,6 +5,7 @@
 
 
 #include "./libs/main_header.h"
+#include "libs/dot_h/_cmd.h"
 
 FILE* otp_file = NULL;
 
@@ -26,9 +27,28 @@ main(int argc, char** argv){
             fprintf(stderr, "output file don't pointed\n");
             return __ERROR;
 
+        case _SUCCESS_BUT_WO_OTP:
+            otp_file = fopen(__DEFAULT_OTP_FILE_NAME, "w");
+            if(!otp_file){
+                fprintf(stderr, "can't open output file\n");
+                return __ERROR;
+            }
+
         case _SUCCESS:
         default:
             break;
+    }
+
+    if(!otp_file){
+        otp_file = fopen(argv[argc - 1], "w");
+        if(!otp_file){
+            fprintf(stderr, "can't open output file\n");
+            return __ERROR;
+        }
+    }
+
+    for(int inp_file_num = start_inp; inp_file_num < end_inp; ++inp_file_num){
+        
     }
 
     return __SUCCESS;
