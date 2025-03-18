@@ -1,0 +1,9 @@
+var int a = 23;
+var char b = 'c';
+var flt c = 23.4f;
+var bool d = true;
+
+a = 2;
+b = 'a';
+c = 32.5f;
+d = false;

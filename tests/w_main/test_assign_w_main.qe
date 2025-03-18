@@ -1,0 +1,6 @@
+fun int main(){
+    var int a = 2;
+    a = 4;
+
+    ret 0;
+};
