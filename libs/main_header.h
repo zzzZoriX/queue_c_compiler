@@ -2,6 +2,8 @@
 #define MAIN_HEADER_H
 
 #include "./dot_h/_cmd.h"
+#include "./dot_h/lexer.h"
+#include "./dot_h/str.h"
 
 #include <stdio.h>
 
