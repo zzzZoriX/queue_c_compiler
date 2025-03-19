@@ -68,3 +68,17 @@ c_concat_c(const char dest, const char src){
 
     return res;
 }
+
+const char
+isspec(const char c){
+    return (
+        c == ';' ||
+        c == '.' ||
+        c == ','
+    );
+}
+
+const char
+comp(const string dest, const string src){
+    return !strcmp(dest, src);
+}

@@ -6,6 +6,8 @@
 
 typedef char* string;
 
+#define NULL_STR ""
+
 /**
  * @brief функция конкатинации строк
  * 
@@ -37,5 +39,21 @@ concat_c(const string, const char);
  */
 string
 c_concat_c(const char, const char);
+
+/**
+ * @brief проверяет символ на то, является ли он спец. символом (.;,:_ и т.д.)
+ * 
+ * @return const char 
+ */
+const char
+isspec(const char);
+
+/**
+ * @brief сравнивает две строки и возвращает true/false в зависимости от того, равны ли они
+ * 
+ * @return const char 
+ */
+const char
+comp(const string, const string);
 
 #endif
