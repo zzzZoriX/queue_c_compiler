@@ -1,6 +1,6 @@
 /*
     комманда компиляции исходников:
-    gcc main.c ./libs/dot_c/_cmd.c -o que
+    gcc main.c ./libs/dot_c/_cmd.c ./libs/dot_c/lexeme.c ./libs/dot_c/lexer.c ./libs/dot_c/str.c ./libs/dot_c/tokens.c -o que
 */
 
 
