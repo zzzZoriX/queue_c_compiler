@@ -58,10 +58,10 @@ define_lexeme(const string word){
     */
     if(comp(word, _LPAREN))        return LEX_LPAREN;
     if(comp(word, _RPAREN))        return LEX_RPAREN;
-    if(comp(word, _LSPAREN))       return LEX_LSPAREN;
-    if(comp(word, _RSPAREN))       return LEX_RSPAREN;
-    if(comp(word, _LPFAREN))       return LEX_LFPAREN;
-    if(comp(word, _RPFAREN))       return LEX_RFPAREN;
+    if(comp(word, _LQPAREN))       return LEX_LQPAREN;
+    if(comp(word, _RQPAREN))       return LEX_RQPAREN;
+    if(comp(word, _LFPAREN))       return LEX_LFPAREN;
+    if(comp(word, _RFPAREN))       return LEX_RFPAREN;
     if(comp(word, _NULL_VALUE))    return LEX_NULL_VALUE;
 
     return LEX_UNDEF;
