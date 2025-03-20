@@ -26,4 +26,18 @@ create_token(char*, _lexemes, _token*);
 _token*
 create_empty_token();
 
+/**
+ * @brief добавляет токен в конец связанного списка
+ * 
+ */
+void
+add(_token*, _token*);
+
+/**
+ * @brief освобождает память всех токенов
+ * 
+ */
+void
+release(_token*);
+
 #endif

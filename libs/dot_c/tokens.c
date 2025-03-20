@@ -26,7 +26,29 @@ create_empty_token(){
 
     new_token->next_token = NULL;
     new_token->data = NULL;
-    new_token->lex = LEX_NULL_VALUE;
+    new_token->lex = LEX_UNDEF;
 
     return new_token;
+}
+
+void
+add(_token* head, _token* to_add){
+    _token* cur = head;
+    while(cur->next_token)
+        cur = cur->next_token;
+
+    cur->next_token = to_add;
+}
+
+void
+release(_token* head){
+    _token* temp;
+    while(head){
+        temp = head->next_token;
+        
+        free(head->data);
+        free(head);
+
+        head = temp;
+    }
 }
