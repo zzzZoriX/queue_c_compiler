@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 typedef char* string;
 
@@ -55,5 +56,13 @@ isspec(const char);
  */
 const char
 comp(const string, const string);
+
+/**
+ * @brief читает одно слово из файлового потока
+ * 
+ * @return const string 
+ */
+const string
+_read_one_word_from_stream(FILE*, const char);
 
 #endif

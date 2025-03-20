@@ -82,3 +82,13 @@ const char
 comp(const string dest, const string src){
     return !strcmp(dest, src);
 }
+
+const string
+_read_one_word_from_stream(FILE* stream, const char separ){
+    string word = "";
+    char c;
+    while((c = getc(stream)) != separ && c != EOF)
+        word = concat_c(word, c);
+
+    return word;
+}
