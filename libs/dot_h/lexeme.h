@@ -138,7 +138,8 @@ typedef enum _lexemes: int {
     LEX_LFPAREN = 59,
     LEX_RFPAREN = 60,
 
-    LEX_NULL_VALUE = 61
+    LEX_NULL_VALUE = 61,
+    LEX_UNDEF = 62
 } _lexemes;
 
 
