@@ -5,9 +5,9 @@
 
 
 #include "./libs/main_header.h"
-#include "libs/dot_h/_cmd.h"
 
 FILE* otp_file = NULL;
+long unknown_lex_offset = 0;
 
 int
 main(int argc, char** argv){
@@ -48,8 +48,43 @@ main(int argc, char** argv){
     }
 
     for(int inp_file_num = start_inp; inp_file_num < end_inp; ++inp_file_num){
-        
+        FILE* curr_ifp = fopen(argv[inp_file_num], "r");
+        if(!curr_ifp){
+            fprintf(stderr, "Can't open input file - %s\n", argv[inp_file_num]);
+            return __ERROR;
+        }
+
+        _token* current_ifp_tokens_header;
+        _lexer_result lexer_result = lexer(curr_ifp, &current_ifp_tokens_header);
+        switch(lexer_result){
+            case _LEX_UNKNOWN_LEXEME:
+                fseek(curr_ifp, unknown_lex_offset, SEEK_SET);
+                const string word = _read_one_word_from_stream(curr_ifp, ' ');
+                fprintf(stderr, "unknown lexeme - %s\n", word);
+                
+                free(word);
+                release(current_ifp_tokens_header);
+                fclose(curr_ifp);
+                fclose(otp_file);
+
+                return __ERROR;
+
+            case _LEX_CANT_ALLOCATE_MEM:
+                fprintf(stderr, "can't allocate memory for lexical analisys\n");
+                return __ERROR;
+
+            case _LEX_SUCCESS:
+            default: break;
+        }
+
+        _token* cur = current_ifp_tokens_header;
+        while(cur){
+            fprintf(stdout, "%s\n", cur->data);
+            cur = cur->next_token;
+        }
     }
+
+    fclose(otp_file);
 
     return __SUCCESS;
 }
