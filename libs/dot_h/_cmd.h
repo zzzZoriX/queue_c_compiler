@@ -18,6 +18,6 @@ typedef enum Results: int {
  * @return const _results 
  */
 const _results 
-parse(int, int, int, char**);
+parse(int, int*, int*, char**);
 
 #endif
