@@ -13,7 +13,7 @@ int
 main(int argc, char** argv){
     int start_inp = 0, end_inp = 0;
 
-    const _results res = parse(argc, start_inp, end_inp, argv); 
+    const _results res = parse(argc, &start_inp, &end_inp, argv); 
     switch(res){
         case _TOO_FEW_ARGS:
             fprintf(stderr, "to few arguments. correct use: que <input_file> -otp <output_file>\n");
@@ -46,7 +46,7 @@ main(int argc, char** argv){
             return __ERROR;
         }
     }
-
+    
     for(int inp_file_num = start_inp; inp_file_num < end_inp; ++inp_file_num){
         FILE* curr_ifp = fopen(argv[inp_file_num], "r");
         if(!curr_ifp){
@@ -56,8 +56,10 @@ main(int argc, char** argv){
 
         _token* current_ifp_tokens_header;
         _lexer_result lexer_result = lexer(curr_ifp, &current_ifp_tokens_header);
+        fprintf(stdout, "%d\n", lexer_result);
         switch(lexer_result){
             case _LEX_UNKNOWN_LEXEME:
+                fprintf(stdout, "%ld\n", unknown_lex_offset);
                 fseek(curr_ifp, unknown_lex_offset, SEEK_SET);
                 const string word = _read_one_word_from_stream(curr_ifp, ' ');
                 fprintf(stderr, "unknown lexeme - %s\n", word);
@@ -75,12 +77,6 @@ main(int argc, char** argv){
 
             case _LEX_SUCCESS:
             default: break;
-        }
-
-        _token* cur = current_ifp_tokens_header;
-        while(cur){
-            fprintf(stdout, "%s\n", cur->data);
-            cur = cur->next_token;
         }
     }
 
