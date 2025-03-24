@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <ctype.h>
 
 typedef char* string;
 
@@ -40,6 +41,14 @@ concat_c(const string, const char);
  */
 string
 c_concat_c(const char, const char);
+
+/**
+ * @brief удаляет лишние пробелы в начале и конце переданной строки
+ * 
+ * @return string 
+ */
+string
+dex_spaces(const string);
 
 /**
  * @brief проверяет символ на то, является ли он спец. символом (.;,:_ и т.д.)

@@ -69,6 +69,32 @@ c_concat_c(const char dest, const char src){
     return res;
 }
 
+string
+dex_spaces(const string src){
+    if(src == NULL)
+        return NULL;
+
+    const char* start = src;
+    const char* end = src + strlen(src) - 1;
+
+    while(isspace(*start))
+        start++;
+
+    while(end > start && isspace(*end))
+        end--;
+
+    size_t length = end - start + 1;
+
+    string result = (string)malloc(length + 1);
+    if(result == NULL)
+        return NULL;
+
+    memcpy(result, start, length);
+    result[length] = '\0';
+
+    return result;
+}
+
 const char
 isspec(const char c){
     return (
