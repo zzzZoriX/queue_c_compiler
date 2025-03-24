@@ -6,6 +6,7 @@
 #include "./dot_h/str.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 
 #define __ERROR -1
 #define __SUCCESS 0
