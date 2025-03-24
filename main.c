@@ -1,6 +1,6 @@
 /*
     комманда компиляции исходников:
-    gcc main.c ./libs/dot_c/_cmd.c ./libs/dot_c/lexeme.c ./libs/dot_c/lexer.c ./libs/dot_c/str.c ./libs/dot_c/tokens.c -o que
+    gcc main.c ./libs/dot_c/_cmd.c ./libs/dot_c/obj.c ./libs/dot_c/lexeme.c ./libs/dot_c/lexer.c ./libs/dot_c/str.c ./libs/dot_c/tokens.c -o que
 */
 
 
@@ -62,7 +62,7 @@ main(int argc, char** argv){
                 fprintf(stdout, "%ld\n", unknown_lex_offset);
                 fseek(curr_ifp, unknown_lex_offset, SEEK_SET);
                 const string word = _read_one_word_from_stream(curr_ifp, ' ');
-                fprintf(stderr, "unknown lexeme - %s\n", word);
+                fprintf(stderr, "unknown lexeme - \"%s\"\n", word);
                 
                 free(word);
                 release(current_ifp_tokens_header);
