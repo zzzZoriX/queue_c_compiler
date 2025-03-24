@@ -2,6 +2,7 @@
 #define LEXEME_H
 
 #include "str.h"
+#include "obj.h"
 
 #define    _VAR "var"
 #define    _ARR "arr"
@@ -63,6 +64,7 @@
 #define    _LFPAREN "{"
 #define    _RFPAREN "}"
 #define    _NULL_VALUE "?"
+#define    _DBL_TWO_DOTS "::"
 
 
 typedef enum _lexemes: int {
@@ -105,41 +107,47 @@ typedef enum _lexemes: int {
     LEX_SEMIC = 32,
     LEX_DOT = 33,
     LEX_COMMA = 34,
-    LEX_QUOTES = 35,
     
-    LEX_COMMENT_START = 36,
-    LEX_COMMENT_END = 37,
+    LEX_COMMENT_START = 35,
+    LEX_COMMENT_END = 36,
     
-    LEX_PLUS = 38,
-    LEX_MINUS = 39,
-    LEX_MUL = 40,
-    LEX_DIV = 41,
-    LEX_REM = 42,
+    LEX_PLUS = 37,
+    LEX_MINUS = 38,
+    LEX_MUL = 49,
+    LEX_DIV = 40,
+    LEX_REM = 41,
 
-    LEX_LE = 43,
-    LEX_L = 44,
-    LEX_EQ = 45,
-    LEX_GE = 46,
-    LEX_G = 47,
-    LEX_NEQ = 48,
+    LEX_LE = 42,
+    LEX_L = 43,
+    LEX_EQ = 44,
+    LEX_GE = 45,
+    LEX_G = 46,
+    LEX_NEQ = 47,
     
-    LEX_AND = 49,
-    LEX_OR = 50,
+    LEX_AND = 48,
+    LEX_OR = 49,
 
-    LEX_PREF_INC = 51,
-    LEX_PREF_DEC = 52,
-    LEX_POST_INT = 53,
-    LEX_POST_DEC = 54,
+    LEX_PREF_INC = 50,
+    LEX_PREF_DEC = 51,
+    LEX_POST_INC = 52,
+    LEX_POST_DEC = 53,
 
-    LEX_LPAREN = 55,
-    LEX_RPAREN = 56,
-    LEX_LQPAREN = 57,
-    LEX_RQPAREN = 58,
-    LEX_LFPAREN = 59,
-    LEX_RFPAREN = 60,
+    LEX_LPAREN = 54,
+    LEX_RPAREN = 55,
+    LEX_LQPAREN = 56,
+    LEX_RQPAREN = 57,
+    LEX_LFPAREN = 58,
+    LEX_RFPAREN = 59,
 
-    LEX_NULL_VALUE = 61,
-    LEX_UNDEF = 62
+    LEX_NULL_VALUE = 60,
+    LEX_OBJ_NAME = 61,
+
+    LEX_DIGIT = 62,
+    LEX_FLOAT = 63,
+    LEX_CHAR_VAL = 64,
+    LEX_DBL_TWO_DOTS = 65,
+
+    LEX_UNDEF = -1
 } _lexemes;
 
 
@@ -148,7 +156,24 @@ typedef enum _lexemes: int {
  * 
  * @return _lexemes 
  */
- _lexemes
- define_lexeme(const string);
+_lexemes
+define_lexeme(const string, _lexemes*, const string);
 
-#endif
+
+/**
+ * @brief проверяет является ли передаваемая строка только числами
+ * 
+ * @return const char 
+ */
+const char
+is_digits(const string);
+
+/**
+ * @brief проверяет является ли передаваемая строка валидным значением для чисел с плавающей точкой
+ * 
+ * @return const char 
+ */
+const char
+is_float(const string);
+
+#endif 

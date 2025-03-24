@@ -1,7 +1,7 @@
 #include "c:/queue_c_compiler/libs/dot_h/lexeme.h"
 
 _lexemes
-define_lexeme(const string word){
+define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
     if(comp(word, _VAR))           return LEX_VAR;
     if(comp(word, _ARR))           return LEX_ARR;
     if(comp(word, _FUNC))          return LEX_FUNC;
@@ -37,7 +37,6 @@ define_lexeme(const string word){
     if(comp(word, _SEMIC))         return LEX_SEMIC;
     if(comp(word, _DOT))           return LEX_DOT;
     if(comp(word, _COMMA))         return LEX_COMMA;
-    if(comp(word, _QUOTES))        return LEX_QUOTES;
     if(comp(word, _COMMENT_START)) return LEX_COMMENT_START;
     if(comp(word, _COMMENT_END))   return LEX_COMMENT_END;
     if(comp(word, _PLUS))          return LEX_PLUS;
@@ -53,9 +52,6 @@ define_lexeme(const string word){
     if(comp(word, _NEQ))           return LEX_NEQ;
     if(comp(word, _AND))           return LEX_AND;
     if(comp(word, _OR))            return LEX_OR;
-    /*
-        надо написать определение для постфиксного и префиксного декримента и инкремента
-    */
     if(comp(word, _LPAREN))        return LEX_LPAREN;
     if(comp(word, _RPAREN))        return LEX_RPAREN;
     if(comp(word, _LQPAREN))       return LEX_LQPAREN;
@@ -63,6 +59,50 @@ define_lexeme(const string word){
     if(comp(word, _LFPAREN))       return LEX_LFPAREN;
     if(comp(word, _RFPAREN))       return LEX_RFPAREN;
     if(comp(word, _NULL_VALUE))    return LEX_NULL_VALUE;
+    if(comp(word, _DBL_TWO_DOTS))  return LEX_DBL_TWO_DOTS;
 
+    if(
+        word[0] == '\'' && 
+        word[strlen(word) - 1] == '\'' && 
+        strlen(word) == 3
+    ) return LEX_CHAR_VAL;
+
+    if(is_valid_obj_name(word) && comp(last_word, _INC)) return LEX_PREF_INC;
+    if(is_valid_obj_name(word) && comp(last_word, _DEC)) return LEX_PREF_DEC;
+    if(is_valid_obj_name(last_word) && comp(word, _INC)) { *last_lexeme = LEX_POST_INC; return LEX_POST_INC; }
+    if(is_valid_obj_name(last_word) && comp(word, _DEC)) { *last_lexeme = LEX_POST_DEC; return LEX_POST_DEC; }
+    
+    if(comp(word, _INC))           return LEX_PREF_INC;
+    if(comp(word, _DEC))           return LEX_PREF_DEC;
+
+    if(is_valid_obj_name(word))    return LEX_OBJ_NAME;
+
+    if(is_digits(word))            return LEX_DIGIT;
+    if(is_float(word))             return LEX_FLOAT;
+    
     return LEX_UNDEF;
+}
+
+const char
+is_digits(const string word){
+    if(!word) return 0;
+
+    for(size_t i = 0; i < strlen(word); ++i)
+        if(!isdigit(word[i])) return 0;
+
+    return 1;
+}
+
+const char
+is_float(const string word){
+    if(word[strlen(word) - 1] != 'f') return 0;
+    char has_dot = 0;
+
+    for(size_t i = 0; i < strlen(word) - 1; ++i){
+        if(!isdigit(word[i]) || (has_dot && word[i] == 0)) return 0;
+
+        if(word[i] == '.') has_dot = 1;
+    }
+
+    return 1;
 }
