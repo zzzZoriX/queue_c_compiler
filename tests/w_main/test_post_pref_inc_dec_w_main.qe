@@ -1,0 +1,11 @@
+fun int main(){
+    var int a = 0;
+    var int b = 10;
+
+    var int c = --b;
+    var int c2 = ++a;
+    var int c3 = a++;
+    var int c4 = b++;
+
+    ret 0;
+};
