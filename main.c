@@ -5,9 +5,10 @@
 
 
 #include "./libs/main_header.h"
+#include "libs/dot_h/_cmd.h"
 
 FILE* otp_file = NULL;
-long unknown_lex_offset = 0;
+long unknown_lex_offset = 0, row = 1;
 
 int
 main(int argc, char** argv){
@@ -16,7 +17,7 @@ main(int argc, char** argv){
     const _results res = parse(argc, &start_inp, &end_inp, argv); 
     switch(res){
         case _TOO_FEW_ARGS:
-            fprintf(stderr, "to few arguments. correct use: que <input_file> -otp <output_file>\n");
+            fprintf(stderr, "to few arguments. correct use: que <input_file> -otp <output_file>\n\tor\nque <input_file>\n");
             return __ERROR;
 
         case _NO_INP_FILE:
@@ -25,6 +26,14 @@ main(int argc, char** argv){
 
         case _NO_OTP_FILE:
             fprintf(stderr, "output file don't pointed\n");
+            return __ERROR;
+
+        case _MULTI_OTP_FLAG:
+            fprintf(stderr, "-otp flag has been writted too many times\n");
+            return __ERROR;
+
+        case _INPUT_FILE_NOT_FOUND:
+            fprintf(stderr, "cant find an input files\n");
             return __ERROR;
 
         case _SUCCESS_BUT_WO_OTP:
@@ -62,7 +71,7 @@ main(int argc, char** argv){
                 fprintf(stdout, "%ld\n", unknown_lex_offset);
                 fseek(curr_ifp, unknown_lex_offset, SEEK_SET);
                 const string word = _read_one_word_from_stream(curr_ifp, ' ');
-                fprintf(stderr, "unknown lexeme - \"%s\"\n", word);
+                fprintf(stderr, "%ld.%ld: unknown lexeme - \"%s\"\n", row, unknown_lex_offset, word);
                 
                 free(word);
                 release(current_ifp_tokens_header);
@@ -77,6 +86,12 @@ main(int argc, char** argv){
 
             case _LEX_SUCCESS:
             default: break;
+        }
+
+        _token* c = current_ifp_tokens_header;
+        while(c){
+            printf("%s\t|\t%d\n", c->data, c->lex);
+            c = c->next_token;
         }
     }
 
