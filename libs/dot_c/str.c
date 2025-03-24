@@ -99,8 +99,12 @@ const char
 isspec(const char c){
     return (
         c == ';' ||
-        c == '.' ||
-        c == ','
+        c == '(' ||
+        c == ')' ||
+        c == '{' ||
+        c == '}' ||
+        c == '[' ||
+        c == ']'
     );
 }
 
