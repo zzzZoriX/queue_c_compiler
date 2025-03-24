@@ -1,10 +1,12 @@
 #include "c:/queue_c_compiler/libs/dot_h/lexer.h"
+#include <stdio.h>
 
 extern long unknown_lex_offset;
+extern long row;
+static _state state = _NORMAL_;
 
 const _lexer_result
 lexer(FILE* ifp, _token** m_token){
-    printf("test\n");
     _token* last_token = create_empty_token();
     string word = NULL_STR;
     char c;
@@ -14,7 +16,64 @@ lexer(FILE* ifp, _token** m_token){
         return _LEX_CANT_ALLOCATE_MEM;
 
     while((c = getc(ifp)) != EOF){
-        if(c == '\n') continue;
+        if(c == '\n'){
+            ++row;
+            continue;
+        }
+        
+        set_state(word, c);
+        switch(state){
+            case _IN_COMMENT_:
+                if(word && !comp(word, NULL_STR)){
+                    _lexemes lexeme = define_lexeme(word, &last_token->lex, last_token->data);
+                    if(lexeme == LEX_UNDEF) goto unknown_lexeme;
+
+                    _token* new_token = create_token(word, lexeme, NULL);
+                    add(*m_token, new_token);
+                    last_token = new_token;
+
+                    free(word);
+
+                    word = NULL_STR;
+                }
+                char last_c = '\0';
+                while((c = getc(ifp)) != EOF){
+                    if(last_c == '-' && c == '/'){
+                        state = _NORMAL_;
+                        break;
+                    }
+                    last_c = c;
+                }
+                
+                continue;
+            
+            case _IN_FLOAT_:
+                if(!word) word = NULL_STR;
+
+                do{
+                    word = concat_c(word, c);
+                    c = getc(ifp);
+                } while(c != EOF && (isdigit(c) || c == '.' || c == 'F' || c == 'f'));
+
+                if(!is_float(word) && !is_digits(word)) goto unknown_lexeme;
+                
+                _lexemes lexeme = define_lexeme(word, &last_token->lex, last_token->data);
+                if(lexeme == LEX_UNDEF) goto unknown_lexeme;
+                
+                _token* new_token = create_token(word, lexeme, NULL);
+                add(*m_token, new_token);
+                last_token = new_token;
+
+                free(word);
+                word = NULL_STR;
+                state = _NORMAL_;
+                ungetc(c, ifp);
+
+                continue;
+
+            case _NORMAL_:
+            default: break;
+        }
         
         if(isspace(c)){
             if(word && !comp(word, NULL_STR)){
@@ -62,8 +121,6 @@ lexer(FILE* ifp, _token** m_token){
             _token* spec_token = create_token(c_str, spec_lexeme, NULL);
             add(*m_token, spec_token);
             last_token = spec_token;
-
-            free(c_str);
         }
         else {
             string new_word = concat_c(word, c);
@@ -89,4 +146,11 @@ unknown_lexeme:
     unknown_lex_offset = ftell(ifp);
     unknown_lex_offset -= strlen(word) - 1;
     return _LEX_UNKNOWN_LEXEME;
+}
+
+void
+set_state(const string word, const char c){
+    if(comp(word, _COMMENT_START)) state = _IN_COMMENT_;
+    if(isdigit(*word) || c == '.') state = _IN_FLOAT_;
+    else state = _NORMAL_;
 }

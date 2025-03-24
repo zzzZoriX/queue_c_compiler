@@ -17,6 +17,12 @@ typedef enum _lexer_result: int {
     _LEX_CANT_ALLOCATE_MEM = -3
 } _lexer_result;
 
+typedef enum _state {
+    _NORMAL_,
+    _IN_COMMENT_,
+    _IN_FLOAT_
+} _state;
+
 
 /**
  * @brief функция лексера
@@ -25,5 +31,12 @@ typedef enum _lexer_result: int {
  */
 const _lexer_result
 lexer(FILE*, _token**);
+
+/**
+ * @brief устанавливает состояние(state переменную)
+ * 
+ */
+void
+set_state(const string, const char); 
 
 #endif
