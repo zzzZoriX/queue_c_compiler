@@ -96,13 +96,15 @@ is_digits(const string word){
 const char
 is_float(const string word){
     if(word[strlen(word) - 1] != 'f') return 0;
-    char has_dot = 0;
+    char has_dot = 0, has_f = 1;
 
     for(size_t i = 0; i < strlen(word) - 1; ++i){
-        if(!isdigit(word[i]) || (has_dot && word[i] == 0)) return 0;
-
-        if(word[i] == '.') has_dot = 1;
+        if(word[i] == '.'){
+            if(has_dot) return 0;
+            has_dot = 1;
+        }
+        else if(!isdigit(word[i])) return 0;
     }
 
-    return 1;
+    return has_dot || has_f;
 }
