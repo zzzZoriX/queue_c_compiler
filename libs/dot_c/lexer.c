@@ -1,10 +1,11 @@
 #include "c:/queue_c_compiler/libs/dot_h/lexer.h"
-#include <string.h>
 
 extern long unknown_lex_offset;
 
 const _lexer_result
 lexer(FILE* ifp, _token** m_token){
+    printf("test\n");
+    _token* last_token = create_empty_token();
     string word = NULL_STR;
     char c;
     
@@ -12,44 +13,68 @@ lexer(FILE* ifp, _token** m_token){
     if(!m_token)
         return _LEX_CANT_ALLOCATE_MEM;
 
-
     while((c = getc(ifp)) != EOF){
+        if(c == '\n') continue;
+        
         if(isspace(c)){
-            _lexemes lexeme = define_lexeme(word);
-            if(lexeme == LEX_UNDEF) 
-                goto unknown_lexeme;
+            if(word && !comp(word, NULL_STR)){
+                string word_wo_extr_spcs = dex_spaces(word);
+                free(word);
+                word = word_wo_extr_spcs;
 
-            if((*m_token)->lex == LEX_UNDEF){
-                (*m_token)->data = _strdup(word);
-                (*m_token)->lex = lexeme;
+                _lexemes lexeme = define_lexeme(word, &last_token->lex, last_token->data);
+                if(lexeme == LEX_UNDEF) 
+                    goto unknown_lexeme;
+
+                if((*m_token)->lex == LEX_UNDEF){
+                    (*m_token)->data = _strdup(word);
+                    (*m_token)->lex = lexeme;
+                }
+                else{
+                    _token* new_token = create_token(word, lexeme, NULL);
+                    add(*m_token, new_token);
+
+                    last_token = new_token;
+                }
+
+                if(word && !comp(word, NULL_STR))
+                    free(word);
+
+                word = NULL_STR;
             }
-            else{
+        }
+        else if(isspec(c)){
+            if(word && !comp(word, NULL_STR)){
+                _lexemes lexeme = define_lexeme(word, &last_token->lex, last_token->data);
+                if(lexeme == LEX_UNDEF)
+                    goto unknown_lexeme;
+
                 _token* new_token = create_token(word, lexeme, NULL);
                 add(*m_token, new_token);
+                last_token = new_token;
+
+                free(word);
+                word = NULL_STR;
             }
 
-            if(isspec(c)){
-                const string c_str = c_concat_c(c, '\0');
-                lexeme = define_lexeme(c_str);
+            const string c_str = c_concat_c(c, '\0');
+            _lexemes spec_lexeme = define_lexeme(c_str, &last_token->lex, last_token->data);
+            _token* spec_token = create_token(c_str, spec_lexeme, NULL);
+            add(*m_token, spec_token);
+            last_token = spec_token;
 
-                _token* new_tok = create_token(word, lexeme, NULL);
-                add(*m_token, new_tok);
-            }
+            free(c_str);
+        }
+        else {
+            string new_word = concat_c(word, c);
             if(word && !comp(word, NULL_STR))
                 free(word);
-
-            word = NULL_STR;
-            continue;
+            word = new_word;
         }
-
-        string new_word = concat_c(word, c);
-        if(word && !comp(word, NULL_STR))
-            free(word);
-        word = new_word;
     }
 
     if(word && !comp(word, NULL_STR)){
-        _lexemes lexeme = define_lexeme(word);
+        _lexemes lexeme = define_lexeme(word, &last_token->lex, last_token->data);
         if(lexeme == LEX_UNDEF)
             goto unknown_lexeme;
 
