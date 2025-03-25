@@ -1,4 +1,5 @@
 #include "c:/queue_c_compiler/libs/dot_h/str.h"
+#include <string.h>
 
 
 string
@@ -42,6 +43,8 @@ c_concat(const char dest, const string src){
 
 string
 concat_c(const string dest, const char src){
+    if(!dest || !src) return dest;
+    
     const size_t length = strlen(dest) + 2;
     string res = (string)malloc(sizeof(char) * length);
     if(!res)
@@ -89,7 +92,7 @@ dex_spaces(const string src){
     if(result == NULL)
         return NULL;
 
-    memcpy(result, start, length);
+    strncpy(result, start, length);
     result[length] = '\0';
 
     return result;
