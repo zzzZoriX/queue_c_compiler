@@ -2,7 +2,7 @@
 
 const char
 is_valid_obj_name(const char* word){
-    if(isdigit(word[0])) 
+    if(!isalpha(word[0]) && word[0] != '_') 
         return 0;
 
     for(size_t i = 1; i < strlen(word); ++i)
