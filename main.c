@@ -5,10 +5,10 @@
 
 
 #include "./libs/main_header.h"
-#include "libs/dot_h/_cmd.h"
 
 FILE* otp_file = NULL;
-long unknown_lex_offset = 0, row = 1;
+long unknown_lex_offset = 0, row = 1, column = 1;
+static string otp_file_name = NULL_STR;
 
 int
 main(int argc, char** argv){
@@ -37,23 +37,19 @@ main(int argc, char** argv){
             return __ERROR;
 
         case _SUCCESS_BUT_WO_OTP:
-            otp_file = fopen(__DEFAULT_OTP_FILE_NAME, "w");
-            if(!otp_file){
-                fprintf(stderr, "can't open output file\n");
-                return __ERROR;
-            }
+            otp_file_name = __DEFAULT_OTP_FILE_NAME;
+            break;
 
         case _SUCCESS:
         default:
+            otp_file_name = argv[argc - 1];
             break;
     }
 
+    otp_file = fopen(otp_file_name, "w");
     if(!otp_file){
-        otp_file = fopen(argv[argc - 1], "w");
-        if(!otp_file){
-            fprintf(stderr, "can't open output file\n");
-            return __ERROR;
-        }
+        fprintf(stderr, "can't open output file\n");
+        return __ERROR;
     }
     
     for(int inp_file_num = start_inp; inp_file_num < end_inp; ++inp_file_num){
@@ -65,13 +61,11 @@ main(int argc, char** argv){
 
         _token* current_ifp_tokens_header;
         _lexer_result lexer_result = lexer(curr_ifp, &current_ifp_tokens_header);
-        fprintf(stdout, "%d\n", lexer_result);
         switch(lexer_result){
             case _LEX_UNKNOWN_LEXEME:
-                fprintf(stdout, "%ld\n", unknown_lex_offset);
                 fseek(curr_ifp, unknown_lex_offset, SEEK_SET);
                 const string word = _read_one_word_from_stream(curr_ifp, ' ');
-                fprintf(stderr, "%ld.%ld: unknown lexeme - \"%s\"\n", row, unknown_lex_offset, word);
+                fprintf(stderr, "%ld.%ld: unknown lexeme - \"%s\"\n", row, column, word);
                 
                 free(word);
                 release(current_ifp_tokens_header);
@@ -87,15 +81,11 @@ main(int argc, char** argv){
             case _LEX_SUCCESS:
             default: break;
         }
-
-        _token* c = current_ifp_tokens_header;
-        while(c){
-            printf("%s\t|\t%d\n", c->data, c->lex);
-            c = c->next_token;
-        }
     }
 
     fclose(otp_file);
+
+    fprintf(stdout, "the output file - %s was created\n", otp_file_name);
 
     return __SUCCESS;
 }
