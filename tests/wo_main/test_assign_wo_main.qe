@@ -1,9 +1,0 @@
-var int a = 23;
-var char b = 'a';
-var flt c = 23.4f;
-var bool d = true;
-
-var int a2 = 2;
-var char b2 = 'b';
-var flt c2 = 32.5f;
-var bool d2 = false;
