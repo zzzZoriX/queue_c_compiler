@@ -24,7 +24,6 @@
 #define    _FLT "flt"
 #define    _BOOL "bool"
 #define    _UNSIGN "unsign"
-#define    _CONST "const"
 #define    _POINTER "pointer"
 #define    _POINTER_DEREF "@"
 #define    _GET_ADDR "&"
@@ -65,6 +64,7 @@
 #define    _RFPAREN "}"
 #define    _NULL_VALUE "?"
 #define    _DBL_TWO_DOTS "::"
+#define    _INST_POINTER "->"
 
 
 typedef enum _lexemes: int {
@@ -90,62 +90,62 @@ typedef enum _lexemes: int {
     LEX_FLT = 17,
     LEX_BOOL = 18,
     LEX_UNSIGN = 19,
-    LEX_CONST = 20,
-    LEX_POINTER = 21,
+    LEX_POINTER = 22,
 
-    LEX_POINTER_DEREF = 22,
-    LEX_GET_ADDR = 23,
+    LEX_POINTER_DEREF = 23,
+    LEX_GET_ADDR = 24,
 
-    LEX_TRUE = 24,
-    LEX_FALSE = 25,
-    LEX_ASSIGN = 26,
-    LEX_ADD_ASSIGN = 27,
-    LEX_REDUCE_ASSIGN = 28,
-    LEX_MUL_ASSIGN = 29,
-    LEX_DIV_ASSIGN = 30,
-    LEX_REM_ASSIGN = 31,
-    LEX_SEMIC = 32,
-    LEX_DOT = 33,
-    LEX_COMMA = 34,
+    LEX_TRUE = 25,
+    LEX_FALSE = 26,
+    LEX_ASSIGN = 27,
+    LEX_ADD_ASSIGN = 28,
+    LEX_REDUCE_ASSIGN = 29,
+    LEX_MUL_ASSIGN = 30,
+    LEX_DIV_ASSIGN = 31,
+    LEX_REM_ASSIGN = 32,
+    LEX_SEMIC = 33,
+    LEX_DOT = 34,
+    LEX_COMMA = 35,
     
-    LEX_COMMENT_START = 35,
-    LEX_COMMENT_END = 36,
+    LEX_COMMENT_START = 36,
+    LEX_COMMENT_END = 37,
     
-    LEX_PLUS = 37,
-    LEX_MINUS = 38,
-    LEX_MUL = 49,
-    LEX_DIV = 40,
-    LEX_REM = 41,
+    LEX_PLUS = 38,
+    LEX_MINUS = 39,
+    LEX_MUL = 40,
+    LEX_DIV = 41,
+    LEX_REM = 42,
 
-    LEX_LE = 42,
-    LEX_L = 43,
-    LEX_EQ = 44,
-    LEX_GE = 45,
-    LEX_G = 46,
-    LEX_NEQ = 47,
+    LEX_LE = 43,
+    LEX_L = 44,
+    LEX_EQ = 45,
+    LEX_GE = 46,
+    LEX_G = 47,
+    LEX_NEQ = 48,
     
-    LEX_AND = 48,
-    LEX_OR = 49,
+    LEX_AND = 49,
+    LEX_OR = 50,
 
-    LEX_PREF_INC = 50,
-    LEX_PREF_DEC = 51,
-    LEX_POST_INC = 52,
-    LEX_POST_DEC = 53,
+    LEX_PREF_INC = 51,
+    LEX_PREF_DEC = 52,
+    LEX_POST_INC = 53,
+    LEX_POST_DEC = 54,
 
-    LEX_LPAREN = 54,
-    LEX_RPAREN = 55,
-    LEX_LQPAREN = 56,
-    LEX_RQPAREN = 57,
-    LEX_LFPAREN = 58,
-    LEX_RFPAREN = 59,
+    LEX_LPAREN = 55,
+    LEX_RPAREN = 56,
+    LEX_LQPAREN = 57,
+    LEX_RQPAREN = 58,
+    LEX_LFPAREN = 59,
+    LEX_RFPAREN = 60,
 
-    LEX_NULL_VALUE = 60,
-    LEX_OBJ_NAME = 61,
+    LEX_NULL_VALUE = 61,
+    LEX_OBJ_NAME = 62,
 
-    LEX_DIGIT = 62,
-    LEX_FLOAT = 63,
-    LEX_CHAR_VAL = 64,
-    LEX_DBL_TWO_DOTS = 65,
+    LEX_DIGIT = 63,
+    LEX_FLOAT = 64,
+    LEX_CHAR_VAL = 65,
+    LEX_DBL_TWO_DOTS = 66,
+    LEX_INST_POINTER = 67,
 
     LEX_UNDEF = -1
 } _lexemes;
@@ -175,5 +175,21 @@ is_digits(const string);
  */
 const char
 is_float(const string);
+
+/**
+ * @brief проверяет символ на то, является ли он спец. символом (.;,:_ и т.д.)
+ * 
+ * @return const char 
+ */
+ const char
+ isspec(const char);
+
+/**
+ * @brief проверяет, является ли строка специальной(->, :: и т.д.)
+ * 
+ * @return const char 
+ */
+const char
+is_spec_str(const string);
 
 #endif 

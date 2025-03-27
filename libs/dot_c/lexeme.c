@@ -22,7 +22,6 @@ define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
     if(comp(word, _FLT))           return LEX_FLT;
     if(comp(word, _BOOL))          return LEX_BOOL;
     if(comp(word, _UNSIGN))        return LEX_UNSIGN;
-    if(comp(word, _CONST))         return LEX_CONST;
     if(comp(word, _POINTER))       return LEX_POINTER;
     if(comp(word, _POINTER_DEREF)) return LEX_POINTER_DEREF;
     if(comp(word, _GET_ADDR))      return LEX_GET_ADDR;
@@ -60,6 +59,7 @@ define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
     if(comp(word, _RFPAREN))       return LEX_RFPAREN;
     if(comp(word, _NULL_VALUE))    return LEX_NULL_VALUE;
     if(comp(word, _DBL_TWO_DOTS))  return LEX_DBL_TWO_DOTS;
+    if(comp(word, _INST_POINTER))  return LEX_INST_POINTER;
 
     if(
         word[0] == '\'' && 
@@ -107,4 +107,43 @@ is_float(const string word){
     }
 
     return has_dot || has_f;
+}
+
+const char
+isspec(const char c){
+    return (
+        c == ';' ||
+        c == '(' ||
+        c == ')' ||
+        c == '{' ||
+        c == '}' ||
+        c == '[' ||
+        c == ']' ||
+        c == '?' ||
+        c == '>' ||
+        c == '<' ||
+        c == '=' ||
+        c == ',' ||
+        c == '&' ||
+        c == '@'
+    );
+}
+
+const char
+is_spec_str(const string str){
+    return (
+        comp(str, _ADD_ASSIGN)      ||
+        comp(str, _REDUCE_ASSIGN)   ||
+        comp(str, _MUL_ASSIGN)      ||
+        comp(str, _DIV_ASSIGN)      ||
+        comp(str, _REM_ASSIGN)      ||
+        comp(str, _LE)              ||
+        comp(str, _EQ)              ||
+        comp(str, _GE)              ||
+        comp(str, _NEQ)             ||
+        comp(str, _AND)             ||
+        comp(str, _OR)              ||
+        comp(str, _DBL_TWO_DOTS)    ||
+        comp(str, _INST_POINTER)
+    );
 }
