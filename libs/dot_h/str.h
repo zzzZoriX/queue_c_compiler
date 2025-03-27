@@ -51,14 +51,6 @@ string
 dex_spaces(const string);
 
 /**
- * @brief проверяет символ на то, является ли он спец. символом (.;,:_ и т.д.)
- * 
- * @return const char 
- */
-const char
-isspec(const char);
-
-/**
  * @brief сравнивает две строки и возвращает true/false в зависимости от того, равны ли они
  * 
  * @return const char 

@@ -99,19 +99,6 @@ dex_spaces(const string src){
 }
 
 const char
-isspec(const char c){
-    return (
-        c == ';' ||
-        c == '(' ||
-        c == ')' ||
-        c == '{' ||
-        c == '}' ||
-        c == '[' ||
-        c == ']'
-    );
-}
-
-const char
 comp(const string dest, const string src){
     return !strcmp(dest, src);
 }
