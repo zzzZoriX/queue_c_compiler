@@ -3,6 +3,8 @@
     gcc main.c ./libs/dot_c/_cmd.c ./libs/dot_c/obj.c ./libs/dot_c/lexeme.c ./libs/dot_c/lexer.c ./libs/dot_c/str.c ./libs/dot_c/tokens.c -o que
 */
 
+#define DEBUG 1
+
 
 #include "./libs/main_header.h"
 
@@ -81,6 +83,13 @@ main(int argc, char** argv){
             case _LEX_SUCCESS:
             default: break;
         }
+#if DEBUG
+        _token* c = current_ifp_tokens_header;
+        while(c){
+            printf("%s\t|\t%d\n", c->data, c->lex);
+            c = c->next_token;
+        }
+#endif
     }
 
     fclose(otp_file);
