@@ -1,5 +1,4 @@
 #include "c:/queue_c_compiler/libs/dot_h/lexer.h"
-#include <stdio.h>
 
 extern long unknown_lex_offset;
 extern long row;
@@ -101,6 +100,32 @@ lexer(FILE* ifp, _token** m_token){
 
                 break;
 
+            case _IN_SPEC_STR_:
+                if(word && !comp(word, NULL_STR)){
+                    _lexemes lexeme = define_lexeme(word, &last_token->lex, last_token->data);
+                    if(lexeme == LEX_UNDEF)
+                        goto unknown_lexeme;
+
+                    _token* new_token = create_token(word, lexeme, NULL);
+                    add(*m_token, new_token);
+                    last_token = new_token;
+                    
+                    free(word);
+                    word = NULL_STR;
+                }
+                char spec[3] = {c, getc(ifp), '\0'};
+                _lexemes spec_lexeme = define_lexeme(spec, &last_token->lex, last_token->data);
+                if(spec_lexeme == LEX_UNDEF)
+                    goto unknown_lexeme;
+
+                _token* new_spec_token = create_token(spec, lexeme, NULL);
+                add(*m_token, new_spec_token);
+                last_token = new_spec_token;
+
+                state = _NORMAL_;
+            
+                break;
+
             case _NORMAL_:
             default: 
                 string word_wo_extr_spcs = dex_spaces(word);
@@ -133,10 +158,10 @@ lexer(FILE* ifp, _token** m_token){
                     if(word && !comp(word, NULL_STR)){
                         _lexemes lexeme = define_lexeme(word, &last_token->lex, last_token->data);
                         if(lexeme == LEX_UNDEF)
-                        goto unknown_lexeme;
+                            goto unknown_lexeme;
                     
-                    _token* new_token = create_token(word, lexeme, NULL);
-                    add(*m_token, new_token);
+                        _token* new_token = create_token(word, lexeme, NULL);
+                        add(*m_token, new_token);
                         last_token = new_token;
                     
                         free(word);
@@ -186,5 +211,6 @@ set_state(const string word, const char c, const char next){
     if(comp(word, _COMMENT_START)) state = _IN_COMMENT_;
     else if((isdigit(c) && (isdigit(next) || c == '.')) || (c == '.' && isdigit(c))) state = _IN_FLOAT_;
     else if((c == '+' && next == '+') || (c == '-' && next == '-')) state = _IN_UN_OP_;
+    else if(is_spec_str(c_concat_c(c, next))) state = _IN_SPEC_STR_;
     else state = _NORMAL_;
 }
