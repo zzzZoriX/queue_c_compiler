@@ -1,0 +1,8 @@
+fun int main(){
+    var int a = ?;
+    in("%di", &a);
+
+    out("Your number is - %di\n", a);
+    
+    ret 0;
+};

@@ -1,0 +1,35 @@
+struct Complex{
+    var flt real;
+    var int imag;
+};
+
+fun struct Complex sum_complex(struct Complex{a, b}); /- должны быть переданы 2 аргумента типа структуры Complex -/
+fun ? print_complex(struct Complex{a}); /- ? - означает, что функция не возвращает ничего -/
+
+fun int main(){
+    var struct Complex a = ?;
+    var struct Complex b = ?;
+
+    a::real = 3.12f;
+    a::imag = -12;
+    b::real = 4.23f;
+    a::imag = 21;
+
+    var struct Complex result = sum_complex(a, b);
+
+    call print_complex(result);
+    
+    ret 0;
+};
+
+fun struct Complex sum_complex(struct Complex{a, b}){
+    var struct Complex res = ?;
+    res::real = a::real + b::real;
+    res::imag = a::imag + b::imag;
+
+    ret res;
+};
+
+fun ? print_complex(struct Complex{a}){
+    out("%df %dii\n", a::real, a::imag);
+};

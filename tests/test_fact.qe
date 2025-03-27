@@ -1,0 +1,15 @@
+fun int factorial(int{a}){
+    if(a == 1) -> ret 1;
+    ret a * factorial(a - 1);
+};
+
+fun int main(){
+    var int a = ?;
+    in("%di", &a);
+
+    var int res = call factorial(a);
+
+    out("a factorial of %di equal - %di\n", a, res);
+
+    ret 0;
+};

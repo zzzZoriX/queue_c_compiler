@@ -1,0 +1,23 @@
+struct test{
+    var int a;
+    var bool b;
+};
+
+struct test_2; /- объявление структуры -/
+
+fun int main(){
+    var struct test test_var = ?;
+    var struct test_2 test_var_2 = ?;
+
+    test_var::a = 20;
+    test_var_2::a = 10;
+
+    out("%di. %di\n", test_var::a, test_var_2::a);
+    
+    ret 0;
+};
+
+test_2 = {
+    var int a;
+    var bool b;
+}; /- реализация ранее объявленной структуры -/
