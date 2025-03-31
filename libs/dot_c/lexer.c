@@ -110,7 +110,7 @@ lexer(FILE* ifp, _token** m_token){
                 if(spec_lexeme == LEX_UNDEF)
                     goto unknown_lexeme;
 
-                _token* new_spec_token = create_token(spec, lexeme, NULL);
+                _token* new_spec_token = create_token(spec, spec_lexeme, NULL);
                 add(*m_token, new_spec_token);
                 last_token = new_spec_token;
 
