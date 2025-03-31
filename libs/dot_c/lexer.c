@@ -124,7 +124,6 @@ lexer(FILE* ifp, _token** m_token){
                 word = word_wo_extr_spcs;
                 
                 if(isspace(c)){
-                    printf("%s\n", word);
                     if(word && !comp(word, NULL_STR)){
                         _lexemes lexeme = define_lexeme(word, &last_token->lex, last_token->data);
                         if(lexeme == LEX_UNDEF) 
@@ -161,7 +160,6 @@ lexer(FILE* ifp, _token** m_token){
                         free(word);
                         word = NULL_STR;
                     }
-                    printf("test\n");
                 
                     const string c_str = c_concat_c(c, '\0');
                     if(!c_str) return _LEX_CANT_ALLOCATE_MEM;
@@ -170,7 +168,6 @@ lexer(FILE* ifp, _token** m_token){
                     _token* spec_token = create_token(c_str, spec_lexeme, NULL);
                     add(*m_token, spec_token);
                     last_token = spec_token;
-                    printf("test\n");
                 }
                 else {
                     string new_word = concat_c(word, c);
