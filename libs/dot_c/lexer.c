@@ -28,18 +28,10 @@ lexer(FILE* ifp, _token** m_token){
         
         switch(state){
             case _IN_COMMENT_:
-                if(word && !comp(word, NULL_STR)){
-                    _lexemes lexeme = define_lexeme(word, &last_token->lex, last_token->data);
-                    if(lexeme == LEX_UNDEF) goto unknown_lexeme;
-
-                    _token* new_token = create_token(word, lexeme, NULL);
-                    add(*m_token, new_token);
-                    last_token = new_token;
-
+                if(word && !comp(word, NULL_STR)){ // удаляю /-
                     free(word);
-
                     word = NULL_STR;
-                }
+                } 
                 char last_c = '\0';
                 while((c = getc(ifp)) != EOF){
                     if(last_c == '-' && c == '/'){
@@ -132,6 +124,7 @@ lexer(FILE* ifp, _token** m_token){
                 word = word_wo_extr_spcs;
                 
                 if(isspace(c)){
+                    printf("%s\n", word);
                     if(word && !comp(word, NULL_STR)){
                         _lexemes lexeme = define_lexeme(word, &last_token->lex, last_token->data);
                         if(lexeme == LEX_UNDEF) 
@@ -140,6 +133,7 @@ lexer(FILE* ifp, _token** m_token){
                         if((*m_token)->lex == LEX_UNDEF){
                             (*m_token)->data = _strdup(word);
                             (*m_token)->lex = lexeme;
+                            last_token = *m_token;
                         }
                         else{
                             _token* new_token = create_token(word, lexeme, NULL);
@@ -167,6 +161,7 @@ lexer(FILE* ifp, _token** m_token){
                         free(word);
                         word = NULL_STR;
                     }
+                    printf("test\n");
                 
                     const string c_str = c_concat_c(c, '\0');
                     if(!c_str) return _LEX_CANT_ALLOCATE_MEM;
@@ -175,6 +170,7 @@ lexer(FILE* ifp, _token** m_token){
                     _token* spec_token = create_token(c_str, spec_lexeme, NULL);
                     add(*m_token, spec_token);
                     last_token = spec_token;
+                    printf("test\n");
                 }
                 else {
                     string new_word = concat_c(word, c);

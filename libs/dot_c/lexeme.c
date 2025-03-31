@@ -67,10 +67,12 @@ define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
         strlen(word) == 3
     ) return LEX_CHAR_VAL;
 
-    if(is_valid_obj_name(word) && comp(last_word, _INC)) return LEX_PREF_INC;
-    if(is_valid_obj_name(word) && comp(last_word, _DEC)) return LEX_PREF_DEC;
-    if(is_valid_obj_name(last_word) && comp(word, _INC)) { *last_lexeme = LEX_POST_INC; return LEX_POST_INC; }
-    if(is_valid_obj_name(last_word) && comp(word, _DEC)) { *last_lexeme = LEX_POST_DEC; return LEX_POST_DEC; }
+    if(comp(word, _INC))           return _T_INC;
+    if(comp(word, _DEC))           return _T_DEC;
+    if(is_valid_obj_name(word) && *last_lexeme == _T_INC) { *last_lexeme = LEX_PREF_INC; return LEX_OBJ_NAME; }
+    if(is_valid_obj_name(word) && *last_lexeme == _T_DEC) { *last_lexeme = LEX_PREF_DEC; return LEX_OBJ_NAME; }
+    if(is_valid_obj_name(last_word) && comp(word, _INC)) return LEX_POST_INC;
+    if(is_valid_obj_name(last_word) && comp(word, _DEC)) return LEX_POST_DEC;
     
     if(comp(word, _INC))           return LEX_PREF_INC;
     if(comp(word, _DEC))           return LEX_PREF_DEC;

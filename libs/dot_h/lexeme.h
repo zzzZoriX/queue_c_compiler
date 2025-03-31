@@ -147,6 +147,9 @@ typedef enum _lexemes: int {
     LEX_DBL_TWO_DOTS = 66,
     LEX_INST_POINTER = 67,
 
+    _T_INC = -2,
+    _T_DEC = -3,
+
     LEX_UNDEF = -1
 } _lexemes;
 
