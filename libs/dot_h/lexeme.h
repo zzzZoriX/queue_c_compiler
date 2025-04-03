@@ -65,6 +65,7 @@
 #define    _NULL_VALUE "?"
 #define    _DBL_TWO_DOTS "::"
 #define    _INST_POINTER "->"
+#define    _CALL "call"
 
 
 typedef enum _lexemes: int {
@@ -147,8 +148,7 @@ typedef enum _lexemes: int {
     LEX_DBL_TWO_DOTS = 66,
     LEX_INST_POINTER = 67,
 
-    _T_INC = -2,
-    _T_DEC = -3,
+    LEX_CALL = 68,
 
     LEX_UNDEF = -1
 } _lexemes;

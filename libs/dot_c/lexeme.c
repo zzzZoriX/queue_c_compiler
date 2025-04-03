@@ -60,6 +60,7 @@ define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
     if(comp(word, _NULL_VALUE))    return LEX_NULL_VALUE;
     if(comp(word, _DBL_TWO_DOTS))  return LEX_DBL_TWO_DOTS;
     if(comp(word, _INST_POINTER))  return LEX_INST_POINTER;
+    if(comp(word, _CALL))          return LEX_CALL;
 
     if(
         word[0] == '\'' && 
@@ -67,14 +68,12 @@ define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
         strlen(word) == 3
     ) return LEX_CHAR_VAL;
 
-    if(is_valid_obj_name(word) && *last_lexeme == _T_INC) { *last_lexeme = LEX_PREF_INC; return LEX_OBJ_NAME; }
-    if(is_valid_obj_name(word) && *last_lexeme == _T_DEC) { *last_lexeme = LEX_PREF_DEC; return LEX_OBJ_NAME; }
     if(*last_lexeme == LEX_OBJ_NAME){
         if(comp(word, _INC)) return LEX_POST_INC;
         if(comp(word, _DEC)) return LEX_POST_DEC;
     }
-    if(comp(word, _INC))           return _T_INC;
-    if(comp(word, _DEC))           return _T_DEC;
+    if(comp(word, _INC))           return LEX_PREF_INC;
+    if(comp(word, _DEC))           return LEX_PREF_DEC;
     
     if(comp(word, _INC))           return LEX_PREF_INC;
     if(comp(word, _DEC))           return LEX_PREF_DEC;
