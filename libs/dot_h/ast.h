@@ -4,6 +4,9 @@
 #include "lexeme.h"
 #include "str.h"
 
+#include <stdbool.h>
+#include <stdlib.h>
+
 typedef enum _node_type {
     AST_OBJ,
     AST_OBJ_ANNONS,
@@ -12,7 +15,9 @@ typedef enum _node_type {
     AST_UNARY_OP,
     AST_BINARY_OP,
     AST_STMT,
-    AST_ASSIGN
+    AST_ASSIGN,
+
+    AST_NULL
 } _node_type;
 
 typedef enum _op_type {
@@ -31,21 +36,14 @@ typedef struct AST_Node {
 
     union {
         string obj_name, type;
+        bool is_pointer;
         union {
             int int_value;
             char char_value;
             float flt_value;
             bool bool_value;
-            struct AST_Node* node_value;
-        } value; // обычный объект
-
-        union {
-            int* p_int_value;
-            char* p_char_value;
-            float* p_float_value;
-            bool* p_bool_value;
-            struct AST_Node** p_node_value;
-        } p_value; // указатель
+            struct AST_Node** p_node_value; // указатель на какой-то объект
+        } value;
 
         struct {
             _op_type type;
@@ -59,6 +57,18 @@ typedef struct AST_Node {
 
     } data;
 } Node;
+
+
+static inline void* __fastcall
+get_value_from_ast_node(Node* n){
+    if(n->data.is_pointer) return get_value_from_ast_node(*(n->data.value.p_node_value));
+    if(comp(n->data.type, (string)"int")) return &n->data.value.int_value;
+    if(comp(n->data.type, (string)"char")) return &n->data.value.char_value;
+    if(comp(n->data.type, (string)"flt")) return &n->data.value.flt_value;
+    if(comp(n->data.type, (string)"bool")) return &n->data.value.bool_value;
+
+    return NULL;
+}
 
 
 /**
@@ -102,42 +112,10 @@ Node*
 create_obj_node(const string, const Node*);
 
 /**
- * @brief создает узел указателя интового объекта
- * 
- * @return Node* 
- */
- Node*
- create_p_int_obj_node(const string, const int*);
- 
- /**
-  * @brief создает узел указателя символьного объекта
-  * 
-  * @return Node* 
-  */
- Node*
- create_p_char_obj_node(const string, const char*);
- 
- /**
-  * @brief создает узел указателя флоат объекта
-  * 
-  * @return Node* 
-  */
- Node*
- create_p_flt_obj_node(const string, const float*);
- 
- /**
-  * @brief создает узел указателя булевого объекта
-  * 
-  * @return Node* 
-  */
- Node*
- create_p_bool_obj_node(const string, const bool*);
- 
- /**
   * @brief создает узел указателя объекта
   * 
   * @return Node* 
   */
  Node*
- create_p_obj_node(const string, const Node**);
+ create_p_obj_node(const string, Node**);
 #endif
