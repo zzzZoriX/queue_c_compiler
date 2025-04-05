@@ -1,8 +1,8 @@
 fun int main(){
     var int a = ?;
-    in("%di", &a);
+    in("%sdi", &a);
 
-    out("Your number is - %di\n", a);
+    out("Your number is - %sdi\n", a);
     
     ret 0;
 };

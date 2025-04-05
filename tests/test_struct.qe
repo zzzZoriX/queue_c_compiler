@@ -12,7 +12,7 @@ fun int main(){
     test_var::a = 20;
     test_var_2::a = 10;
 
-    out("%di. %di\n", test_var::a, test_var_2::a);
+    out("%sdi. %sdi\n", test_var::a, test_var_2::a);
     
     ret 0;
 };

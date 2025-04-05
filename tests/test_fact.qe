@@ -5,11 +5,11 @@ fun int factorial(int{a}){
 
 fun int main(){
     var int a = ?;
-    in("%di", &a);
+    in("%sdi", &a);
 
     var int res = call factorial(a);
 
-    out("a factorial of %di equal - %di\n", a, res);
+    out("a factorial of %sdi equal - %sdi\n", a, res);
 
     ret 0;
 };
