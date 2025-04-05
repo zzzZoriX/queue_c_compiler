@@ -22,7 +22,8 @@ typedef enum _state {
     _IN_COMMENT_,
     _IN_FLOAT_,
     _IN_UN_OP_, // унарный оператор ( ++ или -- )
-    _IN_SPEC_STR_ // ->, ::, <=, && и т.д.
+    _IN_SPEC_STR_, // ->, ::, <=, && и т.д.
+    _IN_STR_ // "мы тут"
 } _state;
 
 

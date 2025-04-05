@@ -1,4 +1,5 @@
 #include "c:/queue_c_compiler/libs/dot_h/lexer.h"
+#include <string.h>
 
 extern long unknown_lex_offset;
 extern long row;
@@ -118,6 +119,38 @@ lexer(FILE* ifp, _token** m_token){
             
                 break;
 
+            case _IN_STR_:
+                if(word && !comp(word, NULL_STR)){
+                    _lexemes lexeme = define_lexeme(word, &last_token->lex, last_token->data);
+                    if(lexeme == LEX_UNDEF)
+                        goto unknown_lexeme;
+
+                    _token* new_token = create_token(word, lexeme, NULL);
+                    add(*m_token, new_token);
+                    last_token = new_token;
+
+                    free(word);
+                    word = NULL_STR;
+                }
+                string str = c_concat_c(c, '\0');
+                while((c = getc(ifp)) != '"' || c != EOF){
+                    string new_word = concat_c(str, c);
+                    if(!new_word) return _LEX_CANT_ALLOCATE_MEM;
+
+                    if(str && !comp(str, NULL_STR))
+                        free(str);
+                    str = new_word;
+                }
+
+                str = parse_string(str);
+                _token* str_token = create_token(str, LEX_STRING, NULL);
+                add(*m_token, str_token);
+                last_token = str_token;
+
+                state = _NORMAL_;
+
+                break;
+
             case _NORMAL_:
             default: 
                 string word_wo_extr_spcs = dex_spaces(word);
@@ -205,5 +238,6 @@ set_state(const string word, const char c, const char next){
     else if((isdigit(c) && (isdigit(next) || c == '.')) || (c == '.' && isdigit(c))) state = _IN_FLOAT_;
     else if((c == '+' && next == '+') || (c == '-' && next == '-')) state = _IN_UN_OP_;
     else if(is_spec_str(c_concat_c(c, next))) state = _IN_SPEC_STR_;
+    else if(c == '"') state = _IN_STR_;
     else state = _NORMAL_;
 }
