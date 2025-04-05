@@ -1,4 +1,5 @@
 #include "c:/queue_c_compiler/libs/dot_h/lexeme.h"
+#include <float.h>
 
 _lexemes
 define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
@@ -84,6 +85,45 @@ define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
     if(is_float(word))             return LEX_FLOAT;
     
     return LEX_UNDEF;
+}
+
+string
+parse_string(const string str){
+    if(strlen(str) < 2) return c_concat_c('\0', '\0');
+
+    string otp_str = c_concat_c((str[0] == '%' ? '\0' : str[0]), '\0');
+    int i = 1;
+    bool proc_has_been = str[0] == '%';
+    size_t str_len = strlen(str);
+    char c;
+
+    while(i < str_len){
+        c = str[i++];
+
+        if(c == '"') break;
+
+        if(c != '%' && !proc_has_been){
+            otp_str = concat_c(otp_str, c);
+            continue;
+        }
+
+        if(proc_has_been){
+            char specifier[5] = {'%', c, str[i], str[i + 1], '\0'};
+            i += 2;
+
+            if (comp(specifier, "%sdi") || comp(specifier, "%pbl")) otp_str = concat(otp_str, "%d");
+            else if (comp(specifier, "%sdf"))                       otp_str = concat(otp_str, "%f");
+            else if (comp(specifier, "%pch"))                       otp_str = concat(otp_str, "%c");
+            else if (comp(specifier, "%udi"))                       otp_str = concat(otp_str, "%u");
+            else                                                    otp_str = concat(otp_str, specifier);
+
+            proc_has_been = false;
+        }
+
+        if(c == '%') proc_has_been = true;
+    }
+
+    return otp_str;
 }
 
 const char

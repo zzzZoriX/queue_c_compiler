@@ -4,6 +4,8 @@
 #include "str.h"
 #include "obj.h"
 
+#include <stdbool.h>
+
 #define    _VAR "var"
 #define    _ARR "arr"
 #define    _FUNC "fun"
@@ -149,6 +151,7 @@ typedef enum _lexemes: int {
     LEX_INST_POINTER = 67,
 
     LEX_CALL = 68,
+    LEX_STRING = 69,
 
     LEX_UNDEF = -1
 } _lexemes;
@@ -161,6 +164,14 @@ typedef enum _lexemes: int {
  */
 _lexemes
 define_lexeme(const string, _lexemes*, const string);
+
+/**
+ * @brief парсит строку, превращая все спец символы моего языка в спец символы языка С 
+ * 
+ * @return string 
+ */
+string
+parse_string(const string);
 
 
 /**
