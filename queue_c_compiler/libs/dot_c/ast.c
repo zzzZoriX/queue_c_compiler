@@ -18,11 +18,18 @@ define_un_op_type(string op){
     if(comp(op, "--")) return TYPE_DEC;
 }
 
-Node*
-make_bin_operation(Node* left, Node* right, char op){
+static inline Node* __fastcall
+make_empty_node(){
     Node* new_node = (Node*)malloc(sizeof(Node));
     if(!new_node)
         exit(1);
+
+    return new_node;
+}
+
+Node*
+make_bin_operation(Node* left, Node* right, char op){
+    Node* new_node = make_empty_node();
 
     new_node->node_type = AST_BINARY_OP;
     new_node->bin_op.left = left;
@@ -34,9 +41,7 @@ make_bin_operation(Node* left, Node* right, char op){
 
 Node*
 make_un_operation(Node* operand, string op){
-    Node* new_node = (Node*)malloc(sizeof(Node));
-    if(!new_node)
-        exit(1);
+    Node* new_node = make_empty_node();
         
     new_node->node_type = AST_UNARY_OP;
     new_node->un_op.operand = operand;
