@@ -1,0 +1,15 @@
+fun int func(){ 
+    ret 1;
+};
+
+fun int fun_decl(); /- просто объявление функции -/
+
+fun int main(){
+    var int a = call fun_decl();
+    
+    ret 0;
+};
+
+fun_decl = {
+    ret 2;
+}; /- реализация объявленной рание функции -/
