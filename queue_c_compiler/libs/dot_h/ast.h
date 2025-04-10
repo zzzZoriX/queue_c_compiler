@@ -8,16 +8,9 @@
 #include <stdlib.h>
 
 typedef enum _node_type {
-    AST_OBJ,
-    AST_OBJ_ANNONS,
-    AST_EXPR,
-    AST_COND,
+    AST_LIT_CNST,
     AST_UNARY_OP,
     AST_BINARY_OP,
-    AST_STMT,
-    AST_ASSIGN,
-
-    AST_NULL
 } _node_type;
 
 typedef enum _bin_op_type {
@@ -90,5 +83,37 @@ make_bin_operation(Node*, Node*, char);
  */
 Node*
 make_un_operation(Node*, string);
+
+/**
+ * @brief создает узел для значения int
+ * 
+ * @return Node* 
+ */
+Node*
+make_int_literal_const(const int);
+
+/**
+ * @brief создает узел для значения float
+ * 
+ * @return Node* 
+ */
+Node*
+make_flt_literal_const(const float);
+
+/**
+ * @brief создает узел для значения bool
+ * 
+ * @return Node* 
+ */
+Node*
+make_bool_literal_const(const bool);
+
+/**
+ * @brief создает узел для значения char
+ * 
+ * @return Node* 
+ */
+Node*
+make_char_literaL_const(const char);
 
 #endif
