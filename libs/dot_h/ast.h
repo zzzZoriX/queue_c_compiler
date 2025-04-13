@@ -8,114 +8,110 @@
 #include <stdlib.h>
 
 typedef enum _node_type {
-    AST_OBJ,
-    AST_OBJ_ANNONS,
-    AST_EXPR,
-    AST_COND,
+    AST_LIT_CNST,
     AST_UNARY_OP,
     AST_BINARY_OP,
-    AST_STMT,
-    AST_ASSIGN,
-
-    AST_NULL
 } _node_type;
 
-typedef enum _op_type {
+typedef enum _bin_op_type {
     TYPE_PLUS,
     TYPE_MINUS,
     TYPE_MULTI,
     TYPE_DIV,
     TYPE_REM,
+} _bin_op_type;
+
+typedef enum _un_op_type {
     TYPE_INC,
     TYPE_DEC,
     TYPE_DEREF
-} _op_type;
+} _un_op_type;
+
+typedef enum _data_type {
+    TYPE_INT,
+    TYPE_CHAR,
+    TYPE_FLT,
+    TYPE_BOOL
+} _data_type;
+
+struct AST_Node;
+
+typedef struct LiteralConstant {
+    _data_type type;
+    union {
+        int int_value;
+        char char_value;
+        float flt_value;
+        bool bool_value;
+    };
+} LiteralConstant;
+
+typedef struct BinaryOperator {
+    struct AST_Node* left,* right;
+    _bin_op_type operation_type;
+} BinaryOperator;
+
+typedef struct UnaryOperator {
+    struct AST_Node* operand;
+    _un_op_type operation_type;
+} UnaryOperator;
 
 typedef struct AST_Node {
     _node_type node_type;
 
     union {
-        string obj_name, type;
-        bool is_pointer;
-        union {
-            int int_value;
-            char char_value;
-            float flt_value;
-            bool bool_value;
-            struct AST_Node** p_node_value; // указатель на какой-то объект
-        } value;
-
-        struct {
-            _op_type type;
-            struct AST_Node* oper;
-        } un_op;
-        
-        struct {
-            _op_type type;
-            struct AST_Node* left,* right;
-        } bin_op;
-
-    } data;
+        LiteralConstant constant;
+        BinaryOperator bin_op;
+        UnaryOperator un_op;
+    };
 } Node;
 
-
-static inline void* __fastcall
-get_value_from_ast_node(Node* n){
-    if(n->data.is_pointer) return get_value_from_ast_node(*(n->data.value.p_node_value));
-    if(comp(n->data.type, (string)"int")) return &n->data.value.int_value;
-    if(comp(n->data.type, (string)"char")) return &n->data.value.char_value;
-    if(comp(n->data.type, (string)"flt")) return &n->data.value.flt_value;
-    if(comp(n->data.type, (string)"bool")) return &n->data.value.bool_value;
-
-    return NULL;
-}
-
+/**
+ * @brief создает узел бинарной операции
+ * 
+ * @return Node*
+ */
+Node*
+make_bin_operation(Node*, Node*, char);
 
 /**
- * @brief создает узел интового объекта
+ * @brief создает узел унарной операции
  * 
  * @return Node* 
  */
 Node*
-create_int_obj_node(const string, const int);
+make_un_operation(Node*, string);
 
 /**
- * @brief создает узел символьного объекта
+ * @brief создает узел для значения int
  * 
  * @return Node* 
  */
 Node*
-create_char_obj_node(const string, const char);
+make_int_literal_const(const int);
 
 /**
- * @brief создает узел флоат объекта
+ * @brief создает узел для значения float
  * 
  * @return Node* 
  */
 Node*
-create_flt_obj_node(const string, const float);
+make_flt_literal_const(const float);
 
 /**
- * @brief создает узел булевого объекта
+ * @brief создает узел для значения bool
  * 
  * @return Node* 
  */
 Node*
-create_bool_obj_node(const string, const bool);
+make_bool_literal_const(const bool);
 
 /**
- * @brief создает узел объекта
+ * @brief создает узел для значения char
  * 
  * @return Node* 
  */
 Node*
-create_obj_node(const string, const Node*);
+make_char_literaL_const(const char);
 
-/**
-  * @brief создает узел указателя объекта
-  * 
-  * @return Node* 
-  */
- Node*
- create_p_obj_node(const string, Node**);
 #endif
