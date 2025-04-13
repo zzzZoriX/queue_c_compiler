@@ -1,8 +1,0 @@
-fun int main(){
-    var int a = 10;
-    pointer var int b = &a; /- получение адреса переменной a -/
-
-    var int c = @b; /- разыменование указателя -/
-    
-    ret 0;
-};

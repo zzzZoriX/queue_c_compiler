@@ -1,9 +1,0 @@
-fun int main(){
-    var int a = 0;
-    var int b = 0;
-    for(a < 5 -> ++a){
-        ++b;
-    };
-
-    for(a > 0 -> --a) -> --b; /- однострочный for -/
-};
