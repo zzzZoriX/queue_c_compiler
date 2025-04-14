@@ -45,6 +45,7 @@ typedef struct Statements {
 
 typedef struct LiteralConstant {
     _data_type type;
+    string name;
     union {
         int int_value;
         char char_value;
@@ -106,7 +107,7 @@ make_stmt_node();
  * @return Node* 
  */
 Node*
-make_int_literal_const(const int);
+make_int_literal_const(const string, const int);
 
 /**
  * @brief создает узел для значения float
@@ -114,7 +115,7 @@ make_int_literal_const(const int);
  * @return Node* 
  */
 Node*
-make_flt_literal_const(const float);
+make_flt_literal_const(const string, const float);
 
 /**
  * @brief создает узел для значения bool
@@ -122,7 +123,7 @@ make_flt_literal_const(const float);
  * @return Node* 
  */
 Node*
-make_bool_literal_const(const bool);
+make_bool_literal_const(const string, const bool);
 
 /**
  * @brief создает узел для значения char
@@ -130,6 +131,6 @@ make_bool_literal_const(const bool);
  * @return Node* 
  */
 Node*
-make_char_literaL_const(const char);
+make_char_literaL_const(const string, const char);
 
 #endif
