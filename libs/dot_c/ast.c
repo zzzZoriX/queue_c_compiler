@@ -9,12 +9,15 @@ define_bin_op_type(char op){
         case '/': return TYPE_DIV;
         case '%': return TYPE_REM;
     }
+    return 0;
 }
 static inline _un_op_type __fastcall
 define_un_op_type(string op){
     if(comp(op, c_concat_c('@', '\0'))) return TYPE_DEREF;
     if(comp(op, "++")) return TYPE_INC;
     if(comp(op, "--")) return TYPE_DEC;
+
+    return 0;
 }
 
 static inline Node* __fastcall
