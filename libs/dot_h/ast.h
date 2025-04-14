@@ -48,6 +48,8 @@ typedef struct LiteralConstant {
     string name;
     union {
         int int_value;
+        short short_value;
+        long long_value;
         char char_value;
         float flt_value;
         bool bool_value;
