@@ -11,6 +11,7 @@ typedef enum _node_type {
     AST_LIT_CNST,
     AST_UNARY_OP,
     AST_BINARY_OP,
+    AST_STMT
 } _node_type;
 
 typedef enum _bin_op_type {
@@ -36,6 +37,12 @@ typedef enum _data_type {
 
 struct AST_Node;
 
+// значения для типов узла
+typedef struct Statements {
+    struct AST_Node** nodes;
+    unsigned count;
+} Statements;
+
 typedef struct LiteralConstant {
     _data_type type;
     union {
@@ -56,6 +63,8 @@ typedef struct UnaryOperator {
     _un_op_type operation_type;
 } UnaryOperator;
 
+
+// узел
 typedef struct AST_Node {
     _node_type node_type;
 
@@ -63,6 +72,7 @@ typedef struct AST_Node {
         LiteralConstant constant;
         BinaryOperator bin_op;
         UnaryOperator un_op;
+        Statements stmt;
     };
 } Node;
 
@@ -81,6 +91,14 @@ make_bin_operation(Node*, Node*, char);
  */
 Node*
 make_un_operation(Node*, string);
+
+/**
+ * @brief создает узел блока кода
+ * 
+ * @return Node* 
+ */
+Node*
+make_stmt_node();
 
 /**
  * @brief создает узел для значения int

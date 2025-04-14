@@ -53,6 +53,16 @@ make_un_operation(Node* operand, string op){
 }
 
 Node*
+make_stmt_node(){
+    Node* stmt_node = make_node(AST_STMT);
+
+    stmt_node->stmt.count = 0;
+    stmt_node->stmt.nodes = (Node**)malloc(sizeof(Node*));
+
+    return stmt_node;
+}
+
+Node*
 make_char_literaL_const(const char value){
     Node* new_node = make_node(AST_LIT_CNST);
 
