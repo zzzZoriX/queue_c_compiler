@@ -1,4 +1,5 @@
 #include "c:/queue_c_compiler/libs/dot_h/ast.h"
+#include <string.h>
 
 static inline _bin_op_type __fastcall
 define_bin_op_type(char op){
@@ -63,7 +64,7 @@ make_stmt_node(){
 }
 
 Node*
-make_char_literaL_const(const string name, const char value){
+make_char_literal_const(const string name, const char value){
     Node* new_node = make_node(AST_LIT_CNST);
 
     new_node->constant.char_value = value;
@@ -103,6 +104,30 @@ make_int_literal_const(const string name, const int value){
     Node* new_node = make_node(AST_LIT_CNST);
 
     new_node->constant.int_value = value;
+    new_node->constant.name = _strdup(name);
+    if(!new_node->constant.name)
+        exit(1);
+
+    return new_node;
+}
+
+Node*
+make_long_literal_const(const string name, const long value){
+    Node* new_node = make_node(AST_LIT_CNST);
+
+    new_node->constant.long_value = value;
+    new_node->constant.name = _strdup(name);
+    if(!new_node->constant.name)
+        exit(1);
+
+    return new_node;
+}
+
+Node*
+make_short_literal_const(const string name, const short value){
+    Node* new_node = make_node(AST_LIT_CNST);
+
+    new_node->constant.short_value = value;
     new_node->constant.name = _strdup(name);
     if(!new_node->constant.name)
         exit(1);

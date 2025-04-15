@@ -133,6 +133,22 @@ make_bool_literal_const(const string, const bool);
  * @return Node* 
  */
 Node*
-make_char_literaL_const(const string, const char);
+make_char_literal_const(const string, const char);
+
+/**
+ * @brief создает узел для значения long
+ * 
+ * @return Node* 
+ */
+Node*
+make_long_literal_const(const string, const long);
+
+/**
+ * @brief создает узел для значения short
+ * 
+ * @return Node* 
+ */
+Node*
+make_short_literal_const(const string, const short);
 
 #endif
