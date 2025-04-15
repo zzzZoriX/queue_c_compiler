@@ -66,4 +66,12 @@ comp(const string, const string);
 const string
 _read_one_word_from_stream(FILE*, const char);
 
+/**
+ * @brief переводит строку-число в число типа short
+ * 
+ * @return short 
+ */
+short __fastcall
+atosh(const string);
+
 #endif

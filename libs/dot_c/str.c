@@ -112,3 +112,38 @@ _read_one_word_from_stream(FILE* stream, const char separ){
 
     return word;
 }
+
+short __fastcall
+atosh(const string str){
+    short num;
+    switch(str[0]){
+        case '1': num = 1; break;
+        case '2': num = 2; break;
+        case '3': num = 3; break;
+        case '4': num = 4; break;
+        case '5': num = 5; break;
+        case '6': num = 6; break;
+        case '7': num = 7; break;
+        case '8': num = 8; break;
+        case '9': num = 9; break;
+        default: num = 0;
+    }
+
+    size_t i = 1, len = strlen(str);
+    while(i < len){
+        switch(str[i++]){
+            case '1': num *= 10; num += 1; break;
+            case '2': num *= 10; num += 2; break;
+            case '3': num *= 10; num += 3; break;
+            case '4': num *= 10; num += 4; break;
+            case '5': num *= 10; num += 5; break;
+            case '6': num *= 10; num += 6; break;
+            case '7': num *= 10; num += 7; break;
+            case '8': num *= 10; num += 8; break;
+            case '9': num *= 10; num += 9; break;
+            default: num *= 10;
+        }   
+    }
+
+    return num;
+}
