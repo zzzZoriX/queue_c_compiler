@@ -32,7 +32,9 @@ typedef enum _data_type {
     TYPE_INT,
     TYPE_CHAR,
     TYPE_FLT,
-    TYPE_BOOL
+    TYPE_BOOL,
+    TYPE_SHORT,
+    TYPE_LONG
 } _data_type;
 
 struct AST_Node;
