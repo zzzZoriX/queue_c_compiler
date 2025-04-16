@@ -195,9 +195,7 @@ is_spec_str(const string str){
 
 bool
 is_data_type(const string str){
-    char check_str[strlen(str)];
-    for(int i = 0; i < strlen(str); ++i)
-        check_str[i] = tolower(str[i]);
+    string check_str = tolower_str(str);
 
     return (
         comp(check_str, "int")      ||
