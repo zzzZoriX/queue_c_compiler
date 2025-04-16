@@ -1,5 +1,7 @@
 #include "c:/queue_c_compiler/libs/dot_h/lexeme.h"
+#include <ctype.h>
 #include <float.h>
+#include <xkeycheck.h>
 
 _lexemes
 define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
@@ -188,5 +190,21 @@ is_spec_str(const string str){
         comp(str, _OR)              ||
         comp(str, _DBL_TWO_DOTS)    ||
         comp(str, _INST_POINTER)
+    );
+}
+
+bool
+is_data_type(const string str){
+    char check_str[strlen(str)];
+    for(int i = 0; i < strlen(str); ++i)
+        check_str[i] = tolower(str[i]);
+
+    return (
+        comp(check_str, "int")      ||
+        comp(check_str, "short")    ||
+        comp(check_str, "long")     ||
+        comp(check_str, "char")     ||
+        comp(check_str, "bool")     ||
+        comp(check_str, "flt")
     );
 }

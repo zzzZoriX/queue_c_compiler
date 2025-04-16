@@ -5,6 +5,7 @@
 #include "obj.h"
 
 #include <stdbool.h>
+#include <xkeycheck.h>
 
 #define    _VAR "var"
 #define    _ARR "arr"
@@ -205,5 +206,14 @@ is_float(const string);
  */
 const char
 is_spec_str(const string);
+
+/**
+ * @brief проверяет является ли строка типом данных
+ * 
+ * @return true 
+ * @return false 
+ */
+bool
+is_data_type(const string);
 
 #endif 
