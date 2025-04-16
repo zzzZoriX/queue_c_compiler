@@ -74,4 +74,12 @@ _read_one_word_from_stream(FILE*, const char);
 short __fastcall
 atosh(const string);
 
+/**
+ * @brief работает как функция tolower, но для полной строки
+ * 
+ * @return string 
+ */
+string __cdecl
+tolower_str(const string);
+
 #endif

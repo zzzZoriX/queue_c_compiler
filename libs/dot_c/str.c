@@ -147,3 +147,15 @@ atosh(const string str){
 
     return num;
 }
+
+string __cdecl
+tolower_str(const string str){
+    string lower_str = (string)malloc(sizeof(char) * strlen(str));
+    if(!lower_str)
+        exit(1);
+    
+    for(int i = 0; i < strlen(str); ++i)
+        lower_str[i] = tolower(str[i]);
+
+    return lower_str;
+}
