@@ -12,7 +12,16 @@
  * @brief парсит токены и превращает их в узлы ast
  * 
  */
-void
-tokens_parser(_token*);
+Node*
+tokens_parser(_token**);
+
+#define make_auto_type_litcnst_node(n, v) _Generic((v),\
+    short   : make_short_literal_const,\
+    int     : make_int_literal_const,\
+    long    : make_long_literal_const,\
+    bool    : make_bool_literal_const,\
+    char    : make_char_literal_const,\
+    float   : make_flt_literal_const,\
+)(n, v)
 
 #endif
