@@ -1,5 +1,15 @@
 #include "c:/queue_c_compiler/libs/dot_h/ast.h"
-#include <string.h>
+
+static inline bool __fastcall
+is_operator(_lexemes lex){
+    return (
+        lex == LEX_PLUS     ||
+        lex == LEX_MINUS    ||
+        lex == LEX_MUL      ||
+        lex == LEX_DIV      ||
+        lex == LEX_REM
+    );
+}
 
 static inline _bin_op_type __fastcall
 define_bin_op_type(char op){
@@ -61,6 +71,46 @@ make_stmt_node(){
     stmt_node->stmt.nodes = (Node**)malloc(sizeof(Node*));
 
     return stmt_node;
+}
+
+Node*
+make_expr_node(_token** token){
+    Node* expr_node = make_node(AST_EXPR);
+
+    if((*token)->lex == LEX_DIGIT || (*token)->lex == LEX_FLOAT){
+        expr_node->expr.type = TYPE_NUM;
+        expr_node->expr.num = atof((*token)->data);
+
+        return expr_node;
+    }
+
+    if((*token)->lex == LEX_OBJ_NAME){
+        expr_node->expr.type = TYPE_LIT_CONST;
+        expr_node->expr.lit_const.name = _strdup((*token)->data);
+
+        return expr_node;
+    }
+
+    if((*token)->lex == LEX_LPAREN){
+        *token = (*token)->next_token;
+        Node* expr = make_expr_node(token);
+
+        *token = (*token)->next_token;
+        return expr;
+    }
+
+    Node* left = make_expr_node(token);
+
+    if(is_operator((*token)->lex)){
+        char op = (*token)->data[0];
+        *token = (*token)->next_token;
+
+        Node* right = make_expr_node(token);
+        
+        make_bin_operation(left, right, op);
+    }
+
+    return left;
 }
 
 Node*
