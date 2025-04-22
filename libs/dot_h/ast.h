@@ -3,6 +3,7 @@
 
 #include "lexeme.h"
 #include "str.h"
+#include "tokens.h"
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -11,7 +12,8 @@ typedef enum _node_type {
     AST_LIT_CNST,
     AST_UNARY_OP,
     AST_BINARY_OP,
-    AST_STMT
+    AST_STMT,
+    AST_EXPR
 } _node_type;
 
 typedef enum _bin_op_type {
@@ -31,6 +33,7 @@ typedef enum _un_op_type {
 
 typedef enum _expr_type {
     TYPE_NUM,
+    TYPE_LIT_CONST,
     TYPE_EXPR
 } _expr_type;
 
@@ -80,6 +83,7 @@ typedef struct Expr {
     union {
         float num;
         BinaryOperator bin_op;
+        LiteralConstant lit_const;
     };
 } Expr;
 
@@ -92,8 +96,14 @@ typedef struct AST_Node {
         BinaryOperator bin_op;
         UnaryOperator un_op;
         Statements stmt;
+        Expr expr;
     };
 } Node;
+
+#define FREE_NODE(node){\
+    free((node)->name);\
+    free((node));\
+}
 
 /**
  * @brief создает узел бинарной операции
@@ -118,6 +128,14 @@ make_un_operation(Node*, string);
  */
 Node*
 make_stmt_node();
+
+/**
+ * @brief создает узел мат. выражения
+ * 
+ * @return Node* 
+ */
+Node*
+make_expr_node(_token**);
 
 /**
  * @brief создает узел для значения int
