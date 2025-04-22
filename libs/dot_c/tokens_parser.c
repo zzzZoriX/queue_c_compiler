@@ -1,6 +1,6 @@
 #include "c:/queue_c_compiler/libs/dot_h/tokens_parser.h"
 
-void
+Node*
 tokens_parser(_token** token){
     switch ((*token)->lex){
         case LEX_INT:
@@ -13,6 +13,24 @@ tokens_parser(_token** token){
             while(*token && !is_data_type((*token)->data))
                 *token = (*token)->next_token;
             
+            if(!is_data_type((*token)->data)) exit(1);
+
+            const string type = _strdup((*token)->data);
+            *token = NEXT_TOKEN(*token);
+
+            Node* lit_const = make_corr_type_litcnst((*token)->data, type);
+            
+            *token = NEXT_TOKEN(*token);
+
+            char bin_op = (*token)->data[0];
+
+            *token = NEXT_TOKEN(*token);
+
+            return make_bin_operation(
+                lit_const, 
+                tokens_parser(token), 
+                bin_op
+            );
 
         default: break;
     }
@@ -20,15 +38,13 @@ tokens_parser(_token** token){
     return tokens_parser(&(*token)->next_token);
 }
 
-_data_type
-data_type_str_to_enum(const string str){
-    string cmp_str = tolower_str(str);
-
-    if(comp(cmp_str, "short"))  return TYPE_SHORT;
-    if(comp(cmp_str, "long"))   return TYPE_LONG;
-    if(comp(cmp_str, "char"))   return TYPE_CHAR;
-    if(comp(cmp_str, "bool"))   return TYPE_BOOL;
-    if(comp(cmp_str, "flt"))    return TYPE_FLT;
-
-    return TYPE_INT;
+Node*
+make_corr_type_litcnst(const string name, const string type){
+    if(comp(type, "bool"))      return make_bool_literal_const(name, false);
+    if(comp(type, "flt"))       return make_flt_literal_const(name, 0);
+    if(comp(type, "short"))     return make_short_literal_const(name, 0);
+    if(comp(type, "long"))      return make_long_literal_const(name, 0);
+    if(comp(type, "char"))      return make_char_literal_const(name, 0);
+    
+    return make_int_literal_const(name, 0);
 }
