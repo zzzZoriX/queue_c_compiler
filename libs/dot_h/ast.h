@@ -20,6 +20,7 @@ typedef enum _bin_op_type {
     TYPE_MULTI,
     TYPE_DIV,
     TYPE_REM,
+    TYPE_ASSIGN
 } _bin_op_type;
 
 typedef enum _un_op_type {
@@ -27,6 +28,12 @@ typedef enum _un_op_type {
     TYPE_DEC,
     TYPE_DEREF
 } _un_op_type;
+
+typedef enum _expr_type {
+    TYPE_NUM,
+    TYPE_EXPR
+} _expr_type;
+
 
 typedef enum _data_type {
     TYPE_INT,
@@ -68,6 +75,13 @@ typedef struct UnaryOperator {
     _un_op_type operation_type;
 } UnaryOperator;
 
+typedef struct Expr {
+    _expr_type type;
+    union {
+        float num;
+        BinaryOperator bin_op;
+    };
+} Expr;
 
 // узел
 typedef struct AST_Node {
