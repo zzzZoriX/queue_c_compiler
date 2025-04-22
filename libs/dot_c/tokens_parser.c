@@ -32,6 +32,22 @@ tokens_parser(_token** token){
                 bin_op
             );
 
+        case LEX_LPAREN:
+            if(NEXT_TOKEN(*token)->lex == LEX_RPAREN){
+                Node* node = (Node*)malloc(sizeof(Node));
+                if(!node) exit(1);
+
+                node->node_type = AST_EXPR;
+                node->expr.num = 0;
+                node->expr.type = TYPE_NUM;
+
+                return node;
+            }
+        case LEX_DIGIT:
+        case LEX_FLOAT:
+        case LEX_CHAR_VAL:
+        case LEX_OBJ_NAME:
+
         default: break;
     }
 
