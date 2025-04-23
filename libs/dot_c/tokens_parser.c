@@ -47,6 +47,8 @@ tokens_parser(_token** token){
         case LEX_FLOAT:
         case LEX_CHAR_VAL:
         case LEX_OBJ_NAME:
+            Node* expr_node = make_expr_node(token);
+            return expr_node;
 
         default: break;
     }
