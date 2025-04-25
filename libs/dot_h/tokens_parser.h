@@ -8,8 +8,6 @@
 
 #include <ctype.h>
 
-#define NEXT_TOKEN(tok) ((tok)->next_token)
-
 /**
  * @brief парсит токены и превращает их в узлы ast
  * 
