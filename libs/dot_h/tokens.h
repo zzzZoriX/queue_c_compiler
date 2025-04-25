@@ -11,6 +11,8 @@ typedef struct _token {
 
 #define CREATE_STATIC_EMPTY_TOKEN() (&(_token){NULL, LEX_UNDEF, NULL})
 
+#define NEXT_TOKEN(tok) ((tok)->next_token)
+
 
 /**
  * @brief создает объект токена
