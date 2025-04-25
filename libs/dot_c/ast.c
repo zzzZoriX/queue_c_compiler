@@ -85,6 +85,19 @@ make_expr_node(_token** token){
     }
 
     if((*token)->lex == LEX_OBJ_NAME){
+
+// если унарная операция
+        if(NEXT_TOKEN(*token)->lex == LEX_POST_INC || NEXT_TOKEN(*token)->lex == LEX_POST_DEC){
+            Node* empty_lit_const = make_empty_literal_const((*token)->data);
+            *token = NEXT_TOKEN(*token);
+
+            return make_un_operation(
+                empty_lit_const,
+                (*token)->data
+            );
+        }
+
+// если не унарная операция
         expr_node->expr.type = TYPE_LIT_CONST;
         expr_node->expr.lit_const.name = _strdup((*token)->data);
 
@@ -179,6 +192,17 @@ make_short_literal_const(const string name, const short value){
 
     new_node->constant.short_value = value;
     new_node->constant.name = _strdup(name);
+    if(!new_node->constant.name)
+        exit(1);
+
+    return new_node;
+}
+
+Node*
+make_empty_literal_const(const string name){
+    Node* new_node = make_node(AST_LIT_CNST);
+
+    new_node->constant.name = concat("__empty_", name);
     if(!new_node->constant.name)
         exit(1);
 

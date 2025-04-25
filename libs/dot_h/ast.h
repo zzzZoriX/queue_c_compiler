@@ -83,6 +83,7 @@ typedef struct Expr {
     union {
         float num;
         BinaryOperator bin_op;
+        UnaryOperator un_op;
         LiteralConstant lit_const;
     };
 } Expr;
@@ -184,5 +185,13 @@ make_long_literal_const(const string, const long);
  */
 Node*
 make_short_literal_const(const string, const short);
+
+/**
+ * @brief создает узел пустой литеральной константы
+ * 
+ * @return Node* 
+ */
+Node*
+make_empty_literal_const(const string);
 
 #endif
