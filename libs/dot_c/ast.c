@@ -84,16 +84,28 @@ make_expr_node(_token** token){
         return expr_node;
     }
 
-    if((*token)->lex == LEX_PREF_INC || (*token)->lex == LEX_PREF_DEC)
+    if((*token)->lex == LEX_CHAR_VAL){
+        // токен содержит 'символ', чтобы получить код символа - мне нужно обратиться ко второй ячейке строки
+        expr_node->expr.ascii_code = (*token)->data[1];
+
+        return expr_node;
+    }
+
+    if((*token)->lex == LEX_PREF_INC || (*token)->lex == LEX_PREF_DEC){
+        free(expr_node);
+
         return make_un_operation(
             make_empty_literal_const(NEXT_TOKEN(*token)->data),
             (*token)->data
         );
+    }
 
     if((*token)->lex == LEX_OBJ_NAME){
 
 // если унарная операция
         if(NEXT_TOKEN(*token)->lex == LEX_POST_INC || NEXT_TOKEN(*token)->lex == LEX_POST_DEC){
+            free(expr_node);
+            
             Node* empty_lit_const = make_empty_literal_const((*token)->data);
             *token = NEXT_TOKEN(*token);
 
@@ -109,6 +121,8 @@ make_expr_node(_token** token){
 
         return expr_node;
     }
+
+    free(expr_node); // дальше эта переменная нигде не используется
 
     if((*token)->lex == LEX_LPAREN){
         *token = (*token)->next_token;
@@ -126,7 +140,7 @@ make_expr_node(_token** token){
 
         Node* right = make_expr_node(token);
         
-        make_bin_operation(left, right, op);
+        return make_bin_operation(left, right, op);
     }
 
     return left;

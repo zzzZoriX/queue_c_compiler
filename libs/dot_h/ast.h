@@ -34,6 +34,7 @@ typedef enum _un_op_type {
 typedef enum _expr_type {
     TYPE_NUM,
     TYPE_LIT_CONST,
+    TYPE_CHAR_VALUE,
     TYPE_EXPR
 } _expr_type;
 
@@ -82,6 +83,7 @@ typedef struct Expr {
     _expr_type type;
     union {
         float num;
+        int ascii_code;
         BinaryOperator bin_op;
         UnaryOperator un_op;
         LiteralConstant lit_const;
