@@ -84,6 +84,12 @@ make_expr_node(_token** token){
         return expr_node;
     }
 
+    if((*token)->lex == LEX_PREF_INC || (*token)->lex == LEX_PREF_DEC)
+        return make_un_operation(
+            make_empty_literal_const(NEXT_TOKEN(*token)->data),
+            (*token)->data
+        );
+
     if((*token)->lex == LEX_OBJ_NAME){
 
 // если унарная операция
