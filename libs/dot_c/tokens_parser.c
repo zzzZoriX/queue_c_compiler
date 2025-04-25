@@ -1,4 +1,5 @@
 #include "c:/queue_c_compiler/libs/dot_h/tokens_parser.h"
+#include <string.h>
 
 Node*
 tokens_parser(_token** token){
@@ -37,7 +38,34 @@ tokens_parser(_token** token){
         case LEX_FLOAT:
         case LEX_CHAR_VAL:
         case LEX_OBJ_NAME:
+            if(
+                NEXT_TOKEN(*token)->lex == LEX_POST_INC ||
+                NEXT_TOKEN(*token)->lex == LEX_POST_DEC
+            ){
+                Node* operand = make_empty_literal_const((*token)->data);
+                *token = NEXT_TOKEN(*token);
+
+                string op = _strdup((*token)->data);
+                *token = NEXT_TOKEN(*token);
+
+                return make_un_operation(
+                    operand,
+                    op
+                );
+            }
+
             return make_expr_node(token);
+
+        case LEX_PREF_INC:
+        case LEX_PREF_DEC:
+            string op = _strdup((*token)->data);
+            *token = NEXT_TOKEN(*token);
+
+            Node* operand = make_expr_node(token);
+            return make_un_operation(
+                operand,
+                op
+            );
 
         default: break;
     }
