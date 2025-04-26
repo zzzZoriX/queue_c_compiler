@@ -2,13 +2,47 @@
 
 static inline bool __fastcall
 is_operator(_lexemes lex){
-    return (
+    return
         lex == LEX_PLUS     ||
         lex == LEX_MINUS    ||
         lex == LEX_MUL      ||
         lex == LEX_DIV      ||
         lex == LEX_REM
-    );
+    ;
+}
+
+static inline bool __fastcall
+is_comp(_lexemes lex){
+    return
+        lex == LEX_EQ       ||
+        lex == LEX_NEQ      ||
+        lex == LEX_G        ||
+        lex == LEX_GE       ||
+        lex == LEX_LE       ||
+        lex == LEX_L        
+    ;
+}
+
+static inline bool __fastcall
+is_logical(_lexemes lex){
+    return
+        lex == LEX_AND || lex == LEX_OR
+    ;
+}
+
+static inline _cond_type __fastcall 
+define_cond_type_by_lex(_lexemes lex){
+    switch(lex){
+        case LEX_EQ:    return TYPE_EQ;
+        case LEX_NEQ:   return TYPE_NEQ;
+        case LEX_G:     return TYPE_G;
+        case LEX_GE:    return TYPE_GE;
+        case LEX_LE:    return TYPE_LE;
+        case LEX_L:     return TYPE_L;
+        case LEX_AND:   return TYPE_AND;
+        case LEX_OR:    return TYPE_OR;
+        default:        return TYPE_COND_EXPR;
+    }
 }
 
 static inline _bin_op_type __fastcall
@@ -144,6 +178,35 @@ make_expr_node(_token** token){
     }
 
     return left;
+}
+
+Node*
+make_cond_node(_token** token){
+    Node* cond = make_node(AST_CONDITION);
+    
+    *token = NEXT_TOKEN(*token);
+    Node* left = make_expr_node(token);
+    
+    if(is_comp((*token)->lex)){
+        cond->cond.type = define_cond_type_by_lex((*token)->lex);
+        *token = NEXT_TOKEN(*token);
+
+        cond->cond.comparsion.left = left->expr;
+        cond->cond.comparsion.right = make_expr_node(token)->expr;
+    }
+    else if(is_logical((*token)->lex)){
+        cond->cond.type = define_cond_type_by_lex((*token)->lex);
+        *token = NEXT_TOKEN(*token);
+
+        cond->cond.bin.left = &left->cond;
+        cond->cond.bin.right = &make_expr_node(token)->cond;
+    }
+    else{
+        cond->cond.type = TYPE_COND_EXPR;
+        cond->cond.expr = make_expr_node(token)->expr;
+    }
+
+    return cond;
 }
 
 Node*

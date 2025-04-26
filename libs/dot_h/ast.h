@@ -13,7 +13,8 @@ typedef enum _node_type {
     AST_UNARY_OP,
     AST_BINARY_OP,
     AST_STMT,
-    AST_EXPR
+    AST_EXPR,
+    AST_CONDITION
 } _node_type;
 
 typedef enum _bin_op_type {
@@ -37,6 +38,18 @@ typedef enum _expr_type {
     TYPE_CHAR_VALUE,
     TYPE_EXPR
 } _expr_type;
+
+typedef enum _cond_type {
+    TYPE_EQ, // ==
+    TYPE_NEQ, // !=
+    TYPE_LE, // <=
+    TYPE_L, // <
+    TYPE_G, // >
+    TYPE_GE, // =>
+    TYPE_AND, // &&
+    TYPE_OR, // ||
+    TYPE_COND_EXPR // если просто значение
+} _cond_type;
 
 
 typedef enum _data_type {
@@ -90,6 +103,21 @@ typedef struct Expr {
     };
 } Expr;
 
+typedef struct Condition {
+    _cond_type type;
+    union {
+        Expr expr;
+
+        struct { // >, <, <=, == и т.д.
+            Expr left, right;
+        } comparsion;
+
+        struct { // && и ||
+            struct Condition* left,* right;
+        } bin;
+    };
+} Condition;
+
 // узел
 typedef struct AST_Node {
     _node_type node_type;
@@ -100,6 +128,7 @@ typedef struct AST_Node {
         UnaryOperator un_op;
         Statements stmt;
         Expr expr;
+        Condition cond;
     };
 } Node;
 
@@ -139,6 +168,14 @@ make_stmt_node();
  */
 Node*
 make_expr_node(_token**);
+
+/**
+ * @brief создает узел условного выражения
+ * 
+ * @return Node* 
+ */
+Node*
+make_cond_node(_token**);
 
 /**
  * @brief создает узел для значения int
