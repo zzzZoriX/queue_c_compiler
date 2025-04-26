@@ -1,4 +1,6 @@
 #include "c:/queue_c_compiler/libs/dot_h/ast.h"
+#include <stdlib.h>
+#include <string.h>
 
 static inline bool __fastcall
 is_operator(_lexemes lex){
@@ -207,6 +209,56 @@ make_cond_node(_token** token){
     }
 
     return cond;
+}
+
+Node*
+make_if_else_node(_cmd_type type, Condition cond, Statements body, Command else_){
+    Node* if_else_node = make_node(AST_COMMAND);
+
+    if_else_node->cmd.type = type;
+    if_else_node->cmd.if_else.condition = cond;
+    if_else_node->cmd.if_else.if_body = body;
+    if_else_node->cmd.if_else.else_ = &else_;
+
+    return if_else_node;
+}
+
+Node*
+make_do_while_node(_cmd_type type, Condition cond, Statements body){
+    Node* do_while_node = make_node(AST_COMMAND);
+
+    do_while_node->cmd.type = type;
+    do_while_node->cmd.cycles.while_cycle.condition = cond;
+    do_while_node->cmd.cycles.while_cycle.while_body = body;
+
+    return do_while_node;
+}
+
+Node*
+make_for_cycle_node(_cmd_type type, Condition cond, Statements body, UnaryOperator iter){
+    Node* for_node = make_node(AST_COMMAND);
+
+    for_node->cmd.type = type;
+    for_node->cmd.cycles.for_cycle.condition = cond;
+    for_node->cmd.cycles.for_cycle.for_body = body;
+    for_node->cmd.cycles.for_cycle.iter = iter;
+
+    return for_node;
+}
+
+Node*
+make_io_node(_cmd_type type, string format, string* args, int count){
+    Node* io_node = make_node(AST_COMMAND);
+
+    io_node->cmd.type = type;
+    io_node->cmd.io.format = _strdup(format);
+    if(!io_node->cmd.io.format)
+        exit(1);
+
+    io_node->cmd.io.args = args;
+    io_node->cmd.io.args_count = count;
+
+    return io_node;
 }
 
 Node*
