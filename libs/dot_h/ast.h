@@ -14,7 +14,8 @@ typedef enum _node_type {
     AST_BINARY_OP,
     AST_STMT,
     AST_EXPR,
-    AST_CONDITION
+    AST_CONDITION,
+    AST_COMMAND
 } _node_type;
 
 typedef enum _bin_op_type {
@@ -50,6 +51,17 @@ typedef enum _cond_type {
     TYPE_OR, // ||
     TYPE_COND_EXPR // если просто значение
 } _cond_type;
+
+typedef enum _cmd_type {
+    CMD_IF,
+    CMD_ELSE_IF,
+    CMD_ELSE,
+    CMD_WHILE,
+    CMD_DO,
+    CMD_FOR,
+    CMD_OUT,
+    CMD_IN
+} _cmd_type;
 
 
 typedef enum _data_type {
@@ -118,6 +130,36 @@ typedef struct Condition {
     };
 } Condition;
 
+typedef struct Command {
+    _cmd_type type;
+
+    union {
+        struct {
+            Condition condition;
+            Statements if_body;
+            struct Command* else_;
+        } if_else;
+
+        union {
+            struct {
+                Condition condition;
+                UnaryOperator iter;
+                Statements for_body;
+            } for_cycle;
+
+            struct {
+                Condition condition;
+                Statements while_body;
+            } while_cycle;
+        } cycles;
+
+        union {
+            string format,* args;
+            int args_count;
+        } io;
+    };
+} Command;
+
 // узел
 typedef struct AST_Node {
     _node_type node_type;
@@ -129,6 +171,7 @@ typedef struct AST_Node {
         Statements stmt;
         Expr expr;
         Condition cond;
+        Command cmd;
     };
 } Node;
 
@@ -176,6 +219,38 @@ make_expr_node(_token**);
  */
 Node*
 make_cond_node(_token**);
+
+/**
+ * @brief создает узел условной конструкции
+ * 
+ * @return Node* 
+ */
+Node*
+make_if_else_node(_cmd_type, Condition, Statements, Command);
+
+/**
+ * @brief создает узел цикла while или do-while
+ * 
+ * @return Node* 
+ */
+Node*
+make_do_while_node(_cmd_type, Condition, Statements);
+
+/**
+ * @brief создает узел цикла for
+ * 
+ * @return Node* 
+ */
+Node*
+make_for_cycle_node(_cmd_type, Condition, Statements, UnaryOperator);
+
+/**
+ * @brief создает узел комманд ввода и вывода
+ * 
+ * @return Node* 
+ */
+Node*
+make_io_node(_cmd_type, string, string*, int);
 
 /**
  * @brief создает узел для значения int
