@@ -73,12 +73,40 @@ typedef struct LiteralConstant {
     };
 } LiteralConstant;
 
+typedef struct Command {
+    union {
+        struct {
+            AST_Node* condition;
+            Statements if_body;
+            struct Command* else_;
+        } if_else;
+
+        union {
+            struct {
+                AST_Node* condition,* iter;
+                Statements for_body;
+            } for_cycle;
+
+            struct {
+                AST_Node* condition;
+                Statements while_body;
+            } while_cycle;
+        } cycles;
+
+        union {
+            string format,* args;
+            int args_count;
+        } io;
+    };
+} Command;
+
 // узел
 typedef struct AST_Node {
     _node_type node_type;
 
     union {
         LiteralConstant constant;
+        Command cmd;
         
         AST_Node* op1,* op2,* op3;
     };
@@ -159,7 +187,7 @@ make_for_cycle_node(Node*, Node*, Node*);
  * @return Node* 
  */
 Node*
-make_io_node(string, string*, int);
+make_io_node(_lexemes, string, string*, int);
 
 /**
  * @brief создает узел для значения int
