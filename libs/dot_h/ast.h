@@ -52,7 +52,7 @@ typedef enum _data_type {
     TYPE_LONG
 } _data_type;
 
-struct AST_Node;
+typedef struct AST_Node AST_Node;
 
 // значения для типов узла
 typedef struct Statements {
@@ -76,20 +76,17 @@ typedef struct LiteralConstant {
 typedef struct Command {
     union {
         struct {
-            AST_Node* condition;
-            Statements if_body;
+            AST_Node* condition,* if_body;
             struct Command* else_;
         } if_else;
 
         union {
             struct {
-                AST_Node* condition,* iter;
-                Statements for_body;
+                AST_Node* condition,* iter,* for_body;
             } for_cycle;
 
             struct {
-                AST_Node* condition;
-                Statements while_body;
+                AST_Node* condition,* while_body;
             } while_cycle;
         } cycles;
 
@@ -134,14 +131,6 @@ Node*
 make_un_operation(Node*, string);
 
 /**
- * @brief создает узел блока кода
- * 
- * @return Node* 
- */
-Node*
-make_stmt_node();
-
-/**
  * @brief создает узел мат. выражения
  * 
  * @return Node* 
@@ -163,7 +152,7 @@ make_cond_node(_token**);
  * @return Node* 
  */
 Node*
-make_if_else_node(Node*, Node*, Node*);
+make_if_else_node(_lexemes, Node*, Node*, Node*);
 
 /**
  * @brief создает узел цикла while или do-while
@@ -171,7 +160,7 @@ make_if_else_node(Node*, Node*, Node*);
  * @return Node* 
  */
 Node*
-make_do_while_node(Node*, Node*, Node*);
+make_do_while_node(_lexemes, Node*, Node*);
 
 /**
  * @brief создает узел цикла for

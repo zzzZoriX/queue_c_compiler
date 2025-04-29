@@ -1,6 +1,4 @@
 #include "c:/queue_c_compiler/libs/dot_h/ast.h"
-#include <stdlib.h>
-#include <string.h>
 
 static inline bool __fastcall
 is_operator(_lexemes lex){
@@ -14,55 +12,50 @@ is_operator(_lexemes lex){
 }
 
 static inline bool __fastcall
-is_comp(_lexemes lex){
+is_cond(_lexemes lex){
     return
         lex == LEX_EQ       ||
         lex == LEX_NEQ      ||
         lex == LEX_G        ||
         lex == LEX_GE       ||
         lex == LEX_LE       ||
-        lex == LEX_L        
+        lex == LEX_L        ||
+        lex == LEX_OR       ||
+        lex == LEX_AND   
     ;
 }
 
-static inline bool __fastcall
-is_logical(_lexemes lex){
-    return
-        lex == LEX_AND || lex == LEX_OR
-    ;
-}
-
-static inline _cond_type __fastcall 
+static inline _node_type __fastcall 
 define_cond_type_by_lex(_lexemes lex){
     switch(lex){
-        case LEX_EQ:    return TYPE_EQ;
-        case LEX_NEQ:   return TYPE_NEQ;
-        case LEX_G:     return TYPE_G;
-        case LEX_GE:    return TYPE_GE;
-        case LEX_LE:    return TYPE_LE;
-        case LEX_L:     return TYPE_L;
-        case LEX_AND:   return TYPE_AND;
-        case LEX_OR:    return TYPE_OR;
-        default:        return TYPE_COND_EXPR;
+        case LEX_EQ:    return AST_EQ;
+        case LEX_NEQ:   return AST_NEQ;
+        case LEX_G:     return AST_G;
+        case LEX_GE:    return AST_GE;
+        case LEX_LE:    return AST_LE;
+        case LEX_L:     return AST_L;
+        case LEX_AND:   return AST_AND;
+        case LEX_OR:    return AST_OR;
+        default:        return AST_EQ;
     }
 }
 
-static inline _bin_op_type __fastcall
+static inline _node_type __fastcall
 define_bin_op_type(char op){
     switch(op){
-        case '+': return TYPE_PLUS;
-        case '-': return TYPE_MINUS;
-        case '*': return TYPE_MULTI;
-        case '/': return TYPE_DIV;
-        case '%': return TYPE_REM;
+        case '+': return AST_PLUS;
+        case '-': return AST_MINUS;
+        case '*': return AST_MULTI;
+        case '/': return AST_DIV;
+        case '%': return AST_REM;
     }
     return 0;
 }
-static inline _un_op_type __fastcall
+static inline _node_type __fastcall
 define_un_op_type(string op){
-    if(comp(op, c_concat_c('@', '\0'))) return TYPE_DEREF;
-    if(comp(op, "++")) return TYPE_INC;
-    if(comp(op, "--")) return TYPE_DEC;
+    if(comp(op, c_concat_c('@', '\0'))) return AST_DEREF;
+    if(comp(op, "++")) return AST_INC;
+    if(comp(op, "--")) return AST_DEC;
 
     return 0;
 }
@@ -80,33 +73,23 @@ make_node(_node_type type){
 
 Node*
 make_bin_operation(Node* left, Node* right, char op){
-    Node* new_node = make_node(AST_BINARY_OP);
+    Node* new_node = make_node(0);
 
-    new_node->bin_op.left = left;
-    new_node->bin_op.right = right;
-    new_node->bin_op.operation_type = define_bin_op_type(op);
+    new_node->op1 = left;
+    new_node->op2 = right;
+    new_node->node_type = define_bin_op_type(op);
 
     return new_node;
 }
 
 Node*
 make_un_operation(Node* operand, string op){
-    Node* new_node = make_node(AST_UNARY_OP);
+    Node* new_node = make_node(0);
         
-    new_node->un_op.operand = operand;
-    new_node->un_op.operation_type = define_un_op_type(op);
+    new_node->op1 = operand;
+    new_node->node_type = define_un_op_type(op);
 
     return new_node;
-}
-
-Node*
-make_stmt_node(){
-    Node* stmt_node = make_node(AST_STMT);
-
-    stmt_node->stmt.count = 0;
-    stmt_node->stmt.nodes = (Node**)malloc(sizeof(Node*));
-
-    return stmt_node;
 }
 
 Node*
@@ -184,62 +167,61 @@ make_expr_node(_token** token){
 
 Node*
 make_cond_node(_token** token){
-    Node* cond = make_node(AST_CONDITION);
+    Node* cond = make_node(0);
     
     *token = NEXT_TOKEN(*token);
     Node* left = make_expr_node(token);
     
-    if(is_comp((*token)->lex)){
-        cond->cond.type = define_cond_type_by_lex((*token)->lex);
+    if(is_cond((*token)->lex)){
+        cond->node_type = define_cond_type_by_lex((*token)->lex);
         *token = NEXT_TOKEN(*token);
 
-        cond->cond.comparsion.left = left->expr;
-        cond->cond.comparsion.right = make_expr_node(token)->expr;
+        cond->op1 = left;
+        cond->op2 = make_expr_node(token);
     }
-    else if(is_logical((*token)->lex)){
-        cond->cond.type = define_cond_type_by_lex((*token)->lex);
-        *token = NEXT_TOKEN(*token);
-
-        cond->cond.bin.left = &left->cond;
-        cond->cond.bin.right = &make_expr_node(token)->cond;
-    }
-    else{
-        cond->cond.type = TYPE_COND_EXPR;
-        cond->cond.expr = make_expr_node(token)->expr;
-    }
+    else
+        cond->op1 = left;
+    ;
 
     return cond;
 }
 
 Node*
-make_if_else_node(_cmd_type type, Condition cond, Statements body, Command else_){
-    Node* if_else_node = make_node(AST_COMMAND);
+make_if_else_node(_lexemes lexeme, Node* condition, Node* body, Node* else_){
+    Node* if_else_node = make_node(
+        (
+            lexeme == LEX_IF ? 
+            AST_IF : (
+                lexeme == LEX_ELIF ?
+                AST_ELSE_IF : AST_ELSE
+            )
+        )
+    );
 
-    if_else_node->cmd.type = type;
-    if_else_node->cmd.if_else.condition = cond;
+    if_else_node->cmd.if_else.condition = condition;
     if_else_node->cmd.if_else.if_body = body;
-    if_else_node->cmd.if_else.else_ = &else_;
+    if_else_node->cmd.if_else.else_ = &else_->cmd;
 
     return if_else_node;
 }
 
 Node*
-make_do_while_node(_cmd_type type, Condition cond, Statements body){
-    Node* do_while_node = make_node(AST_COMMAND);
+make_do_while_node(_lexemes lexeme, Node* condition, Node* body){
+    Node* do_while_node = make_node(
+        (lexeme == LEX_DO ? AST_DO : AST_WHILE)
+    );
 
-    do_while_node->cmd.type = type;
-    do_while_node->cmd.cycles.while_cycle.condition = cond;
+    do_while_node->cmd.cycles.while_cycle.condition = condition;
     do_while_node->cmd.cycles.while_cycle.while_body = body;
 
     return do_while_node;
 }
 
 Node*
-make_for_cycle_node(_cmd_type type, Condition cond, Statements body, UnaryOperator iter){
-    Node* for_node = make_node(AST_COMMAND);
+make_for_cycle_node(Node* condition, Node* body, Node* iter){
+    Node* for_node = make_node(AST_FOR);
 
-    for_node->cmd.type = type;
-    for_node->cmd.cycles.for_cycle.condition = cond;
+    for_node->cmd.cycles.for_cycle.condition = condition;
     for_node->cmd.cycles.for_cycle.for_body = body;
     for_node->cmd.cycles.for_cycle.iter = iter;
 
@@ -247,10 +229,11 @@ make_for_cycle_node(_cmd_type type, Condition cond, Statements body, UnaryOperat
 }
 
 Node*
-make_io_node(_cmd_type type, string format, string* args, int count){
-    Node* io_node = make_node(AST_COMMAND);
+make_io_node(_lexemes lexeme, string format, string* args, int count){
+    Node* io_node = make_node(
+        (lexeme == LEX_IN ? AST_IN : AST_OUT)
+    );
 
-    io_node->cmd.type = type;
     io_node->cmd.io.format = _strdup(format);
     if(!io_node->cmd.io.format)
         exit(1);
