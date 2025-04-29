@@ -10,58 +10,37 @@
 
 typedef enum _node_type {
     AST_LIT_CNST,
-    AST_UNARY_OP,
-    AST_BINARY_OP,
-    AST_STMT,
+    AST_PLUS,
+    AST_MINUS,
+    AST_MULTI,
+    AST_DIV,
+    AST_REM,
+    AST_ASSIGN,
+    AST_INC,
+    AST_DEC,
+    AST_DEREF,
+    AST_NUM,
+    AST_LIT_CONST,
+    AST_CHAR_VALUE,
+    AST_BOOLIAN_VALUE,
     AST_EXPR,
-    AST_CONDITION,
-    AST_COMMAND
+    AST_EQ,
+    AST_NEQ,
+    AST_LE,
+    AST_L,
+    AST_G,
+    AST_GE,
+    AST_AND,
+    AST_OR,
+    AST_IF,
+    AST_ELSE_IF,
+    AST_ELSE,
+    AST_WHILE,
+    AST_DO,
+    AST_FOR,
+    AST_OUT,
+    AST_IN
 } _node_type;
-
-typedef enum _bin_op_type {
-    TYPE_PLUS,
-    TYPE_MINUS,
-    TYPE_MULTI,
-    TYPE_DIV,
-    TYPE_REM,
-    TYPE_ASSIGN
-} _bin_op_type;
-
-typedef enum _un_op_type {
-    TYPE_INC,
-    TYPE_DEC,
-    TYPE_DEREF
-} _un_op_type;
-
-typedef enum _expr_type {
-    TYPE_NUM,
-    TYPE_LIT_CONST,
-    TYPE_CHAR_VALUE,
-    TYPE_EXPR
-} _expr_type;
-
-typedef enum _cond_type {
-    TYPE_EQ, // ==
-    TYPE_NEQ, // !=
-    TYPE_LE, // <=
-    TYPE_L, // <
-    TYPE_G, // >
-    TYPE_GE, // =>
-    TYPE_AND, // &&
-    TYPE_OR, // ||
-    TYPE_COND_EXPR // если просто значение
-} _cond_type;
-
-typedef enum _cmd_type {
-    CMD_IF,
-    CMD_ELSE_IF,
-    CMD_ELSE,
-    CMD_WHILE,
-    CMD_DO,
-    CMD_FOR,
-    CMD_OUT,
-    CMD_IN
-} _cmd_type;
 
 
 typedef enum _data_type {
@@ -94,84 +73,14 @@ typedef struct LiteralConstant {
     };
 } LiteralConstant;
 
-typedef struct BinaryOperator {
-    struct AST_Node* left,* right;
-    _bin_op_type operation_type;
-} BinaryOperator;
-
-typedef struct UnaryOperator {
-    struct AST_Node* operand;
-    _un_op_type operation_type;
-} UnaryOperator;
-
-typedef struct Expr {
-    _expr_type type;
-    union {
-        float num;
-        int ascii_code;
-        BinaryOperator bin_op;
-        UnaryOperator un_op;
-        LiteralConstant lit_const;
-    };
-} Expr;
-
-typedef struct Condition {
-    _cond_type type;
-    union {
-        Expr expr;
-
-        struct { // >, <, <=, == и т.д.
-            Expr left, right;
-        } comparsion;
-
-        struct { // && и ||
-            struct Condition* left,* right;
-        } bin;
-    };
-} Condition;
-
-typedef struct Command {
-    _cmd_type type;
-
-    union {
-        struct {
-            Condition condition;
-            Statements if_body;
-            struct Command* else_;
-        } if_else;
-
-        union {
-            struct {
-                Condition condition;
-                UnaryOperator iter;
-                Statements for_body;
-            } for_cycle;
-
-            struct {
-                Condition condition;
-                Statements while_body;
-            } while_cycle;
-        } cycles;
-
-        union {
-            string format,* args;
-            int args_count;
-        } io;
-    };
-} Command;
-
 // узел
 typedef struct AST_Node {
     _node_type node_type;
 
     union {
         LiteralConstant constant;
-        BinaryOperator bin_op;
-        UnaryOperator un_op;
-        Statements stmt;
-        Expr expr;
-        Condition cond;
-        Command cmd;
+        
+        AST_Node* op1,* op2,* op3;
     };
 } Node;
 
@@ -226,7 +135,7 @@ make_cond_node(_token**);
  * @return Node* 
  */
 Node*
-make_if_else_node(_cmd_type, Condition, Statements, Command);
+make_if_else_node(Node*, Node*, Node*);
 
 /**
  * @brief создает узел цикла while или do-while
@@ -234,7 +143,7 @@ make_if_else_node(_cmd_type, Condition, Statements, Command);
  * @return Node* 
  */
 Node*
-make_do_while_node(_cmd_type, Condition, Statements);
+make_do_while_node(Node*, Node*, Node*);
 
 /**
  * @brief создает узел цикла for
@@ -242,7 +151,7 @@ make_do_while_node(_cmd_type, Condition, Statements);
  * @return Node* 
  */
 Node*
-make_for_cycle_node(_cmd_type, Condition, Statements, UnaryOperator);
+make_for_cycle_node(Node*, Node*, Node*);
 
 /**
  * @brief создает узел комманд ввода и вывода
@@ -250,7 +159,7 @@ make_for_cycle_node(_cmd_type, Condition, Statements, UnaryOperator);
  * @return Node* 
  */
 Node*
-make_io_node(_cmd_type, string, string*, int);
+make_io_node(string, string*, int);
 
 /**
  * @brief создает узел для значения int
