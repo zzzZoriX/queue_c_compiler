@@ -1,4 +1,5 @@
 #include "c:/queue_c_compiler/libs/dot_h/ast.h"
+#include <string.h>
 
 static inline bool __fastcall
 is_operator(_lexemes lex){
@@ -41,14 +42,21 @@ define_cond_type_by_lex(_lexemes lex){
 }
 
 static inline _node_type __fastcall
-define_bin_op_type(char op){
-    switch(op){
-        case '+': return AST_PLUS;
-        case '-': return AST_MINUS;
-        case '*': return AST_MULTI;
-        case '/': return AST_DIV;
-        case '%': return AST_REM;
-    }
+define_bin_op_type(string op){
+    if(comp("+", op))   return AST_PLUS;
+    if(comp("*", op))   return AST_MULTI;
+    if(comp("-", op))   return AST_MINUS;
+    if(comp("%", op))   return AST_REM;
+    if(comp("/", op))   return AST_DIV;
+    if(comp("<", op))   return AST_L;
+    if(comp(">", op))   return AST_G;
+    if(comp("&&", op))  return AST_AND;
+    if(comp("||", op))  return AST_OR;
+    if(comp("==", op))  return AST_EQ;
+    if(comp("!=", op))  return AST_NEQ;
+    if(comp("=>", op))  return AST_GE;
+    if(comp("<=", op))  return AST_LE;
+
     return 0;
 }
 static inline _node_type __fastcall
@@ -72,7 +80,7 @@ make_node(_node_type type){
 }
 
 Node*
-make_bin_operation(Node* left, Node* right, char op){
+make_bin_operation(Node* left, Node* right, string op){
     Node* new_node = make_node(0);
 
     new_node->op1 = left;
@@ -97,25 +105,45 @@ make_expr_node(_token** token){
     Node* expr_node = make_node(AST_EXPR);
 
     if((*token)->lex == LEX_DIGIT || (*token)->lex == LEX_FLOAT){
-        expr_node->expr.type = TYPE_NUM;
-        expr_node->expr.num = atof((*token)->data);
+        expr_node->node_type = AST_NUM;
+        
+        if((*token)->lex == LEX_FLOAT){
+            expr_node->constant.type = TYPE_FLT;
+            expr_node->constant.flt_value = atof((*token)->data);    
+        }
+        else{
+            expr_node->constant.type = TYPE_INT;
+            expr_node->constant.int_value = atoi((*token)->data);    
+        }
 
         return expr_node;
     }
 
     if((*token)->lex == LEX_CHAR_VAL){
-        // токен содержит 'символ', чтобы получить код символа - мне нужно обратиться ко второй ячейке строки
-        expr_node->expr.ascii_code = (*token)->data[1];
+        expr_node->constant.type = TYPE_CHAR;
+        expr_node->constant.char_value = (*token)->data[1];
+
+        return expr_node;
+    }
+
+    if((*token)->lex == LEX_TRUE || (*token)->lex == LEX_FALSE){
+        expr_node->node_type = AST_BOOLIAN_VALUE;
+        expr_node->constant.type = TYPE_BOOL;
+        expr_node->constant.bool_value = ((*token)->lex == LEX_TRUE ? true : false);
 
         return expr_node;
     }
 
     if((*token)->lex == LEX_PREF_INC || (*token)->lex == LEX_PREF_DEC){
         free(expr_node);
+        string op = _strdup((*token)->data);
+        if(!op) exit(1);
+
+        *token = NEXT_TOKEN(*token);
 
         return make_un_operation(
-            make_empty_literal_const(NEXT_TOKEN(*token)->data),
-            (*token)->data
+            make_empty_literal_const((*token)->data),
+            op
         );
     }
 
@@ -135,8 +163,8 @@ make_expr_node(_token** token){
         }
 
 // если не унарная операция
-        expr_node->expr.type = TYPE_LIT_CONST;
-        expr_node->expr.lit_const.name = _strdup((*token)->data);
+        expr_node->node_type = AST_LIT_CNST;
+        expr_node->constant.name = _strdup((*token)->data);
 
         return expr_node;
     }
@@ -144,18 +172,19 @@ make_expr_node(_token** token){
     free(expr_node); // дальше эта переменная нигде не используется
 
     if((*token)->lex == LEX_LPAREN){
-        *token = (*token)->next_token;
+        *token = NEXT_TOKEN(*token);
         Node* expr = make_expr_node(token);
 
-        *token = (*token)->next_token;
+        *token = NEXT_TOKEN(*token);
         return expr;
     }
 
     Node* left = make_expr_node(token);
 
     if(is_operator((*token)->lex)){
-        char op = (*token)->data[0];
-        *token = (*token)->next_token;
+        string op = _strdup((*token)->data);
+        if(!op) exit(1);
+        *token = NEXT_TOKEN(*token);
 
         Node* right = make_expr_node(token);
         

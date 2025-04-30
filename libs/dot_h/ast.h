@@ -120,7 +120,7 @@ typedef struct AST_Node {
  * @return Node*
  */
 Node*
-make_bin_operation(Node*, Node*, char);
+make_bin_operation(Node*, Node*, string);
 
 /**
  * @brief создает узел унарной операции
