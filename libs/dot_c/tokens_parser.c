@@ -49,23 +49,8 @@ tokens_parser(_token** token){
         case LEX_DIGIT:
         case LEX_FLOAT:
         case LEX_CHAR_VAL:
-        case LEX_OBJ_NAME:
-            if(
-                NEXT_TOKEN(*token)->lex == LEX_POST_INC ||
-                NEXT_TOKEN(*token)->lex == LEX_POST_DEC
-            ){
-                Node* operand = make_empty_literal_const((*token)->data);
-                *token = NEXT_TOKEN(*token);
-
-                string op = _strdup((*token)->data);
-                *token = NEXT_TOKEN(*token);
-
-                return make_un_operation(
-                    operand,
-                    op
-                );
-            }
-
+        case LEX_TRUE:
+        case LEX_FALSE:
             return make_expr_node(token);
 
         case LEX_PREF_INC:
@@ -303,6 +288,59 @@ tokens_parser(_token** token){
                 return statements;
 
 /* ------------ стейтменты ------------ */
+
+/* ------------ операции с переменными ------------ */
+
+            case LEX_OBJ_NAME:
+                _lexemes next_lex = NEXT_TOKEN(*token)->lex;
+                string var_name = _strdup((*token)->data);
+                if(!var_name)   exit(1);
+
+                *token = NEXT_TOKEN(*token);
+
+                if(
+                    next_lex == LEX_POST_INC ||
+                    next_lex == LEX_POST_DEC
+                ){
+                    Node* operand = make_empty_literal_const(var_name);
+                
+                    string op = _strdup((*token)->data);
+                    *token = NEXT_TOKEN(*token);
+                
+                    return make_un_operation(
+                        operand,
+                        op
+                    );
+                }
+                else if(is_assign(next_lex)){
+                    string op = _strdup((*token)->data);
+                    if(!op) exit(1);
+
+                    *token = NEXT_TOKEN(*token);
+
+                    Node* expr = make_expr_node(token);
+
+                    return make_bin_operation(
+                        make_empty_literal_const(var_name),
+                        expr,
+                        op
+                    );
+                }
+                return make_expr_node(token);
+
+            case LEX_GET_ADDR:
+            case LEX_POINTER_DEREF:
+                string un_op = _strdup((*token)->data);
+                if(!un_op)   exit(1);
+
+                *token = NEXT_TOKEN(*token);
+
+                return make_un_operation(
+                    make_empty_literal_const((*token)->data),
+                    un_op
+                );
+
+/* ------------ операции с переменными ------------ */
 
         default: break;
     }
