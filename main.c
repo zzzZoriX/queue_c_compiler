@@ -3,6 +3,7 @@
     gcc main.c ./libs/dot_c/_cmd.c ./libs/dot_c/obj.c ./libs/dot_c/lexeme.c ./libs/dot_c/lexer.c ./libs/dot_c/str.c ./libs/dot_c/tokens.c -o que
 */
 
+#include "libs/dot_h/str.h"
 #define DEBUG 1
 
 
@@ -83,6 +84,15 @@ main(int argc, char** argv){
             case _LEX_SUCCESS:
             default: break;
         }
+
+        add(
+            current_ifp_tokens_header, 
+            create_token(
+                NULL_STR,
+                LEX_END,
+                NULL
+            )
+        );
 #if DEBUG
         _token* c = current_ifp_tokens_header;
         while(c){

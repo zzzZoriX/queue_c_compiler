@@ -153,6 +153,7 @@ typedef enum _lexemes: int {
 
     LEX_CALL = 68,
     LEX_STRING = 69,
+    LEX_END = 70,
 
     LEX_UNDEF = -1
 } _lexemes;

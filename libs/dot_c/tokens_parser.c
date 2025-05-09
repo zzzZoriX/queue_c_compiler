@@ -231,117 +231,118 @@ tokens_parser(_token** token){
 /* ------------ цикл while ------------ */
 
 // LEX_WHILE не рассматривается, потому что синтаксис обязывает писать сначала do, а потом while
-            case LEX_DO:
-                Node
-                    * while_cond,
-                    * while_body
-                ;
-                _lexemes lexeme = (*token)->lex;
-
-                *token = NEXT_TOKEN(NEXT_TOKEN(*token));
-
-                while_cond = make_cond_node(token);
-                while_body = tokens_parser(token);
-
-                return make_do_while_node(
-                    lexeme,
-                    while_cond,
-                    while_body
-                );
+        case LEX_DO:
+            Node
+                * while_cond,
+                * while_body
+            ;
+            _lexemes lexeme = (*token)->lex;
+            
+            *token = NEXT_TOKEN(NEXT_TOKEN(*token));
+            
+            while_cond = make_cond_node(token);
+            while_body = tokens_parser(token);
+            
+            return make_do_while_node(
+                lexeme,
+                while_cond,
+                while_body
+            );
 
 /* ------------ цикл while ------------ */
 
 /* ------------ стейтменты ------------ */
 
 // ->
-            case LEX_INST_POINTER:
-                Node* single_command = (Node*)malloc(sizeof(Node));
-                if(!single_command) exit(1);
+        case LEX_INST_POINTER:
+            Node* single_command = (Node*)malloc(sizeof(Node));
+            if(!single_command) exit(1);
 
-                single_command->node_type = AST_SINGLE_STMT;
-                *token = NEXT_TOKEN(*token);
+            single_command->node_type = AST_SINGLE_STMT;
+            *token = NEXT_TOKEN(*token);
 
-                single_command->op1 = tokens_parser(token);
+            single_command->op1 = tokens_parser(token);
 
-                return single_command;
+            return single_command;
 
 // {};
-            case LEX_LFPAREN:
-                Node* statements = (Node*)malloc(sizeof(Node));
+        case LEX_LFPAREN:
+            Node* statements = (Node*)malloc(sizeof(Node));
+            if(!statements) exit(1);
+        
+            statements->node_type = AST_MULTI_STMT;
+        
+            while((*token = NEXT_TOKEN(*token))->lex != LEX_RFPAREN){
+                Node* command = tokens_parser(token);
+                statements->op1 = command;
+        
+                Node* next = (Node*)malloc(sizeof(Node));
                 if(!statements) exit(1);
-
-                statements->node_type = AST_MULTI_STMT;
-                while((*token = NEXT_TOKEN(*token))->lex != LEX_RFPAREN){
-                    Node* command = tokens_parser(token);
-
-                    statements->op1 = command;
-
-                    Node* next = (Node*)malloc(sizeof(Node));
-                    if(!statements) exit(1);
-
-                    next = tokens_parser(token);
-
-                    statements->op2 = next;
-                }
-                *token = NEXT_TOKEN(NEXT_TOKEN(*token)); // скипаем };
-
-                return statements;
+        
+                next = tokens_parser(token);
+                statements->op2 = next;
+            }
+        
+            *token = NEXT_TOKEN(NEXT_TOKEN(*token)); // скипаем };
+        
+            return statements;
 
 /* ------------ стейтменты ------------ */
 
 /* ------------ операции с переменными ------------ */
 
-            case LEX_OBJ_NAME:
-                _lexemes next_lex = NEXT_TOKEN(*token)->lex;
-                string var_name = _strdup((*token)->data);
-                if(!var_name)   exit(1);
-
+        case LEX_OBJ_NAME:
+            _lexemes next_lex = NEXT_TOKEN(*token)->lex;
+            string var_name = _strdup((*token)->data);
+            if(!var_name)   exit(1);
+            
+            *token = NEXT_TOKEN(*token);
+            
+            if(
+                next_lex == LEX_POST_INC ||
+                next_lex == LEX_POST_DEC
+            ){
+                Node* operand = make_empty_literal_const(var_name);
+            
+                string op = _strdup((*token)->data);
                 *token = NEXT_TOKEN(*token);
-
-                if(
-                    next_lex == LEX_POST_INC ||
-                    next_lex == LEX_POST_DEC
-                ){
-                    Node* operand = make_empty_literal_const(var_name);
-                
-                    string op = _strdup((*token)->data);
-                    *token = NEXT_TOKEN(*token);
-                
-                    return make_un_operation(
-                        operand,
-                        op
-                    );
-                }
-                else if(is_assign(next_lex)){
-                    string op = _strdup((*token)->data);
-                    if(!op) exit(1);
-
-                    *token = NEXT_TOKEN(*token);
-
-                    Node* expr = make_expr_node(token);
-
-                    return make_bin_operation(
-                        make_empty_literal_const(var_name),
-                        expr,
-                        op
-                    );
-                }
-                return make_expr_node(token);
-
-            case LEX_GET_ADDR:
-            case LEX_POINTER_DEREF:
-                string un_op = _strdup((*token)->data);
-                if(!un_op)   exit(1);
-
-                *token = NEXT_TOKEN(*token);
-
+            
                 return make_un_operation(
-                    make_empty_literal_const((*token)->data),
-                    un_op
+                    operand,
+                    op
                 );
+            }
+            else if(is_assign(next_lex)){
+                string op = _strdup((*token)->data);
+                if(!op) exit(1);
+            
+                *token = NEXT_TOKEN(*token);
+            
+                Node* expr = make_expr_node(token);
+            
+                return make_bin_operation(
+                    make_empty_literal_const(var_name),
+                    expr,
+                    op
+                );
+            }
+            return make_expr_node(token);
+        
+        case LEX_GET_ADDR:
+        case LEX_POINTER_DEREF:
+            string un_op = _strdup((*token)->data);
+            if(!un_op)   exit(1);
+        
+            *token = NEXT_TOKEN(*token);
+        
+            return make_un_operation(
+                make_empty_literal_const((*token)->data),
+                un_op
+            );
 
 /* ------------ операции с переменными ------------ */
 
+        case LEX_END: return NULL;
         default: break;
     }
 
