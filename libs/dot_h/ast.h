@@ -40,7 +40,8 @@ typedef enum _node_type {
     AST_FOR,
     AST_OUT,
     AST_IN,
-    AST_STMT
+    AST_SINGLE_STMT,
+    AST_MULTI_STMT
 } _node_type;
 
 
