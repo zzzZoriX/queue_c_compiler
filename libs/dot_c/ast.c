@@ -56,12 +56,18 @@ define_bin_op_type(string op){
     if(comp("!=", op))  return AST_NEQ;
     if(comp("=>", op))  return AST_GE;
     if(comp("<=", op))  return AST_LE;
+    if(comp("+=", op))  return AST_ADD_ASSIGN;
+    if(comp("-=", op))  return AST_REDUCE_ASSIGN;
+    if(comp("*=", op))  return AST_MUL_ASSIGN;
+    if(comp("/=", op))  return AST_DIV_ASSIGN;
+    if(comp("%=", op))  return AST_REM_ASSIGN;
 
     return 0;
 }
 static inline _node_type __fastcall
 define_un_op_type(string op){
     if(comp(op, c_concat_c('@', '\0'))) return AST_DEREF;
+    if(comp(op, c_concat_c('&', '\0'))) return AST_GET_ADDR;
     if(comp(op, "++")) return AST_INC;
     if(comp(op, "--")) return AST_DEC;
 
