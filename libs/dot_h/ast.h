@@ -155,6 +155,14 @@ Node*
 make_cond_node(_token**);
 
 /**
+ * @brief создает узел стейтмента
+ * 
+ * @return Node* 
+ */
+Node*
+make_stmt_node(_token**);
+
+/**
  * @brief создает узел условной конструкции
  * 
  * @return Node* 

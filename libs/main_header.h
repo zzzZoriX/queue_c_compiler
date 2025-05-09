@@ -5,6 +5,7 @@
 #include "./dot_h/lexer.h"
 #include "./dot_h/str.h"
 #include "./dot_h/ast.h"
+#include "./dot_h/tokens_parser.h"
 
 #include <stdio.h>
 #include <stdbool.h>

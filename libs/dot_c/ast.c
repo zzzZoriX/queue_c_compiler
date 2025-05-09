@@ -1,5 +1,7 @@
 #include "c:/queue_c_compiler/libs/dot_h/ast.h"
-#include <string.h>
+
+Node*
+tokens_parser(_token**);
 
 static inline bool __fastcall
 is_operator(_lexemes lex){
@@ -232,6 +234,26 @@ make_cond_node(_token** token){
     ;
 
     return cond;
+}
+
+Node*
+make_stmt_node(_token** token){
+    Node* statements = make_node(AST_MULTI_STMT);
+
+    while((*token = NEXT_TOKEN(*token))->lex != LEX_RFPAREN){
+        Node* command = tokens_parser(token);
+        statements->op1 = command;
+
+        Node* next = (Node*)malloc(sizeof(Node));
+        if(!statements) exit(1);
+
+        next = tokens_parser(token);
+        statements->op2 = next;
+    }
+
+    *token = NEXT_TOKEN(NEXT_TOKEN(*token)); // скипаем };
+
+    return statements;
 }
 
 Node*

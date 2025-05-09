@@ -267,25 +267,7 @@ tokens_parser(_token** token){
 
 // {};
         case LEX_LFPAREN:
-            Node* statements = (Node*)malloc(sizeof(Node));
-            if(!statements) exit(1);
-        
-            statements->node_type = AST_MULTI_STMT;
-        
-            while((*token = NEXT_TOKEN(*token))->lex != LEX_RFPAREN){
-                Node* command = tokens_parser(token);
-                statements->op1 = command;
-        
-                Node* next = (Node*)malloc(sizeof(Node));
-                if(!statements) exit(1);
-        
-                next = tokens_parser(token);
-                statements->op2 = next;
-            }
-        
-            *token = NEXT_TOKEN(NEXT_TOKEN(*token)); // скипаем };
-        
-            return statements;
+            return make_stmt_node(token);
 
 /* ------------ стейтменты ------------ */
 
