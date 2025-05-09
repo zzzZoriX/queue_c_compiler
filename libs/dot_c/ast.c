@@ -162,6 +162,12 @@ make_expr_node(_token** token){
             );
         }
 
+        if(NEXT_TOKEN(*token)->lex == LEX_INST_POINTER){
+            free(expr_node);
+            *token = NEXT_TOKEN(*token);
+            return make_expr_node(token);
+        }
+
 // если не унарная операция
         expr_node->node_type = AST_LIT_CNST;
         expr_node->constant.name = _strdup((*token)->data);
@@ -184,6 +190,7 @@ make_expr_node(_token** token){
     if(is_operator((*token)->lex)){
         string op = _strdup((*token)->data);
         if(!op) exit(1);
+        
         *token = NEXT_TOKEN(*token);
 
         Node* right = make_expr_node(token);
@@ -201,12 +208,18 @@ make_cond_node(_token** token){
     *token = NEXT_TOKEN(*token);
     Node* left = make_expr_node(token);
     
+    if((*token)->lex == LEX_INST_POINTER)
+        return left;
+
     if(is_cond((*token)->lex)){
         cond->node_type = define_cond_type_by_lex((*token)->lex);
         *token = NEXT_TOKEN(*token);
 
         cond->op1 = left;
         cond->op2 = make_expr_node(token);
+
+        if((*token)->lex == LEX_INST_POINTER)
+            return cond;
     }
     else
         cond->op1 = left;

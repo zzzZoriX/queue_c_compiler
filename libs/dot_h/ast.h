@@ -39,7 +39,8 @@ typedef enum _node_type {
     AST_DO,
     AST_FOR,
     AST_OUT,
-    AST_IN
+    AST_IN,
+    AST_STMT
 } _node_type;
 
 
