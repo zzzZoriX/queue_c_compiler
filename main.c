@@ -1,10 +1,8 @@
 /*
     комманда компиляции исходников:
-    gcc main.c ./libs/dot_c/_cmd.c ./libs/dot_c/obj.c ./libs/dot_c/lexeme.c ./libs/dot_c/lexer.c ./libs/dot_c/str.c ./libs/dot_c/tokens.c -o que
+    gcc main.c ./libs/dot_c/parse_ast.c ./libs/dot_c/ast.c ./libs/dot_c/tokens_parser.c ./libs/dot_c/_cmd.c ./libs/dot_c/obj.c ./libs/dot_c/lexeme.c ./libs/dot_c/lexer.c ./libs/dot_c/str.c ./libs/dot_c/tokens.c -o que
 */
-
-#include "libs/dot_h/str.h"
-#define DEBUG 1
+#define DEBUG 0
 
 
 #include "./libs/main_header.h"
@@ -62,6 +60,8 @@ main(int argc, char** argv){
             return __ERROR;
         }
 
+// лексер
+
         _token* current_ifp_tokens_header;
         _lexer_result lexer_result = lexer(curr_ifp, &current_ifp_tokens_header);
         switch(lexer_result){
@@ -93,12 +93,13 @@ main(int argc, char** argv){
                 NULL
             )
         );
-#if DEBUG
-        _token* c = current_ifp_tokens_header;
-        while(c){
-            printf("%s\t|\t%d\n", c->data, c->lex);
-            c = c->next_token;
-        }
+
+// парсер
+
+        Node* head = make_stmt_node(&current_ifp_tokens_header);
+
+#ifdef DEBUG
+        traverse_ast(head, 0);
 #endif
     }
 
