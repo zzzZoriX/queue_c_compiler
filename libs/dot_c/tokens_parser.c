@@ -45,7 +45,7 @@ tokens_parser(_token** token){
                 ++args_count;
                 func_args = (Node**)realloc(func_args, sizeof(Node*) * args_count);
 
-                Node* arg = tokens_parser(token);
+                arg = tokens_parser(token);
                 func_args[args_count - 1] = arg;
             }
 
@@ -69,7 +69,7 @@ tokens_parser(_token** token){
         case LEX_BOOL:
         case LEX_FLT:
         case LEX_POINTER:
-            while(*token && !is_data_type((*token)->data))
+            while(*token && !is_data_type((*token)->data) && (*token)->lex != LEX_END)
                 *token = (*token)->next_token;
             
             if(!is_data_type((*token)->data)) exit(1);
@@ -317,13 +317,13 @@ tokens_parser(_token** token){
             Node** calling_func_args = (Node**)malloc(sizeof(Node*) * func_args_count);
             
             Node* current_arg = tokens_parser(token);
-            func_args[func_args_count - 1] = arg;
+            func_args[func_args_count - 1] = current_arg;
 
             while((*token = NEXT_TOKEN(*token))->lex != LEX_LPAREN && (*token)->lex != LEX_END){
-                ++args_count;
+                ++func_args_count;
                 calling_func_args = (Node**)realloc(calling_func_args, sizeof(Node*) * func_args_count);
 
-                Node* arg = tokens_parser(token);
+                arg = tokens_parser(token);
                 calling_func_args[func_args_count - 1] = arg;
             }
 
@@ -372,7 +372,8 @@ tokens_parser(_token** token){
                 next_lex == LEX_POST_DEC
             ){
                 Node* operand = make_empty_literal_const(var_name);
-            
+                free(var_name);
+
                 string op = _strdup((*token)->data);
                 *token = NEXT_TOKEN(*token);
             
@@ -395,6 +396,8 @@ tokens_parser(_token** token){
                     op
                 );
             }
+            free(var_name);
+
             return make_expr_node(token);
         
         case LEX_GET_ADDR:
