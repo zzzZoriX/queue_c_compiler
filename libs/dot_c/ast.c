@@ -63,6 +63,7 @@ define_bin_op_type(string op){
     if(comp("*=", op))  return AST_MUL_ASSIGN;
     if(comp("/=", op))  return AST_DIV_ASSIGN;
     if(comp("%=", op))  return AST_REM_ASSIGN;
+    if (comp(op, c_concat_c('=', '\0'))) return AST_ASSIGN;
 
     return 0;
 }
@@ -229,7 +230,7 @@ make_cond_node(_token** token){
     
     *token = NEXT_TOKEN(*token);
     Node* left = make_expr_node(token);
-    
+
     if((*token)->lex == LEX_INST_POINTER)
         return left;
 
@@ -257,15 +258,21 @@ make_stmt_node(_token** token){
     while((*token = NEXT_TOKEN(*token))->lex != LEX_RFPAREN || (*token)->lex != LEX_END){
         Node* command = tokens_parser(token);
         statements->op1 = command;
-        
-        Node* next = (Node*)malloc(sizeof(Node));
-        if(!statements) exit(1);
 
-        next = tokens_parser(token);
-        statements->op2 = next;
+        if ((*token)->lex != LEX_END) {
+            Node* next = (Node*)malloc(sizeof(Node));
+            if(!next) exit(1);
+
+            next = make_stmt_node(token);
+            statements->op2 = next;
+
+            break;
+        }
+        else    break;
     }
 
-    *token = NEXT_TOKEN(NEXT_TOKEN(*token)); // скипаем };
+    if ((*token)->lex != LEX_END)
+        *token = NEXT_TOKEN(NEXT_TOKEN(*token)); // скипаем };
 
     return statements;
 }

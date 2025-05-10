@@ -123,9 +123,8 @@ typedef struct AST_Node {
         LiteralConstant constant;
         Command cmd;
         Function function;
-        
-        AST_Node* op1,* op2,* op3;
     };
+    AST_Node* op1,* op2,* op3;
 } Node;
 
 #define FREE_NODE(node){\
