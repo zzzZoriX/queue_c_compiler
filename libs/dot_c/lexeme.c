@@ -191,9 +191,7 @@ is_spec_str(const string str){
 }
 
 bool
-is_data_type(const string str){
-    string check_str = tolower_str(str);
-
+is_data_type(const string check_str){
     return (
         comp(check_str, "int")      ||
         comp(check_str, "short")    ||
