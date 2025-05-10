@@ -72,6 +72,7 @@ define_un_op_type(string op){
     if(comp(op, c_concat_c('&', '\0'))) return AST_GET_ADDR;
     if(comp(op, "++")) return AST_INC;
     if(comp(op, "--")) return AST_DEC;
+    if(comp(op, "call"))    return AST_CALL;
 
     return 0;
 }

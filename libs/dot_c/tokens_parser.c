@@ -18,6 +18,48 @@ Node*
 tokens_parser(_token** token){
     switch ((*token)->lex){
 
+/* ------------ объекты ------------ */
+
+        case LEX_FUNC:
+            *token = NEXT_TOKEN(*token);
+            
+            Node* fun_header = tokens_parser(token);
+
+            *token = NEXT_TOKEN(*token); // скипаем (
+
+            int args_count = 0;
+            if((*token)->lex == LEX_LPAREN)
+                return make_function_node(
+                    fun_header,
+                    NULL,
+                    args_count
+                );
+
+            ++args_count;
+            Node** func_args = (Node**)malloc(sizeof(Node*) * args_count);
+            
+            Node* arg = tokens_parser(token);
+            func_args[args_count - 1] = arg;
+
+            while((*token = NEXT_TOKEN(*token))->lex != LEX_LPAREN && (*token)->lex != LEX_END){
+                ++args_count;
+                func_args = (Node**)realloc(func_args, sizeof(Node*) * args_count);
+
+                Node* arg = tokens_parser(token);
+                func_args[args_count - 1] = arg;
+            }
+
+            return make_function_node(
+                fun_header,
+                func_args,
+                args_count
+            );
+
+        case LEX_VAR:
+            *token = NEXT_TOKEN(*token);
+
+/* ------------ объекты ------------ */
+
 /* ------------ литеральные константы ------------ */
 
         case LEX_INT:
@@ -103,7 +145,7 @@ tokens_parser(_token** token){
 
         case LEX_IN:
         case LEX_OUT:
-            size_t curr_args_count = 0;
+            int curr_args_count = 0;
             _lexemes io_lexeme = (*token)->lex;
             string format;
 
@@ -250,6 +292,51 @@ tokens_parser(_token** token){
             );
 
 /* ------------ цикл while ------------ */
+
+/* ------------ функция call ------------ */
+
+        case LEX_CALL:
+            *token = NEXT_TOKEN(*token);
+
+            Node* base = make_empty_literal_const((*token)->data);
+
+            *token = NEXT_TOKEN(NEXT_TOKEN(*token));
+
+            int func_args_count = 0;
+            if((*token)->lex == LEX_LPAREN)
+                return make_un_operation(
+                    make_function_node(
+                        base,
+                        NULL,
+                        func_args_count
+                    ),
+                    _CALL
+                );
+
+            ++func_args_count;
+            Node** calling_func_args = (Node**)malloc(sizeof(Node*) * func_args_count);
+            
+            Node* current_arg = tokens_parser(token);
+            func_args[func_args_count - 1] = arg;
+
+            while((*token = NEXT_TOKEN(*token))->lex != LEX_LPAREN && (*token)->lex != LEX_END){
+                ++args_count;
+                calling_func_args = (Node**)realloc(calling_func_args, sizeof(Node*) * func_args_count);
+
+                Node* arg = tokens_parser(token);
+                calling_func_args[func_args_count - 1] = arg;
+            }
+
+            return make_un_operation(
+                make_function_node(
+                    base,
+                    calling_func_args,
+                    func_args_count
+                ),
+                _CALL
+            );
+
+/* ------------ функция call ------------ */
 
 /* ------------ стейтменты ------------ */
 
