@@ -125,6 +125,7 @@ make_expr_node(_token** token){
             expr_node->constant.int_value = atoi((*token)->data);    
         }
 
+        *token = NEXT_TOKEN(*token);    
         return expr_node;
     }
 
@@ -132,6 +133,7 @@ make_expr_node(_token** token){
         expr_node->constant.type = TYPE_CHAR;
         expr_node->constant.char_value = (*token)->data[1];
 
+        *token = NEXT_TOKEN(*token);
         return expr_node;
     }
 
@@ -140,6 +142,7 @@ make_expr_node(_token** token){
         expr_node->constant.type = TYPE_BOOL;
         expr_node->constant.bool_value = ((*token)->lex == LEX_TRUE ? true : false);
 
+        *token = NEXT_TOKEN(*token);
         return expr_node;
     }
 
@@ -150,8 +153,11 @@ make_expr_node(_token** token){
 
         *token = NEXT_TOKEN(*token);
 
+        Node* lit = make_empty_literal_const((*token)->data);
+        *token = NEXT_TOKEN(*token);
+
         return make_un_operation(
-            make_empty_literal_const((*token)->data),
+            lit,
             op
         );
     }
@@ -165,21 +171,28 @@ make_expr_node(_token** token){
             Node* empty_lit_const = make_empty_literal_const((*token)->data);
             *token = NEXT_TOKEN(*token);
 
+            string op = _strdup((*token)->data);
+            if(!op) exit(1);
+
+            *token = NEXT_TOKEN(*token);
+
             return make_un_operation(
                 empty_lit_const,
-                (*token)->data
+                op
             );
         }
 
         if(NEXT_TOKEN(*token)->lex == LEX_INST_POINTER){
             free(expr_node);
-            *token = NEXT_TOKEN(*token);
+            *token = NEXT_TOKEN(NEXT_TOKEN(*token));
             return make_expr_node(token);
         }
 
 // если не унарная операция
         expr_node->node_type = AST_LIT_CNST;
         expr_node->constant.name = _strdup((*token)->data);
+
+        *token = NEXT_TOKEN(*token);
 
         return expr_node;
     }

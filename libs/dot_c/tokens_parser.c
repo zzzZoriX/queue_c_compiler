@@ -48,6 +48,8 @@ tokens_parser(_token** token){
                 arg = tokens_parser(token);
                 func_args[args_count - 1] = arg;
             }
+            
+            *token = NEXT_TOKEN(*token);
 
             return make_function_node(
                 fun_header,
@@ -79,6 +81,10 @@ tokens_parser(_token** token){
 
             Node* lit_const = make_corr_type_litcnst((*token)->data, type);
             
+            *token = NEXT_TOKEN(*token);
+
+            /* сделаю создание бинарной опки с = */
+
             *token = NEXT_TOKEN(*token);
 
             return lit_const;
@@ -131,6 +137,8 @@ tokens_parser(_token** token){
 
             if((*token)->lex == LEX_ELIF || (*token)->lex == LEX_ELSE)
                 _else = tokens_parser(token);
+
+            *token = NEXT_TOKEN(*token);
 
             return make_if_else_node(
                 if_else_lexeme,
@@ -201,9 +209,10 @@ tokens_parser(_token** token){
                 * iter
             ;
             
-            *token = NEXT_TOKEN(*token);
+            *token = NEXT_TOKEN(NEXT_TOKEN(*token));
 
             for_cond = make_cond_node(token);
+
             *token = NEXT_TOKEN(*token);
 
             if((*token)->lex == LEX_OBJ_NAME){
