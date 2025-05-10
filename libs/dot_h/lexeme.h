@@ -5,7 +5,6 @@
 #include "obj.h"
 
 #include <stdbool.h>
-#include <xkeycheck.h>
 
 #define    _VAR "var"
 #define    _ARR "arr"
