@@ -24,6 +24,7 @@ tokens_parser(_token** token){
             *token = NEXT_TOKEN(*token);
             
             Node* fun_header = tokens_parser(token);
+            fun_header->node_type = AST_FUNCTION;
 
             *token = NEXT_TOKEN(*token); // скипаем (
 
@@ -83,9 +84,24 @@ tokens_parser(_token** token){
             
             *token = NEXT_TOKEN(*token);
 
-            /* сделаю создание бинарной опки с = */
+            if (is_assign((*token)->lex)) {
+                string op = _strdup((*token)->data);
+                if (!op)    exit(1);
 
-            *token = NEXT_TOKEN(*token);
+                *token = NEXT_TOKEN(*token);
+
+                Node* expr = make_expr_node(token);
+
+                *token = NEXT_TOKEN(*token);
+
+                Node* assign = make_bin_operation(
+                    lit_const,
+                    expr,
+                    op
+                );
+
+                return assign;
+            }
 
             return lit_const;
 
