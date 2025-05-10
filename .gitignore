@@ -3,3 +3,5 @@ testf.c
 testf.exe
 *.asm
 test.c
+.idea/
+test.qe
