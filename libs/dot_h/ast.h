@@ -47,7 +47,9 @@ typedef enum _node_type {
     AST_OUT,
     AST_IN,
     AST_SINGLE_STMT,
-    AST_MULTI_STMT
+    AST_MULTI_STMT,
+    AST_CALL,
+    AST_FUNCTION
 } _node_type;
 
 
@@ -105,6 +107,14 @@ typedef struct Command {
     };
 } Command;
 
+typedef struct Function {
+    union {
+        LiteralConstant function_header;
+        AST_Node** args;
+        int count;
+    };
+} Function;
+
 // узел
 typedef struct AST_Node {
     _node_type node_type;
@@ -112,6 +122,7 @@ typedef struct AST_Node {
     union {
         LiteralConstant constant;
         Command cmd;
+        Function function;
         
         AST_Node* op1,* op2,* op3;
     };
@@ -193,6 +204,15 @@ make_for_cycle_node(Node*, Node*, Node*);
  */
 Node*
 make_io_node(_lexemes, string, string*, int);
+
+/**
+ * @brief создает узел функции
+ * 
+ * @param base  литеральная константа, определяющая тип функции и ее имя
+ * @return Node* 
+ */
+Node*
+make_function_node(Node* base, Node**, int);
 
 /**
  * @brief создает узел для значения int

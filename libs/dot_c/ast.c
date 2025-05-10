@@ -240,10 +240,10 @@ Node*
 make_stmt_node(_token** token){
     Node* statements = make_node(AST_MULTI_STMT);
 
-    while((*token = NEXT_TOKEN(*token))->lex != LEX_RFPAREN){
+    while((*token = NEXT_TOKEN(*token))->lex != LEX_RFPAREN || (*token)->lex != LEX_END){
         Node* command = tokens_parser(token);
         statements->op1 = command;
-
+        
         Node* next = (Node*)malloc(sizeof(Node));
         if(!statements) exit(1);
 
@@ -312,6 +312,17 @@ make_io_node(_lexemes lexeme, string format, string* args, int count){
     io_node->cmd.io.args_count = count;
 
     return io_node;
+}
+
+Node*
+make_function_node(Node* base, Node** args, int count){
+    Node* funcion_node = make_node(AST_FUNCTION);
+
+    funcion_node->function.function_header = base->constant;
+    funcion_node->function.args = args;
+    funcion_node->function.count = count;
+
+    return funcion_node;
 }
 
 Node*
