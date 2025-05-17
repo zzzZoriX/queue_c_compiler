@@ -29,6 +29,7 @@ typedef enum _node_type {
     AST_LIT_CONST,
     AST_CHAR_VALUE,
     AST_BOOLIAN_VALUE,
+    AST_NULL_VALUE,
     AST_EXPR,
     AST_EQ,
     AST_NEQ,
@@ -61,7 +62,8 @@ typedef enum _data_type {
     TYPE_FLT,
     TYPE_BOOL,
     TYPE_SHORT,
-    TYPE_LONG
+    TYPE_LONG,
+    TYPE_NULL
 } _data_type;
 
 typedef struct AST_Node AST_Node;
@@ -101,7 +103,8 @@ typedef struct Command {
     } cycles;
 
     struct {
-        string format,* args;
+        string format;
+        struct AST_Node** args;
         int args_count;
     } io;
 } Command;
@@ -201,7 +204,7 @@ make_for_cycle_node(Node*, Node*, Node*);
  * @return Node* 
  */
 Node*
-make_io_node(_lexemes, string, string*, int);
+make_io_node(_lexemes, string, Node**, int);
 
 /**
  * @brief создает узел функции

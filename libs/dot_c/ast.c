@@ -148,6 +148,15 @@ make_expr_node(_token** token){
         return expr_node;
     }
 
+    if ((*token)->lex == LEX_NULL_VALUE) {
+        expr_node->node_type = AST_NULL_VALUE;
+        expr_node->constant = (LiteralConstant){0};
+        expr_node->constant.type = TYPE_NULL;
+
+        *token = NEXT_TOKEN(*token);
+        return expr_node;
+    }
+
     if((*token)->lex == LEX_PREF_INC || (*token)->lex == LEX_PREF_DEC){
         free(expr_node);
         string op = _strdup((*token)->data);
@@ -265,10 +274,10 @@ make_stmt_node(_token** token){
         Node* command = tokens_parser(token);
         statements->op1 = command;
 
-        if ((*token)->lex == LEX_RFPAREN)
+        if (!*token || (*token)->lex == LEX_RFPAREN)
             break;
 
-        if ((*token)->lex != LEX_END) {
+        if (*token && (*token)->lex != LEX_END) {
             Node* next = make_stmt_node(token);
             statements->op2 = next;
 
@@ -276,7 +285,7 @@ make_stmt_node(_token** token){
         }
     }
 
-    if ((*token)->lex != LEX_END)
+    if (*token && (*token)->lex != LEX_END)
         *token = NEXT_TOKEN(NEXT_TOKEN(*token)); // скипаем };
 
     if (!statements->op1) {
@@ -339,7 +348,7 @@ make_for_cycle_node(Node* condition, Node* body, Node* iter){
 }
 
 Node*
-make_io_node(_lexemes lexeme, string format, string* args, int count){
+make_io_node(_lexemes lexeme, string format, Node** args, int count){
     Node* io_node = make_node(
         (lexeme == LEX_IN ? AST_IN : AST_OUT)
     );
