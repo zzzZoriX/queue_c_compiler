@@ -21,6 +21,8 @@ traverse_ast(Node* node, int level){
             break;
 
         case AST_NUM:
+        case AST_CHAR_VALUE:
+        case AST_BOOLIAN_VALUE:
             printf("LITERAL CONSTANT: ");
             print_type(node->constant.type);
             printf(" = ");
@@ -34,9 +36,11 @@ traverse_ast(Node* node, int level){
 
         case AST_FUNCTION:
             printf("FUNCTION: %s\n", node->constant.name);
+            traverse_ast(node->op1, level + 1);
             break;
 
         case AST_IF:
+        case AST_ELSE_IF:
             printf("IF STATEMENT\n");
             print_indent(level + 1);
             printf("CONDITION:\n");
@@ -45,10 +49,74 @@ traverse_ast(Node* node, int level){
             printf("THEN:\n");
             traverse_ast(node->cmd.if_else.if_body, level + 2);
             if (node->cmd.if_else.else_) {
-                print_indent(level + 1);
-                printf("ELSE:\n");
-                traverse_ast((Node*)node->cmd.if_else.else_, level + 2);
+                print_indent(level);
+                Node* else_node = (Node*)malloc(sizeof(Node));
+                if (!else_node) exit(1);
+                else_node->cmd = *(node->cmd.if_else.else_);
+
+                if (else_node->cmd.if_else.condition)
+                    else_node->node_type = AST_ELSE_IF;
+                else
+                    else_node->node_type = AST_ELSE;
+
+                traverse_ast(else_node, level);
+
+                free(else_node);
             }
+            break;
+
+        case AST_ELSE:
+            printf("ELSE STATEMENT\n");
+            print_indent(level + 1);
+            traverse_ast(node->cmd.if_else.if_body, level + 2);
+            break;
+
+        case AST_EQ:
+            printf("EQUAL (==)\n");
+            traverse_ast(node->op1, level + 1);
+            traverse_ast(node->op2, level + 1);
+            break;
+
+        case AST_NEQ:
+            printf("NOT EQUAL (!=)\n");
+            traverse_ast(node->op1, level + 1);
+            traverse_ast(node->op2, level + 1);
+            break;
+
+        case AST_LE:
+            printf("LESS OR EQUAL (<=)\n");
+            traverse_ast(node->op1, level + 1);
+            traverse_ast(node->op2, level + 1);
+            break;
+
+        case AST_L:
+            printf("LESS THAN (<)\n");
+            traverse_ast(node->op1, level + 1);
+            traverse_ast(node->op2, level + 1);
+            break;
+
+        case AST_G:
+            printf("GREATER THAN (>)\n");
+            traverse_ast(node->op1, level + 1);
+            traverse_ast(node->op2, level + 1);
+            break;
+
+        case AST_GE:
+            printf("GREATER OR EQUAL (>=)\n");
+            traverse_ast(node->op1, level + 1);
+            traverse_ast(node->op2, level + 1);
+            break;
+
+        case AST_AND:
+            printf("LOGICAL AND (&&)\n");
+            traverse_ast(node->op1, level + 1);
+            traverse_ast(node->op2, level + 1);
+            break;
+
+        case AST_OR:
+            printf("LOGICAL OR (||)\n");
+            traverse_ast(node->op1, level + 1);
+            traverse_ast(node->op2, level + 1);
             break;
 
         case AST_FOR:
@@ -92,6 +160,15 @@ traverse_ast(Node* node, int level){
         case AST_MULTI_STMT:
             traverse_ast(node->op1, level);
             traverse_ast(node->op2, level);
+            break;
+
+        case AST_SINGLE_STMT:
+            traverse_ast(node->op1, level);
+            break;
+
+        case AST_RET:
+            printf("RETURN:\n");
+            traverse_ast(node->op1, level + 1);
             break;
 
         default:
