@@ -179,7 +179,7 @@ tokens_parser(_token** token){
             if(!format) exit(1);
 
             *token = NEXT_TOKEN(*token);
-            if((*token)->lex == LEX_LPAREN)
+            if((*token)->lex == LEX_RPAREN)
                 return make_io_node(
                     io_lexeme,
                     format,
@@ -189,20 +189,32 @@ tokens_parser(_token** token){
             *token = NEXT_TOKEN(*token);
 
             ++curr_args_count;
-            string* args = (string*)malloc(sizeof(string) * curr_args_count);
+            Node** args = (Node**)malloc(sizeof(Node*) * curr_args_count);
             if(!args) exit(1);
 
-            args[curr_args_count - 1] = _strdup((*token)->data);
+            args[curr_args_count - 1] = tokens_parser(token);
             if(!args[curr_args_count - 1]) exit(1);
-            *token = NEXT_TOKEN(*token);
 
-            while(*token && (*token)->lex != LEX_LPAREN){
+            if ((*token)->lex != LEX_RPAREN)
+                *token = NEXT_TOKEN(*token);
+
+            else {
+                *token = NEXT_TOKEN(NEXT_TOKEN(*token));
+                return make_io_node(
+                    io_lexeme,
+                    format,
+                    args,
+                    curr_args_count
+                );
+            }
+
+            while(*token && (*token)->lex != LEX_RPAREN){
                 ++curr_args_count;
                 
-                args = (string*)realloc(args, sizeof(string) * curr_args_count);
+                args = (Node**)realloc(args, sizeof(Node) * curr_args_count);
                 if(!args) exit(1);
 
-                args[curr_args_count - 1] = _strdup((*token)->data);
+                args[curr_args_count - 1] = tokens_parser(token);
                 if(!args[curr_args_count - 1]) exit(1);
                 *token = NEXT_TOKEN(*token);
             }
@@ -408,8 +420,6 @@ tokens_parser(_token** token){
             string var_name = _strdup((*token)->data);
             if(!var_name)   exit(1);
             
-            *token = NEXT_TOKEN(*token);
-            
             if(
                 next_lex == LEX_POST_INC ||
                 next_lex == LEX_POST_DEC
@@ -461,7 +471,8 @@ tokens_parser(_token** token){
         default: break;
     }
 
-    return tokens_parser(&(*token)->next_token);
+    *token = NEXT_TOKEN(*token);
+    return tokens_parser(token);
 }
 
 Node*
