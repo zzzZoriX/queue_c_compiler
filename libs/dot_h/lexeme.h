@@ -14,7 +14,7 @@
 #define    _OUT "out"
 #define    _IN "in"
 #define    _IF "if"
-#define    _ELIF "else if"
+#define    _ELIF "elseif"
 #define    _ELSE "else"
 #define    _FOR "for"
 #define    _WHILE "while"

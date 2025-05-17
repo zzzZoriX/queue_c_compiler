@@ -3,7 +3,7 @@ fun int main(){
     if(a > 10){
         var bool b = true;
     };
-    else if(a < 10){
+    elseif(a < 10){
         var bool b = true;
     };
     else{
