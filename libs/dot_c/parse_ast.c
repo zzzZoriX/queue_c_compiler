@@ -147,7 +147,8 @@ traverse_ast(Node* node, int level){
             printf("I/O OPERATION: %s\n", node->cmd.io.format);
             for (int i = 0; i < node->cmd.io.args_count; i++) {
                 print_indent(level + 1);
-                printf("ARG %d: %s\n", i + 1, node->cmd.io.args[i]);
+                printf("ARG %d: ", i);
+                traverse_ast(node->cmd.io.args[i], 0);
             }
             break;
 
