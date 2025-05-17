@@ -49,7 +49,9 @@ typedef enum _node_type {
     AST_SINGLE_STMT,
     AST_MULTI_STMT,
     AST_CALL,
-    AST_FUNCTION
+    AST_RET,
+    AST_FUNCTION,
+    AST_FUNCTION_DECL
 } _node_type;
 
 
@@ -84,27 +86,24 @@ typedef struct LiteralConstant {
 } LiteralConstant;
 
 typedef struct Command {
-    union {
+    struct {
+        AST_Node* condition,* if_body;
+        struct Command* else_;
+    } if_else;
+
+    struct {
         struct {
-            AST_Node* condition,* if_body;
-            struct Command* else_;
-        } if_else;
+            AST_Node* condition,* iter,* for_body;
+        } for_cycle;
+        struct {
+            AST_Node* condition,* while_body;
+        } while_cycle;
+    } cycles;
 
-        union {
-            struct {
-                AST_Node* condition,* iter,* for_body;
-            } for_cycle;
-
-            struct {
-                AST_Node* condition,* while_body;
-            } while_cycle;
-        } cycles;
-
-        union {
-            string format,* args;
-            int args_count;
-        } io;
-    };
+    struct {
+        string format,* args;
+        int args_count;
+    } io;
 } Command;
 
 typedef struct Function {
@@ -211,7 +210,7 @@ make_io_node(_lexemes, string, string*, int);
  * @return Node* 
  */
 Node*
-make_function_node(Node* base, Node**, int);
+make_function_node(Node* base, Node**, int, Node*);
 
 /**
  * @brief создает узел для значения int
