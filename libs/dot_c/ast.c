@@ -74,6 +74,7 @@ define_un_op_type(string op){
     if(comp(op, "++")) return AST_INC;
     if(comp(op, "--")) return AST_DEC;
     if(comp(op, "call"))    return AST_CALL;
+    if (comp(op, "ret"))    return AST_RET;
 
     return 0;
 }
@@ -254,25 +255,34 @@ make_cond_node(_token** token){
 Node*
 make_stmt_node(_token** token){
     Node* statements = make_node(AST_MULTI_STMT);
+    if ((*token)->lex == LEX_LFPAREN)
+        *token = NEXT_TOKEN(*token);
 
-    while((*token = NEXT_TOKEN(*token))->lex != LEX_RFPAREN || (*token)->lex != LEX_END){
+    statements->op1 = NULL;
+    statements->op2 = NULL;
+
+    while((*token)->lex != LEX_RFPAREN && (*token)->lex != LEX_END){
         Node* command = tokens_parser(token);
         statements->op1 = command;
 
-        if ((*token)->lex != LEX_END) {
-            Node* next = (Node*)malloc(sizeof(Node));
-            if(!next) exit(1);
+        if ((*token)->lex == LEX_RFPAREN)
+            break;
 
-            next = make_stmt_node(token);
+        if ((*token)->lex != LEX_END) {
+            Node* next = make_stmt_node(token);
             statements->op2 = next;
 
             break;
         }
-        else    break;
     }
 
     if ((*token)->lex != LEX_END)
         *token = NEXT_TOKEN(NEXT_TOKEN(*token)); // скипаем };
+
+    if (!statements->op1) {
+        free(statements);
+        return NULL;
+    }
 
     return statements;
 }
@@ -291,7 +301,16 @@ make_if_else_node(_lexemes lexeme, Node* condition, Node* body, Node* else_){
 
     if_else_node->cmd.if_else.condition = condition;
     if_else_node->cmd.if_else.if_body = body;
-    if_else_node->cmd.if_else.else_ = &else_->cmd;
+    if (else_) {
+        Command* else_cmd = (Command*)malloc(sizeof(Command));
+        if (!else_cmd) exit(1);
+
+        *else_cmd = else_->cmd;
+
+        if_else_node->cmd.if_else.else_ = else_cmd;
+    }
+    else
+        if_else_node->cmd.if_else.else_ = NULL;
 
     return if_else_node;
 }
@@ -336,12 +355,17 @@ make_io_node(_lexemes lexeme, string format, string* args, int count){
 }
 
 Node*
-make_function_node(Node* base, Node** args, int count){
-    Node* funcion_node = make_node(AST_FUNCTION);
+make_function_node(Node* base, Node** args, int count, Node* body){
+    Node* funcion_node = make_node(
+        (
+            body ? AST_FUNCTION : AST_FUNCTION_DECL
+        )
+    );
 
     funcion_node->function.function_header = base->constant;
     funcion_node->function.args = args;
     funcion_node->function.count = count;
+    funcion_node->op1 = body;
 
     return funcion_node;
 }
