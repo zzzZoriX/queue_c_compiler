@@ -133,7 +133,7 @@ lexer(FILE* ifp, _token** m_token){
                     word = NULL_STR;
                 }
                 string str = c_concat_c(c, '\0');
-                while((c = getc(ifp)) != '"' || c != EOF){
+                while((c = getc(ifp)) != '"' && c != EOF){
                     string new_word = concat_c(str, c);
                     if(!new_word) return _LEX_CANT_ALLOCATE_MEM;
 
@@ -142,8 +142,12 @@ lexer(FILE* ifp, _token** m_token){
                     str = new_word;
                 }
 
-                str = parse_string(str);
-                _token* str_token = create_token(str, LEX_STRING, NULL);
+                string final_str = concat_c(str, '"');
+                free(str);
+                if(!final_str) return _LEX_CANT_ALLOCATE_MEM;
+
+                final_str = parse_string(final_str);
+                _token* str_token = create_token(final_str, LEX_STRING, NULL);
                 add(*m_token, str_token);
                 last_token = str_token;
 
