@@ -2,7 +2,8 @@
     комманда компиляции исходников:
     gcc main.c ./libs/dot_c/parse_ast.c ./libs/dot_c/ast.c ./libs/dot_c/tokens_parser.c ./libs/dot_c/_cmd.c ./libs/dot_c/obj.c ./libs/dot_c/lexeme.c ./libs/dot_c/lexer.c ./libs/dot_c/str.c ./libs/dot_c/tokens.c -o que
 */
-#define DEBUG 0
+#define LEX_DEBUG 0
+#define AST_DEBUG 1
 
 
 #include "./libs/main_header.h"
@@ -95,10 +96,18 @@ main(int argc, char** argv){
         );
 
 // парсер
+#if LEX_DEBUG == 1
+        const _token* c = current_ifp_tokens_header;
+        while (c) {
+            printf("%s\t|\t%d\n", c->data, c->lex);
+            c = c->next_token;
+        }
+#endif
+
 
         Node* head = make_stmt_node(&current_ifp_tokens_header);
 
-#ifdef DEBUG
+#if AST_DEBUG == 1
         traverse_ast(head, 0);
 #endif
     }
