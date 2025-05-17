@@ -23,39 +23,42 @@ tokens_parser(_token** token){
         case LEX_FUNC:
             *token = NEXT_TOKEN(*token);
             
-            Node* fun_header = tokens_parser(token);
+            Node
+                * fun_header = tokens_parser(token),
+                * body = NULL,
+                ** func_args = NULL
+            ;
             fun_header->node_type = AST_FUNCTION;
 
             *token = NEXT_TOKEN(*token); // скипаем (
 
             int args_count = 0;
-            if((*token)->lex == LEX_LPAREN)
-                return make_function_node(
-                    fun_header,
-                    NULL,
-                    args_count
-                );
-
-            ++args_count;
-            Node** func_args = (Node**)malloc(sizeof(Node*) * args_count);
-            
-            Node* arg = tokens_parser(token);
-            func_args[args_count - 1] = arg;
-
-            while((*token = NEXT_TOKEN(*token))->lex != LEX_LPAREN && (*token)->lex != LEX_END){
+            if((*token)->lex != LEX_RPAREN) {
                 ++args_count;
-                func_args = (Node**)realloc(func_args, sizeof(Node*) * args_count);
+                func_args = (Node**)malloc(sizeof(Node*) * args_count);
+                if (!func_args) exit(1);
 
-                arg = tokens_parser(token);
+                Node* arg = tokens_parser(token);
                 func_args[args_count - 1] = arg;
+
+                while((*token = NEXT_TOKEN(*token))->lex != LEX_LPAREN && (*token)->lex != LEX_END){
+                    ++args_count;
+                    func_args = (Node**)realloc(func_args, sizeof(Node*) * args_count);
+                    if (!func_args) exit(1);
+
+                    arg = tokens_parser(token);
+                    func_args[args_count - 1] = arg;
+                }
             }
-            
             *token = NEXT_TOKEN(*token);
+            if ((*token)->lex == LEX_LFPAREN)
+                body = tokens_parser(token);
 
             return make_function_node(
                 fun_header,
                 func_args,
-                args_count
+                args_count,
+                body
             );
 
         case LEX_VAR:
@@ -137,8 +140,8 @@ tokens_parser(_token** token){
         case LEX_ELSE:
             _lexemes if_else_lexeme = (*token)->lex;
             Node
-                * condition,
-                * _else
+                * condition = NULL,
+                * _else = NULL
             ;
 
             if((*token)->lex != LEX_ELSE){
@@ -148,18 +151,15 @@ tokens_parser(_token** token){
             }
             *token = NEXT_TOKEN(*token);
                 
-            Node* body = tokens_parser(token); // парсим тело
-            *token = NEXT_TOKEN(*token);
+            Node* if_body = tokens_parser(token); // парсим тело
 
             if((*token)->lex == LEX_ELIF || (*token)->lex == LEX_ELSE)
                 _else = tokens_parser(token);
 
-            *token = NEXT_TOKEN(*token);
-
             return make_if_else_node(
                 if_else_lexeme,
                 condition,
-                body,
+                if_body,
                 _else
             );
 
@@ -323,45 +323,63 @@ tokens_parser(_token** token){
         case LEX_CALL:
             *token = NEXT_TOKEN(*token);
 
-            Node* base = make_empty_literal_const((*token)->data);
+            Node
+                * base = make_empty_literal_const((*token)->data),
+                ** calling_func_args = NULL
+            ;
 
             *token = NEXT_TOKEN(NEXT_TOKEN(*token));
 
             int func_args_count = 0;
-            if((*token)->lex == LEX_LPAREN)
-                return make_un_operation(
-                    make_function_node(
-                        base,
-                        NULL,
-                        func_args_count
-                    ),
-                    _CALL
-                );
-
-            ++func_args_count;
-            Node** calling_func_args = (Node**)malloc(sizeof(Node*) * func_args_count);
-            
-            Node* current_arg = tokens_parser(token);
-            func_args[func_args_count - 1] = current_arg;
-
-            while((*token = NEXT_TOKEN(*token))->lex != LEX_LPAREN && (*token)->lex != LEX_END){
+            if((*token)->lex != LEX_LPAREN) {
                 ++func_args_count;
-                calling_func_args = (Node**)realloc(calling_func_args, sizeof(Node*) * func_args_count);
+                calling_func_args = (Node**)malloc(sizeof(Node*) * func_args_count);
+                if (!calling_func_args) exit(1);
 
-                arg = tokens_parser(token);
-                calling_func_args[func_args_count - 1] = arg;
+                Node* current_arg = tokens_parser(token);
+                calling_func_args[func_args_count - 1] = current_arg;
+
+                while((*token = NEXT_TOKEN(*token))->lex != LEX_LPAREN && (*token)->lex != LEX_END){
+                    ++func_args_count;
+                    calling_func_args = (Node**)realloc(calling_func_args, sizeof(Node*) * func_args_count);
+                    if (!calling_func_args) exit(1);
+
+                    current_arg = tokens_parser(token);
+                    calling_func_args[func_args_count - 1] = current_arg;
+                }
             }
 
             return make_un_operation(
                 make_function_node(
                     base,
                     calling_func_args,
-                    func_args_count
+                    func_args_count,
+                    NULL
                 ),
                 _CALL
             );
 
 /* ------------ функция call ------------ */
+
+/* ------------ функция ret ------------ */
+
+        case LEX_RET:
+            string ret = _strdup((*token)->data);
+            if (!ret) exit(1);
+
+            *token = NEXT_TOKEN(*token);
+
+            Node* ret_expr = make_expr_node(token);
+
+            *token = NEXT_TOKEN(*token);
+
+            return make_un_operation(
+                ret_expr,
+                ret
+            );
+
+
+/* ------------ функция ret ------------ */
 
 /* ------------ стейтменты ------------ */
 
