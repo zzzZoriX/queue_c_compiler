@@ -10,8 +10,6 @@ void
 traverse_ast(Node* node, int level){
     if (!node) return;
 
-    print_indent(level);
-
     switch (node->node_type) {
         case AST_EXPR:
             printf("EXPRESSION\n");
@@ -133,6 +131,7 @@ traverse_ast(Node* node, int level){
             break;
 
         case AST_DO:
+        case AST_WHILE:
             printf("WHILE LOOP\n");
             print_indent(level + 1);
             printf("CONDITION:\n");

@@ -311,13 +311,14 @@ tokens_parser(_token** token){
 
 // LEX_WHILE не рассматривается, потому что синтаксис обязывает писать сначала do, а потом while
         case LEX_DO:
+        case LEX_WHILE:
             Node
                 * while_cond,
                 * while_body
             ;
             _lexemes lexeme = (*token)->lex;
             
-            *token = NEXT_TOKEN(NEXT_TOKEN(*token));
+            *token = NEXT_TOKEN(*token);
             
             while_cond = make_cond_node(token);
             while_body = tokens_parser(token);
