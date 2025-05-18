@@ -285,7 +285,7 @@ make_stmt_node(_token** token){
         }
     }
 
-    if (*token && (*token)->lex != LEX_END)
+    if (*token && (*token)->lex != LEX_END && (*token)->lex == LEX_RFPAREN)
         *token = NEXT_TOKEN(NEXT_TOKEN(*token)); // скипаем };
 
     if (!statements->op1) {
