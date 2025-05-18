@@ -197,6 +197,7 @@ is_data_type(const string check_str){
         comp(check_str, "long")     ||
         comp(check_str, "char")     ||
         comp(check_str, "bool")     ||
-        comp(check_str, "flt")
+        comp(check_str, "flt")      ||
+        comp(check_str, _NULL_VALUE)
     );
 }
