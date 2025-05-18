@@ -7,6 +7,7 @@
 #include "./dot_h/ast.h"
 #include "./dot_h/tokens_parser.h"
 #include "./dot_h/parse_ast.h"
+#include "./dot_h/debug_ast.h"
 
 #include <stdio.h>
 #include <stdbool.h>
