@@ -28,12 +28,16 @@ traverse_ast(Node* node, int level){
             printf("\n");
             break;
 
+        case AST_NULL_VALUE:
+            printf("NULL\n");
+            break;
+
         case AST_LIT_CNST:
             printf("VARIABLE: %s\n", node->constant.name);
             break;
 
         case AST_FUNCTION:
-            printf("\nFUNCTION: %s {\n", node->constant.name);
+            printf("\nFUNCTION: %d %s {\n", node->constant.type, node->constant.name);
             traverse_ast(node->op1, level + 1);
             printf("}\n\n");
             break;
@@ -45,7 +49,7 @@ traverse_ast(Node* node, int level){
             printf("CONDITION:\n");
             traverse_ast(node->cmd.if_else.condition, level + 2);
             print_indent(level + 1);
-            printf("THEN:\n");
+            printf("THEN{\n");
             traverse_ast(node->cmd.if_else.if_body, level + 2);
             if (node->cmd.if_else.else_) {
                 print_indent(level);
@@ -62,12 +66,14 @@ traverse_ast(Node* node, int level){
 
                 free(else_node);
             }
+            printf("}\n");
             break;
 
         case AST_ELSE:
-            printf("ELSE STATEMENT\n");
+            printf("ELSE STATEMENT{\n");
             print_indent(level + 1);
             traverse_ast(node->cmd.if_else.if_body, level + 2);
+            printf("}\n");
             break;
 
         case AST_EQ:
@@ -127,8 +133,9 @@ traverse_ast(Node* node, int level){
             printf("ITERATION:\n");
             traverse_ast(node->cmd.cycles.for_cycle.iter, level + 2);
             print_indent(level + 1);
-            printf("BODY:\n");
+            printf("BODY{\n");
             traverse_ast(node->cmd.cycles.for_cycle.for_body, level + 1);
+            printf("}\n");
             break;
 
         case AST_WHILE:
@@ -137,8 +144,9 @@ traverse_ast(Node* node, int level){
             printf("CONDITION:\n");
             traverse_ast(node->cmd.cycles.while_cycle.condition, level + 2);
             print_indent(level + 1);
-            printf("BODY:\n");
+            printf("BODY{\n");
             traverse_ast(node->cmd.cycles.while_cycle.while_body, level + 2);
+            printf("}\n");
             break;
 
         case AST_IN:
