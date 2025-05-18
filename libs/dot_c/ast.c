@@ -453,7 +453,7 @@ Node*
 make_empty_literal_const(const string name){
     Node* new_node = make_node(AST_LIT_CNST);
 
-    new_node->constant.name = concat("__empty_", name);
+    new_node->constant.name = _strdup(name);
     if(!new_node->constant.name)
         exit(1);
 
