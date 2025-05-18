@@ -33,13 +33,13 @@ traverse_ast(Node* node, int level){
             break;
 
         case AST_FUNCTION:
-            printf("FUNCTION: %s\n", node->constant.name);
+            printf("\nFUNCTION: %s\n", node->constant.name);
             traverse_ast(node->op1, level + 1);
             break;
 
         case AST_IF:
         case AST_ELSE_IF:
-            printf("IF STATEMENT\n");
+            printf("\nIF STATEMENT\n");
             print_indent(level + 1);
             printf("CONDITION:\n");
             traverse_ast(node->cmd.if_else.condition, level + 2);
@@ -118,7 +118,7 @@ traverse_ast(Node* node, int level){
             break;
 
         case AST_FOR:
-            printf("FOR LOOP\n");
+            printf("\nFOR LOOP\n");
             print_indent(level + 1);
             printf("CONDITION:\n");
             traverse_ast(node->cmd.cycles.for_cycle.condition, level + 2);
@@ -130,9 +130,8 @@ traverse_ast(Node* node, int level){
             traverse_ast(node->cmd.cycles.for_cycle.for_body, level + 1);
             break;
 
-        case AST_DO:
         case AST_WHILE:
-            printf("WHILE LOOP\n");
+            printf("\nWHILE LOOP\n");
             print_indent(level + 1);
             printf("CONDITION:\n");
             traverse_ast(node->cmd.cycles.while_cycle.condition, level + 2);
@@ -143,7 +142,7 @@ traverse_ast(Node* node, int level){
 
         case AST_IN:
         case AST_OUT:
-            printf("I/O OPERATION: %s\n", node->cmd.io.format);
+            printf("\nI/O OPERATION: %s\n", node->cmd.io.format);
             for (int i = 0; i < node->cmd.io.args_count; i++) {
                 print_indent(level + 1);
                 printf("ARG %d: ", i);
@@ -167,7 +166,7 @@ traverse_ast(Node* node, int level){
             break;
 
         case AST_RET:
-            printf("RETURN:\n");
+            printf("\nRETURN:\n");
             traverse_ast(node->op1, level + 1);
             break;
 

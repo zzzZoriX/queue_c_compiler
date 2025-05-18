@@ -309,8 +309,6 @@ tokens_parser(_token** token){
 
 /* ------------ цикл while ------------ */
 
-// LEX_WHILE не рассматривается, потому что синтаксис обязывает писать сначала do, а потом while
-        case LEX_DO:
         case LEX_WHILE:
             Node
                 * while_cond,

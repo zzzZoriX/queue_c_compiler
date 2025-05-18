@@ -43,7 +43,6 @@ typedef enum _node_type {
     AST_ELSE_IF,
     AST_ELSE,
     AST_WHILE,
-    AST_DO,
     AST_FOR,
     AST_OUT,
     AST_IN,

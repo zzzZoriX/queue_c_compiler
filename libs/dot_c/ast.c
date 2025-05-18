@@ -326,9 +326,7 @@ make_if_else_node(_lexemes lexeme, Node* condition, Node* body, Node* else_){
 
 Node*
 make_do_while_node(_lexemes lexeme, Node* condition, Node* body){
-    Node* do_while_node = make_node(
-        (lexeme == LEX_DO ? AST_DO : AST_WHILE)
-    );
+    Node* do_while_node = make_node(AST_WHILE);
 
     do_while_node->cmd.cycles.while_cycle.condition = condition;
     do_while_node->cmd.cycles.while_cycle.while_body = body;

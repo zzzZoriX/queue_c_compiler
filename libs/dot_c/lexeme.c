@@ -14,7 +14,6 @@ define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
     if(comp(word, _ELSE))          return LEX_ELSE;
     if(comp(word, _FOR))           return LEX_FOR;
     if(comp(word, _WHILE))         return LEX_WHILE;
-    if(comp(word, _DO))            return LEX_DO;
     if(comp(word, _SHORT))         return LEX_SHORT;
     if(comp(word, _INT))           return LEX_INT;
     if(comp(word, _LONG))          return LEX_LONG;
