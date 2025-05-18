@@ -1,4 +1,4 @@
-fun int factorial(int{a}){
+fun int factorial(var int a){
     if(a == 1) -> ret 1;
     ret a * factorial(a - 1);
 };
