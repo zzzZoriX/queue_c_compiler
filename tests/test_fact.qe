@@ -1,6 +1,6 @@
 fun int factorial(var int a){
     if(a == 1) -> ret 1;
-    ret a * factorial(a - 1);
+    ret a * call factorial(a - 1);
 };
 
 fun int main(){
