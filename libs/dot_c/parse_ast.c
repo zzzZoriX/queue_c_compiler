@@ -129,7 +129,7 @@ traverse_ast(Node* node, int level){
             traverse_ast(node->cmd.cycles.for_cycle.iter, level + 2);
             print_indent(level + 1);
             printf("BODY:\n");
-            traverse_ast(node->cmd.cycles.for_cycle.for_body, level + 2);
+            traverse_ast(node->cmd.cycles.for_cycle.for_body, level + 1);
             break;
 
         case AST_DO:
@@ -170,6 +170,16 @@ traverse_ast(Node* node, int level){
         case AST_RET:
             printf("RETURN:\n");
             traverse_ast(node->op1, level + 1);
+            break;
+
+        case AST_INC:
+            printf("INCREMENT: ");\
+            traverse_ast(node->op1, 0);
+            break;
+
+        case AST_DEC:
+            printf("DECREMENT: ");\
+            traverse_ast(node->op1, 0);
             break;
 
         default:

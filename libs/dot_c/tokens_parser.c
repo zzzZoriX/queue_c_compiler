@@ -237,7 +237,7 @@ tokens_parser(_token** token){
                 * iter
             ;
             
-            *token = NEXT_TOKEN(NEXT_TOKEN(*token));
+            *token = NEXT_TOKEN(*token);
 
             for_cond = make_cond_node(token);
 
