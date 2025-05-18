@@ -377,6 +377,7 @@ make_char_literal_const(const string name, const char value, const bool is_ptr){
 
     new_node->constant.char_value = value;
     new_node->constant.name = _strdup(name);
+    new_node->constant.type = TYPE_CHAR;
     if(!new_node->constant.name)
         exit(1);
     new_node->constant.is_ptr = is_ptr;
@@ -390,6 +391,7 @@ make_bool_literal_const(const string name, const bool value, const bool is_ptr){
 
     new_node->constant.bool_value = value;
     new_node->constant.name = _strdup(name);
+    new_node->constant.type = TYPE_BOOL;
     if(!new_node->constant.name)
         exit(1);
     new_node->constant.is_ptr = is_ptr;
@@ -403,6 +405,7 @@ make_flt_literal_const(const string name, const float value, const bool is_ptr){
 
     new_node->constant.flt_value = value;
     new_node->constant.name = _strdup(name);
+    new_node->constant.type = TYPE_FLT;
     if(!new_node->constant.name)
         exit(1);
 
@@ -415,6 +418,7 @@ make_int_literal_const(const string name, const int value, const bool is_ptr){
 
     new_node->constant.int_value = value;
     new_node->constant.name = _strdup(name);
+    new_node->constant.type = TYPE_INT;
     if(!new_node->constant.name)
         exit(1);
     new_node->constant.is_ptr = is_ptr;
@@ -428,6 +432,7 @@ make_long_literal_const(const string name, const long value, const bool is_ptr){
 
     new_node->constant.long_value = value;
     new_node->constant.name = _strdup(name);
+    new_node->constant.type = TYPE_LONG;
     if(!new_node->constant.name)
         exit(1);
     new_node->constant.is_ptr = is_ptr;
@@ -441,6 +446,7 @@ make_short_literal_const(const string name, const short value, const bool is_ptr
 
     new_node->constant.short_value = value;
     new_node->constant.name = _strdup(name);
+    new_node->constant.type = TYPE_SHORT;
     if(!new_node->constant.name)
         exit(1);
     new_node->constant.is_ptr = is_ptr;
