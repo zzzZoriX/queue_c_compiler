@@ -180,6 +180,16 @@ traverse_ast(Node* node, int level){
             traverse_ast(node->op1, 0);
             break;
 
+        case AST_DEREF:
+            printf("DEREFERENCE: ");
+            traverse_ast(node->op1, 0);
+            break;
+
+        case AST_GET_ADDR:
+            printf("GET ADDRESS OF: ");
+            traverse_ast(node->op1, 0);
+            break;
+
         default:
             printf("UNKNOWN NODE TYPE: %d\n", node->node_type);
             traverse_ast(node->op1, level + 1);

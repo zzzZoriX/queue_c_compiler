@@ -95,7 +95,7 @@ tokens_parser(_token** token){
 
                 *token = NEXT_TOKEN(*token);
 
-                Node* expr = make_expr_node(token);
+                Node* expr = tokens_parser(token);
 
                 *token = NEXT_TOKEN(*token);
 
