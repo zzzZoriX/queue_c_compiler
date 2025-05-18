@@ -10,6 +10,6 @@ fun int main(){
     ret 0;
 };
 
-fun_decl = {
+fun int fun_decl(){
     ret 2;
 }; /- реализация объявленной рание функции -/
