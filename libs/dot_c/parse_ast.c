@@ -33,8 +33,9 @@ traverse_ast(Node* node, int level){
             break;
 
         case AST_FUNCTION:
-            printf("\nFUNCTION: %s\n", node->constant.name);
+            printf("\nFUNCTION: %s {\n", node->constant.name);
             traverse_ast(node->op1, level + 1);
+            printf("}\n\n");
             break;
 
         case AST_IF:
@@ -188,6 +189,14 @@ traverse_ast(Node* node, int level){
         case AST_GET_ADDR:
             printf("GET ADDRESS OF: ");
             traverse_ast(node->op1, 0);
+            break;
+
+        case AST_CALL:
+            printf("CALL %s FUNCTION\n", node->op1->constant.name);
+            break;
+
+        case AST_FUNCTION_DECL:
+            printf("DECLARE FUNCTION WITH NAME: %s\n", node->constant.name);
             break;
 
         default:

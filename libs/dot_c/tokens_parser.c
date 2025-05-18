@@ -344,7 +344,7 @@ tokens_parser(_token** token){
             *token = NEXT_TOKEN(NEXT_TOKEN(*token));
 
             int func_args_count = 0;
-            if((*token)->lex != LEX_LPAREN) {
+            if((*token)->lex != LEX_RPAREN) {
                 ++func_args_count;
                 calling_func_args = (Node**)malloc(sizeof(Node*) * func_args_count);
                 if (!calling_func_args) exit(1);
