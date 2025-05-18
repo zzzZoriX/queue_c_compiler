@@ -164,7 +164,7 @@ make_expr_node(_token** token){
 
         *token = NEXT_TOKEN(*token);
 
-        Node* lit = make_empty_literal_const((*token)->data);
+        Node* lit = make_empty_literal_const((*token)->data, false);
         *token = NEXT_TOKEN(*token);
 
         return make_un_operation(
@@ -179,7 +179,7 @@ make_expr_node(_token** token){
         if(NEXT_TOKEN(*token)->lex == LEX_POST_INC || NEXT_TOKEN(*token)->lex == LEX_POST_DEC){
             free(expr_node);
             
-            Node* empty_lit_const = make_empty_literal_const((*token)->data);
+            Node* empty_lit_const = make_empty_literal_const((*token)->data, false);
             *token = NEXT_TOKEN(*token);
 
             string op = _strdup((*token)->data);
@@ -378,31 +378,33 @@ make_function_node(Node* base, Node** args, int count, Node* body){
 }
 
 Node*
-make_char_literal_const(const string name, const char value){
+make_char_literal_const(const string name, const char value, const bool is_ptr){
     Node* new_node = make_node(AST_LIT_CNST);
 
     new_node->constant.char_value = value;
     new_node->constant.name = _strdup(name);
     if(!new_node->constant.name)
         exit(1);
+    new_node->constant.is_ptr = is_ptr;
 
     return new_node;
 }
 
 Node*
-make_bool_literal_const(const string name, const bool value){
+make_bool_literal_const(const string name, const bool value, const bool is_ptr){
     Node* new_node = make_node(AST_LIT_CNST);
 
     new_node->constant.bool_value = value;
     new_node->constant.name = _strdup(name);
     if(!new_node->constant.name)
         exit(1);
+    new_node->constant.is_ptr = is_ptr;
 
     return new_node;
 }
 
 Node*
-make_flt_literal_const(const string name, const float value){
+make_flt_literal_const(const string name, const float value, const bool is_ptr){
     Node* new_node = make_node(AST_LIT_CNST);
 
     new_node->constant.flt_value = value;
@@ -414,48 +416,52 @@ make_flt_literal_const(const string name, const float value){
 }
 
 Node*
-make_int_literal_const(const string name, const int value){
+make_int_literal_const(const string name, const int value, const bool is_ptr){
     Node* new_node = make_node(AST_LIT_CNST);
 
     new_node->constant.int_value = value;
     new_node->constant.name = _strdup(name);
     if(!new_node->constant.name)
         exit(1);
+    new_node->constant.is_ptr = is_ptr;
 
     return new_node;
 }
 
 Node*
-make_long_literal_const(const string name, const long value){
+make_long_literal_const(const string name, const long value, const bool is_ptr){
     Node* new_node = make_node(AST_LIT_CNST);
 
     new_node->constant.long_value = value;
     new_node->constant.name = _strdup(name);
     if(!new_node->constant.name)
         exit(1);
+    new_node->constant.is_ptr = is_ptr;
 
     return new_node;
 }
 
 Node*
-make_short_literal_const(const string name, const short value){
+make_short_literal_const(const string name, const short value, const bool is_ptr){
     Node* new_node = make_node(AST_LIT_CNST);
 
     new_node->constant.short_value = value;
     new_node->constant.name = _strdup(name);
     if(!new_node->constant.name)
         exit(1);
+    new_node->constant.is_ptr = is_ptr;
 
     return new_node;
 }
 
 Node*
-make_empty_literal_const(const string name){
+make_empty_literal_const(const string name, const bool is_ptr){
     Node* new_node = make_node(AST_LIT_CNST);
 
     new_node->constant.name = _strdup(name);
     if(!new_node->constant.name)
         exit(1);
+    new_node->constant.is_ptr = is_ptr;
 
     return new_node;
 }

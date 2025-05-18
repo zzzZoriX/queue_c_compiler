@@ -75,6 +75,8 @@ tokens_parser(_token** token){
         case LEX_BOOL:
         case LEX_FLT:
         case LEX_POINTER:
+            const bool is_ptr = (*token)->lex == LEX_POINTER;
+
             while(*token && !is_data_type((*token)->data) && (*token)->lex != LEX_END)
                 *token = (*token)->next_token;
             
@@ -83,7 +85,7 @@ tokens_parser(_token** token){
             const string type = _strdup((*token)->data);
             *token = NEXT_TOKEN(*token);
 
-            Node* lit_const = make_corr_type_litcnst((*token)->data, type);
+            Node* lit_const = make_corr_type_litcnst((*token)->data, type, is_ptr);
             
             *token = NEXT_TOKEN(*token);
 
@@ -258,7 +260,7 @@ tokens_parser(_token** token){
                     Node* expr = make_expr_node(token);
 
                     iter = make_bin_operation(
-                        make_empty_literal_const(var_name),
+                        make_empty_literal_const(var_name, false),
                         expr,
                         assign
                     );
@@ -270,12 +272,12 @@ tokens_parser(_token** token){
                     *token = NEXT_TOKEN(*token);
 
                     iter = make_un_operation(
-                        make_empty_literal_const(var_name),
+                        make_empty_literal_const(var_name, false),
                         op
                     );
                 }
     
-                else    iter = make_empty_literal_const(var_name);
+                else    iter = make_empty_literal_const(var_name, false);
 
                 free(var_name);
             }
@@ -335,7 +337,7 @@ tokens_parser(_token** token){
             *token = NEXT_TOKEN(*token);
 
             Node
-                * base = make_empty_literal_const((*token)->data),
+                * base = make_empty_literal_const((*token)->data, false),
                 ** calling_func_args = NULL
             ;
 
@@ -423,7 +425,7 @@ tokens_parser(_token** token){
                 next_lex == LEX_POST_INC ||
                 next_lex == LEX_POST_DEC
             ){
-                Node* operand = make_empty_literal_const(var_name);
+                Node* operand = make_empty_literal_const(var_name, false);
                 free(var_name);
 
                 string op = _strdup((*token)->data);
@@ -443,7 +445,7 @@ tokens_parser(_token** token){
                 Node* expr = make_expr_node(token);
             
                 return make_bin_operation(
-                    make_empty_literal_const(var_name),
+                    make_empty_literal_const(var_name, false),
                     expr,
                     op
                 );
@@ -460,7 +462,7 @@ tokens_parser(_token** token){
             *token = NEXT_TOKEN(*token);
         
             return make_un_operation(
-                make_empty_literal_const((*token)->data),
+                make_empty_literal_const((*token)->data, false),
                 un_op
             );
 
@@ -475,12 +477,12 @@ tokens_parser(_token** token){
 }
 
 Node*
-make_corr_type_litcnst(const string name, const string type){
-    if(comp(type, "bool"))      return make_bool_literal_const(name, false);
-    if(comp(type, "flt"))       return make_flt_literal_const(name, 0);
-    if(comp(type, "short"))     return make_short_literal_const(name, 0);
-    if(comp(type, "long"))      return make_long_literal_const(name, 0);
-    if(comp(type, "char"))      return make_char_literal_const(name, 0);
+make_corr_type_litcnst(const string name, const string type, const bool is_ptr){
+    if(comp(type, "bool"))      return make_bool_literal_const(name, false, is_ptr);
+    if(comp(type, "flt"))       return make_flt_literal_const(name, 0, is_ptr);
+    if(comp(type, "short"))     return make_short_literal_const(name, 0, is_ptr);
+    if(comp(type, "long"))      return make_long_literal_const(name, 0, is_ptr);
+    if(comp(type, "char"))      return make_char_literal_const(name, 0, is_ptr);
     
-    return make_int_literal_const(name, 0);
+    return make_int_literal_const(name, 0, is_ptr);
 }

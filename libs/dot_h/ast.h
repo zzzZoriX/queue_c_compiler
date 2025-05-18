@@ -76,6 +76,7 @@ typedef struct Statements {
 typedef struct LiteralConstant {
     _data_type type;
     string name;
+    bool is_ptr;
     union {
         int int_value;
         short short_value;
@@ -220,7 +221,7 @@ make_function_node(Node* base, Node**, int, Node*);
  * @return Node* 
  */
 Node*
-make_int_literal_const(const string, const int);
+make_int_literal_const(const string, const int, const bool);
 
 /**
  * @brief создает узел для значения float
@@ -228,7 +229,7 @@ make_int_literal_const(const string, const int);
  * @return Node* 
  */
 Node*
-make_flt_literal_const(const string, const float);
+make_flt_literal_const(const string, const float, const bool);
 
 /**
  * @brief создает узел для значения bool
@@ -236,7 +237,7 @@ make_flt_literal_const(const string, const float);
  * @return Node* 
  */
 Node*
-make_bool_literal_const(const string, const bool);
+make_bool_literal_const(const string, const bool, const bool);
 
 /**
  * @brief создает узел для значения char
@@ -244,7 +245,7 @@ make_bool_literal_const(const string, const bool);
  * @return Node* 
  */
 Node*
-make_char_literal_const(const string, const char);
+make_char_literal_const(const string, const char, const bool);
 
 /**
  * @brief создает узел для значения long
@@ -252,7 +253,7 @@ make_char_literal_const(const string, const char);
  * @return Node* 
  */
 Node*
-make_long_literal_const(const string, const long);
+make_long_literal_const(const string, const long, const bool);
 
 /**
  * @brief создает узел для значения short
@@ -260,7 +261,7 @@ make_long_literal_const(const string, const long);
  * @return Node* 
  */
 Node*
-make_short_literal_const(const string, const short);
+make_short_literal_const(const string, const short, const bool);
 
 /**
  * @brief создает узел пустой литеральной константы
@@ -268,6 +269,6 @@ make_short_literal_const(const string, const short);
  * @return Node* 
  */
 Node*
-make_empty_literal_const(const string);
+make_empty_literal_const(const string, const bool);
 
 #endif

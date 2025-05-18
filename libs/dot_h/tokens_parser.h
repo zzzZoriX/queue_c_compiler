@@ -21,6 +21,6 @@ tokens_parser(_token**);
  * @return Node* 
  */
 Node*
-make_corr_type_litcnst(const string, const string);
+make_corr_type_litcnst(const string, const string, const bool);
 
 #endif
