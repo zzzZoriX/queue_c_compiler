@@ -428,6 +428,8 @@ tokens_parser(_token** token){
                 Node* operand = make_empty_literal_const(var_name, false);
                 free(var_name);
 
+                *token = NEXT_TOKEN(*token);
+
                 string op = _strdup((*token)->data);
                 *token = NEXT_TOKEN(*token);
             
