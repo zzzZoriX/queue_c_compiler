@@ -1,5 +1,7 @@
 #include "c:/queue_c_compiler/libs/dot_h/ast.h"
 
+#include <math.h>
+
 Node*
 tokens_parser(_token**);
 
@@ -127,8 +129,7 @@ make_expr_node(_token** token){
             expr_node->constant.int_value = atoi((*token)->data);    
         }
 
-        *token = NEXT_TOKEN(*token);    
-        return expr_node;
+        *token = NEXT_TOKEN(*token);
     }
 
     if((*token)->lex == LEX_CHAR_VAL){
@@ -136,7 +137,6 @@ make_expr_node(_token** token){
         expr_node->constant.char_value = (*token)->data[1];
 
         *token = NEXT_TOKEN(*token);
-        return expr_node;
     }
 
     if((*token)->lex == LEX_TRUE || (*token)->lex == LEX_FALSE){
@@ -145,7 +145,6 @@ make_expr_node(_token** token){
         expr_node->constant.bool_value = ((*token)->lex == LEX_TRUE ? true : false);
 
         *token = NEXT_TOKEN(*token);
-        return expr_node;
     }
 
     if ((*token)->lex == LEX_NULL_VALUE) {
@@ -154,7 +153,6 @@ make_expr_node(_token** token){
         expr_node->constant.type = TYPE_NULL;
 
         *token = NEXT_TOKEN(*token);
-        return expr_node;
     }
 
     if((*token)->lex == LEX_PREF_INC || (*token)->lex == LEX_PREF_DEC){
@@ -167,7 +165,7 @@ make_expr_node(_token** token){
         Node* lit = make_empty_literal_const((*token)->data, false);
         *token = NEXT_TOKEN(*token);
 
-        return make_un_operation(
+        expr_node = make_un_operation(
             lit,
             op
         );
@@ -187,7 +185,7 @@ make_expr_node(_token** token){
 
             *token = NEXT_TOKEN(*token);
 
-            return make_un_operation(
+            expr_node = make_un_operation(
                 empty_lit_const,
                 op
             );
@@ -196,7 +194,7 @@ make_expr_node(_token** token){
         if(NEXT_TOKEN(*token)->lex == LEX_INST_POINTER){
             free(expr_node);
             *token = NEXT_TOKEN(NEXT_TOKEN(*token));
-            return make_expr_node(token);
+            expr_node = make_expr_node(token);
         }
 
 // если не унарная операция
@@ -204,13 +202,9 @@ make_expr_node(_token** token){
         expr_node->constant.name = _strdup((*token)->data);
 
         *token = NEXT_TOKEN(*token);
-
-        return expr_node;
     }
 
-    free(expr_node); // дальше эта переменная нигде не используется
-
-    if((*token)->lex == LEX_LPAREN){
+    else if((*token)->lex == LEX_LPAREN){
         *token = NEXT_TOKEN(*token);
         Node* expr = make_expr_node(token);
 
@@ -218,7 +212,8 @@ make_expr_node(_token** token){
         return expr;
     }
 
-    Node* left = make_expr_node(token);
+    else if ((*token)->lex == LEX_CALL)
+        expr_node = tokens_parser(token);
 
     if(is_operator((*token)->lex)){
         string op = _strdup((*token)->data);
@@ -228,17 +223,19 @@ make_expr_node(_token** token){
 
         Node* right = make_expr_node(token);
         
-        return make_bin_operation(left, right, op);
+        return make_bin_operation(expr_node, right, op);
     }
 
-    return left;
+    return expr_node;
 }
 
 Node*
 make_cond_node(_token** token){
     Node* cond = make_node(0);
     
-    *token = NEXT_TOKEN(*token);
+    if ((*token)->lex == LEX_LPAREN)
+        *token = NEXT_TOKEN(*token);
+
     Node* left = make_expr_node(token);
 
     if((*token)->lex == LEX_INST_POINTER)
@@ -249,13 +246,10 @@ make_cond_node(_token** token){
         *token = NEXT_TOKEN(*token);
 
         cond->op1 = left;
-        cond->op2 = make_expr_node(token);
-
-        if((*token)->lex == LEX_INST_POINTER)
-            return cond;
+        cond->op2 = make_cond_node(token);
     }
     else
-        cond->op1 = left;
+         return left
     ;
 
     return cond;
@@ -459,6 +453,7 @@ make_empty_literal_const(const string name, const bool is_ptr){
     Node* new_node = make_node(AST_LIT_CNST);
 
     new_node->constant.name = _strdup(name);
+    new_node->constant.type = TYPE_NULL;
     if(!new_node->constant.name)
         exit(1);
     new_node->constant.is_ptr = is_ptr;

@@ -57,12 +57,12 @@ typedef enum _node_type {
 
 typedef enum _data_type {
     TYPE_INT,
+    TYPE_NULL,
     TYPE_CHAR,
     TYPE_FLT,
     TYPE_BOOL,
     TYPE_SHORT,
-    TYPE_LONG,
-    TYPE_NULL
+    TYPE_LONG
 } _data_type;
 
 typedef struct AST_Node AST_Node;
