@@ -382,7 +382,7 @@ tokens_parser(_token** token){
 
             *token = NEXT_TOKEN(*token);
 
-            Node* ret_expr = make_expr_node(token);
+            Node* ret_expr = tokens_parser(token);
 
             *token = NEXT_TOKEN(*token);
 
