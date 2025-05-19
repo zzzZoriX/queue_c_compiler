@@ -390,10 +390,12 @@ tokens_parser(_token** token){
         case LEX_RET:
             string ret = _strdup((*token)->data);
             if (!ret) exit(1);
+            Node* ret_expr = NULL;
 
             *token = NEXT_TOKEN(*token);
 
-            Node* ret_expr = tokens_parser(token);
+            if ((*token)->lex  != LEX_SEMIC)
+                ret_expr = tokens_parser(token);
 
             *token = NEXT_TOKEN(*token);
 
