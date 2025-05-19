@@ -79,11 +79,15 @@ tokens_parser(_token** token){
         case LEX_FLT:
         case LEX_POINTER:
         case LEX_UNSIGN:
-            const bool is_unsign = (*token)->lex == LEX_UNSIGN;
+            bool is_unsign = (*token)->lex == LEX_UNSIGN;
             const bool is_ptr = (*token)->lex == LEX_POINTER;
 
-            while(*token && !is_data_type((*token)->data) && (*token)->lex != LEX_END)
+            while(*token && !is_data_type((*token)->data) && (*token)->lex != LEX_END) {
+                if ((*token)->lex == LEX_UNSIGN)
+                    is_unsign = true;
+
                 *token = (*token)->next_token;
+            }
             
             if(!is_data_type((*token)->data)) exit(1);
 
