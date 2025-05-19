@@ -176,7 +176,12 @@ traverse_ast(Node* node, int level){
 
         case AST_RET:
             printf("\nRETURN:\n");
-            traverse_ast(node->op1, level + 1);
+            if (node->op1)
+                traverse_ast(node->op1, level + 1);
+            else {
+                print_indent(level + 1);
+                printf("NULL\n");
+            }
             break;
 
         case AST_INC:
