@@ -14,6 +14,6 @@
 
 #define __ERROR -1
 #define __SUCCESS 0
-#define __DEFAULT_OTP_FILE_NAME "a.c"
+#define __DEFAULT_OTP_FILE_NAME "a"
 
 #endif

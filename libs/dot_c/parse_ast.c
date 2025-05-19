@@ -87,7 +87,7 @@ parse_nodes(Node* n, FILE* o_fpt) {
             if (n->node_type == AST_IF)
                 fprintf(o_fpt,"if(");
             else
-                fprintf(o_fpt,"else if(\n");
+                fprintf(o_fpt,"else if(");
 
             parse_nodes(n->cmd.if_else.condition, o_fpt);
             fprintf(o_fpt,"){\n");
@@ -211,6 +211,9 @@ parse_nodes(Node* n, FILE* o_fpt) {
             break;
 
         case AST_IN:
+            if (comp(n->cmd.io.format, "%c"))
+                fprintf(o_fpt, "getc(stdin);\n");
+
             fprintf(
                 o_fpt,
                 "scanf(\"%s\"",

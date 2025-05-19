@@ -39,12 +39,12 @@ main(int argc, char** argv){
             return __ERROR;
 
         case _SUCCESS_BUT_WO_OTP:
-            otp_file_name = __DEFAULT_OTP_FILE_NAME;
+            otp_file_name = concat(__DEFAULT_OTP_FILE_NAME, ".c");
             break;
 
         case _SUCCESS:
         default:
-            otp_file_name = argv[argc - 1];
+            otp_file_name = concat(argv[argc - 1], ".c");
             break;
     }
 
@@ -116,7 +116,22 @@ main(int argc, char** argv){
 
     fclose(otp_file);
 
-    fprintf(stdout, "the output file - %s was created\n", otp_file_name);
+    string name = c_concat_c(otp_file_name[0], '\0');
+    for (int i = 1; i < strlen(otp_file_name); ++i) {
+        if (otp_file_name[i] == '.') {
+            name = concat_c(name, otp_file_name[i]);
+            break;
+        }
+        name = concat_c(name, otp_file_name[i]);
+    }
+
+    string otp_exe_file_name = concat(name, "exe");
+    free(name);
+
+    string command = concat("gcc ", concat(otp_file_name, concat(" -o ", otp_exe_file_name)));
+    system(command);
+
+    fprintf(stdout, "the output file - %s was created\n", otp_exe_file_name);
 
     return __SUCCESS;
 }
