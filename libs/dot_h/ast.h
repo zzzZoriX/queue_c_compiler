@@ -57,7 +57,7 @@ typedef enum _node_type {
 
 typedef enum _data_type {
     TYPE_INT,
-    TYPE_NULL,
+    TYPE_VOID,
     TYPE_CHAR,
     TYPE_FLT,
     TYPE_BOOL,
@@ -110,11 +110,9 @@ typedef struct Command {
 } Command;
 
 typedef struct Function {
-    union {
-        LiteralConstant function_header;
-        AST_Node** args;
-        int count;
-    };
+    LiteralConstant function_header;
+    AST_Node** args;
+    int count;
 } Function;
 
 // узел
