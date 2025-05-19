@@ -2,24 +2,24 @@
 #define PARSE_AST_H
 
 #include "ast.h"
-#include "tokens_parser.h"
+#include "str.h"
 
 #include <stdio.h>
-#include <string.h>
+#include <ctype.h>
 
-void 
-print_indent(int level);
+static string str_types[] = {
+    "int", "void", "char", "float",
+    "bool", "short", "long"
+};
 
-void 
-print_type(_data_type);
+static string str_assigns[] = {
+    "=", "+=", "-=", "/=", "*=", "%="
+};
 
-void 
-print_constant_value(const LiteralConstant*);
+void
+code_gen(Node*, FILE*);
 
-void 
-traverse_ast(Node*, int);
-
-void 
-print_ast(Node*);
+void
+parse_nodes(Node*, FILE*);
 
 #endif
