@@ -126,13 +126,14 @@ make_expr_node(_token** token){
         }
         else{
             expr_node->constant.type = TYPE_INT;
-            expr_node->constant.int_value = atoi((*token)->data);    
+            expr_node->constant.long_value = atol((*token)->data);
         }
 
         *token = NEXT_TOKEN(*token);
     }
 
     if((*token)->lex == LEX_CHAR_VAL){
+        expr_node->node_type = AST_CHAR_VALUE;
         expr_node->constant.type = TYPE_CHAR;
         expr_node->constant.char_value = (*token)->data[1];
 

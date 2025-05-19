@@ -357,8 +357,6 @@ tokens_parser(_token** token){
 
                 Node* current_arg = tokens_parser(token);
                 calling_func_args[func_args_count - 1] = current_arg;
-                if ((*token)->lex == LEX_RPAREN)
-
 
                 while((*token)->lex != LEX_RPAREN && (*token)->lex != LEX_END){
                     *token = NEXT_TOKEN(*token);
