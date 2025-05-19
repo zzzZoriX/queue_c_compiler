@@ -70,9 +70,7 @@ tokens_parser(_token** token){
 
 /* ------------ литеральные константы ------------ */
 
-        case LEX_NULL_VALUE:
-            if (NEXT_TOKEN(*token)->lex != LEX_OBJ_NAME)
-                return make_expr_node(token);
+        case LEX_VOID_TYPE:
         case LEX_INT:
         case LEX_LONG:
         case LEX_SHORT:
@@ -125,6 +123,7 @@ tokens_parser(_token** token){
         case LEX_CHAR_VAL:
         case LEX_TRUE:
         case LEX_FALSE:
+        case LEX_NULL_VALUE:
             return make_expr_node(token);
 
         case LEX_PREF_INC:
@@ -498,7 +497,7 @@ make_corr_type_litcnst(const string name, const string type, const bool is_ptr){
     if(comp(type, "short"))     return make_short_literal_const(name, 0, is_ptr);
     if(comp(type, "long"))      return make_long_literal_const(name, 0, is_ptr);
     if(comp(type, "char"))      return make_char_literal_const(name, 0, is_ptr);
-    if (comp(type, _NULL_VALUE))return make_empty_literal_const(name, is_ptr);
+    if (comp(type, _VOID))return make_empty_literal_const(name, is_ptr);
     
     return make_int_literal_const(name, 0, is_ptr);
 }

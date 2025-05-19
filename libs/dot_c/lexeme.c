@@ -14,6 +14,7 @@ define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
     if(comp(word, _ELSE))          return LEX_ELSE;
     if(comp(word, _FOR))           return LEX_FOR;
     if(comp(word, _WHILE))         return LEX_WHILE;
+    if (comp(word, _VOID))         return LEX_VOID_TYPE;
     if(comp(word, _SHORT))         return LEX_SHORT;
     if(comp(word, _INT))           return LEX_INT;
     if(comp(word, _LONG))          return LEX_LONG;
@@ -198,6 +199,6 @@ is_data_type(const string check_str){
         comp(check_str, "char")     ||
         comp(check_str, "bool")     ||
         comp(check_str, "flt")      ||
-        comp(check_str, _NULL_VALUE)
+        comp(check_str, _VOID)
     );
 }

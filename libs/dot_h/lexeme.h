@@ -18,6 +18,7 @@
 #define    _ELSE "else"
 #define    _FOR "for"
 #define    _WHILE "while"
+#define    _VOID ".."
 #define    _SHORT "short"
 #define    _INT "int"
 #define    _LONG "long"
@@ -83,7 +84,8 @@ typedef enum _lexemes: int {
     LEX_ELSE = 9,
     LEX_FOR = 10,
     LEX_WHILE = 11,
-    
+
+    LEX_VOID_TYPE = 12,
     LEX_SHORT = 13,
     LEX_INT = 14,
     LEX_LONG = 15,

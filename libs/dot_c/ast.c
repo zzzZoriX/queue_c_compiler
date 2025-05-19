@@ -150,7 +150,7 @@ make_expr_node(_token** token){
     if ((*token)->lex == LEX_NULL_VALUE) {
         expr_node->node_type = AST_NULL_VALUE;
         expr_node->constant = (LiteralConstant){0};
-        expr_node->constant.type = TYPE_NULL;
+        expr_node->constant.type = TYPE_VOID;
 
         *token = NEXT_TOKEN(*token);
     }
@@ -459,7 +459,7 @@ make_empty_literal_const(const string name, const bool is_ptr){
     Node* new_node = make_node(AST_LIT_CNST);
 
     new_node->constant.name = _strdup(name);
-    new_node->constant.type = TYPE_NULL;
+    new_node->constant.type = TYPE_VOID;
     if(!new_node->constant.name)
         exit(1);
     new_node->constant.is_ptr = is_ptr;
