@@ -1,9 +1,9 @@
 /*
     комманда компиляции исходников:
-    gcc main.c ./libs/dot_c/parse_ast.c ./libs/dot_c/ast.c ./libs/dot_c/tokens_parser.c ./libs/dot_c/_cmd.c ./libs/dot_c/obj.c ./libs/dot_c/lexeme.c ./libs/dot_c/lexer.c ./libs/dot_c/str.c ./libs/dot_c/tokens.c -o que
+    gcc main.c ./libs/dot_c/debug_ast.c ./libs/dot_c/parse_ast.c ./libs/dot_c/ast.c ./libs/dot_c/tokens_parser.c ./libs/dot_c/_cmd.c ./libs/dot_c/obj.c ./libs/dot_c/lexeme.c ./libs/dot_c/lexer.c ./libs/dot_c/str.c ./libs/dot_c/tokens.c -o que
 */
 #define LEX_DEBUG 0
-#define AST_DEBUG 1
+#define AST_DEBUG 0
 
 
 #include "./libs/main_header.h"
@@ -110,6 +110,8 @@ main(int argc, char** argv){
 #if AST_DEBUG == 1
         traverse_ast(head, 0);
 #endif
+
+        code_gen(head, otp_file);
     }
 
     fclose(otp_file);
