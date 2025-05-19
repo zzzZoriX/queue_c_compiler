@@ -78,6 +78,8 @@ tokens_parser(_token** token){
         case LEX_BOOL:
         case LEX_FLT:
         case LEX_POINTER:
+        case LEX_UNSIGN:
+            const bool is_unsign = (*token)->lex == LEX_UNSIGN;
             const bool is_ptr = (*token)->lex == LEX_POINTER;
 
             while(*token && !is_data_type((*token)->data) && (*token)->lex != LEX_END)
@@ -88,7 +90,7 @@ tokens_parser(_token** token){
             const string type = _strdup((*token)->data);
             *token = NEXT_TOKEN(*token);
 
-            Node* lit_const = make_corr_type_litcnst((*token)->data, type, is_ptr);
+            Node* lit_const = make_corr_type_litcnst((*token)->data, type, is_ptr, is_unsign);
             
             *token = NEXT_TOKEN(*token);
 
@@ -266,7 +268,7 @@ tokens_parser(_token** token){
                     Node* expr = make_expr_node(token);
 
                     iter = make_bin_operation(
-                        make_empty_literal_const(var_name, false),
+                        make_empty_literal_const(var_name, false, false),
                         expr,
                         assign
                     );
@@ -278,12 +280,12 @@ tokens_parser(_token** token){
                     *token = NEXT_TOKEN(*token);
 
                     iter = make_un_operation(
-                        make_empty_literal_const(var_name, false),
+                        make_empty_literal_const(var_name, false, false),
                         op
                     );
                 }
     
-                else    iter = make_empty_literal_const(var_name, false);
+                else    iter = make_empty_literal_const(var_name, false, false);
 
                 free(var_name);
             }
@@ -343,7 +345,7 @@ tokens_parser(_token** token){
             *token = NEXT_TOKEN(*token);
 
             Node
-                * base = make_empty_literal_const((*token)->data, false),
+                * base = make_empty_literal_const((*token)->data, false, false),
                 ** calling_func_args = NULL
             ;
 
@@ -436,7 +438,7 @@ tokens_parser(_token** token){
                 next_lex == LEX_POST_INC ||
                 next_lex == LEX_POST_DEC
             ){
-                Node* operand = make_empty_literal_const(var_name, false);
+                Node* operand = make_empty_literal_const(var_name, false, false);
                 free(var_name);
 
                 *token = NEXT_TOKEN(*token);
@@ -458,7 +460,7 @@ tokens_parser(_token** token){
                 Node* expr = make_expr_node(token);
             
                 return make_bin_operation(
-                    make_empty_literal_const(var_name, false),
+                    make_empty_literal_const(var_name, false, false),
                     expr,
                     op
                 );
@@ -475,7 +477,7 @@ tokens_parser(_token** token){
             *token = NEXT_TOKEN(*token);
         
             return make_un_operation(
-                make_empty_literal_const((*token)->data, false),
+                make_empty_literal_const((*token)->data, false, false),
                 un_op
             );
 
@@ -490,13 +492,13 @@ tokens_parser(_token** token){
 }
 
 Node*
-make_corr_type_litcnst(const string name, const string type, const bool is_ptr){
-    if(comp(type, "bool"))      return make_bool_literal_const(name, false, is_ptr);
-    if(comp(type, "flt"))       return make_flt_literal_const(name, 0, is_ptr);
-    if(comp(type, "short"))     return make_short_literal_const(name, 0, is_ptr);
-    if(comp(type, "long"))      return make_long_literal_const(name, 0, is_ptr);
-    if(comp(type, "char"))      return make_char_literal_const(name, 0, is_ptr);
-    if (comp(type, _VOID))return make_empty_literal_const(name, is_ptr);
+make_corr_type_litcnst(const string name, const string type, const bool is_ptr, const bool is_unsign){
+    if(comp(type, "bool"))      return make_bool_literal_const(name, false, is_ptr, is_unsign);
+    if(comp(type, "flt"))       return make_flt_literal_const(name, 0, is_ptr, is_unsign);
+    if(comp(type, "short"))     return make_short_literal_const(name, 0, is_ptr, is_unsign);
+    if(comp(type, "long"))      return make_long_literal_const(name, 0, is_ptr, is_unsign);
+    if(comp(type, "char"))      return make_char_literal_const(name, 0, is_ptr, is_unsign);
+    if (comp(type, _VOID))return make_empty_literal_const(name, is_ptr, is_unsign);
     
-    return make_int_literal_const(name, 0, is_ptr);
+    return make_int_literal_const(name, 0, is_ptr, is_unsign);
 }

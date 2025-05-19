@@ -77,7 +77,7 @@ typedef struct Statements {
 typedef struct LiteralConstant {
     _data_type type;
     string name;
-    bool is_ptr;
+    bool is_ptr, is_unsign;
     union {
         int int_value;
         short short_value;
@@ -220,7 +220,7 @@ make_function_node(Node* base, Node**, int, Node*);
  * @return Node* 
  */
 Node*
-make_int_literal_const(const string, const int, const bool);
+make_int_literal_const(const string, const int, const bool, const bool);
 
 /**
  * @brief создает узел для значения float
@@ -228,7 +228,7 @@ make_int_literal_const(const string, const int, const bool);
  * @return Node* 
  */
 Node*
-make_flt_literal_const(const string, const float, const bool);
+make_flt_literal_const(const string, const float, const bool, const bool);
 
 /**
  * @brief создает узел для значения bool
@@ -236,7 +236,7 @@ make_flt_literal_const(const string, const float, const bool);
  * @return Node* 
  */
 Node*
-make_bool_literal_const(const string, const bool, const bool);
+make_bool_literal_const(const string, const bool, const bool, const bool);
 
 /**
  * @brief создает узел для значения char
@@ -244,7 +244,7 @@ make_bool_literal_const(const string, const bool, const bool);
  * @return Node* 
  */
 Node*
-make_char_literal_const(const string, const char, const bool);
+make_char_literal_const(const string, const char, const bool, const bool);
 
 /**
  * @brief создает узел для значения long
@@ -252,7 +252,7 @@ make_char_literal_const(const string, const char, const bool);
  * @return Node* 
  */
 Node*
-make_long_literal_const(const string, const long, const bool);
+make_long_literal_const(const string, const long, const bool, const bool);
 
 /**
  * @brief создает узел для значения short
@@ -260,7 +260,7 @@ make_long_literal_const(const string, const long, const bool);
  * @return Node* 
  */
 Node*
-make_short_literal_const(const string, const short, const bool);
+make_short_literal_const(const string, const short, const bool, const bool);
 
 /**
  * @brief создает узел пустой литеральной константы
@@ -268,6 +268,6 @@ make_short_literal_const(const string, const short, const bool);
  * @return Node* 
  */
 Node*
-make_empty_literal_const(const string, const bool);
+make_empty_literal_const(const string, const bool, const bool);
 
 #endif
