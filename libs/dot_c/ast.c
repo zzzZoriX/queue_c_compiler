@@ -170,6 +170,8 @@ make_expr_node(_token** token){
             lit,
             op
         );
+
+        expr_node->node_type = comp(op, "--") ? AST_DEC_PREF : AST_INC_PREF;
     }
 
     if((*token)->lex == LEX_OBJ_NAME){
@@ -190,6 +192,8 @@ make_expr_node(_token** token){
                 empty_lit_const,
                 op
             );
+
+            expr_node->node_type = comp(op, "--") ? AST_DEC_POST : AST_INC_POST;
         }
 
         if(NEXT_TOKEN(*token)->lex == LEX_INST_POINTER){
@@ -212,9 +216,21 @@ make_expr_node(_token** token){
         expr_node->op1 = make_expr_node(token);
 
         *token = NEXT_TOKEN(*token);
+
+        if ((*token)->lex == LEX_POST_DEC || (*token)->lex == LEX_POST_INC) {
+            Node* un_op = make_un_operation(expr_node, (*token)->data);
+            un_op->node_type = (*token)->lex == LEX_POST_DEC ? AST_DEC_POST : AST_INC_POST;
+
+            *token = NEXT_TOKEN(*token);
+
+            return un_op;
+        }
     }
 
     else if ((*token)->lex == LEX_CALL)
+        expr_node = tokens_parser(token);
+
+    else if ((*token)->lex == LEX_POINTER_DEREF)
         expr_node = tokens_parser(token);
 
     if(is_operator((*token)->lex)){

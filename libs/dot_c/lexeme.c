@@ -68,7 +68,7 @@ define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
         strlen(word) == 3
     ) return LEX_CHAR_VAL;
 
-    if(*last_lexeme == LEX_OBJ_NAME){
+    if(*last_lexeme == LEX_OBJ_NAME || *last_lexeme == LEX_RPAREN){
         if(comp(word, _INC)) return LEX_POST_INC;
         if(comp(word, _DEC)) return LEX_POST_DEC;
     }

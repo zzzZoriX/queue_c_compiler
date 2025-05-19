@@ -137,12 +137,15 @@ tokens_parser(_token** token){
             string op = _strdup((*token)->data);
             *token = NEXT_TOKEN(*token);
 
-            Node* operand = make_expr_node(token);
+            Node* operand = tokens_parser(token);
             *token = NEXT_TOKEN(*token);
-            return make_un_operation(
+            Node* un_op = make_un_operation(
                 operand,
                 op
             );
+            un_op->node_type = comp(op, "++") ? AST_INC_PREF : AST_DEC_PREF;
+
+            return un_op;
 
 /* ------------ выражения ------------ */
 
@@ -450,10 +453,13 @@ tokens_parser(_token** token){
                 string op = _strdup((*token)->data);
                 *token = NEXT_TOKEN(*token);
             
-                return make_un_operation(
+                Node* post_un_op = make_un_operation(
                     operand,
                     op
                 );
+                post_un_op->node_type = next_lex == LEX_POST_INC ? AST_INC_POST : AST_DEC_POST;
+
+                return post_un_op;
             }
             else if(is_assign(next_lex)){
                 string op = _strdup((*token)->data);
@@ -475,14 +481,14 @@ tokens_parser(_token** token){
         
         case LEX_GET_ADDR:
         case LEX_POINTER_DEREF:
-            string un_op = _strdup((*token)->data);
-            if(!un_op)   exit(1);
+            string ptr_un_op = _strdup((*token)->data);
+            if(!ptr_un_op)   exit(1);
         
             *token = NEXT_TOKEN(*token);
         
             return make_un_operation(
-                make_empty_literal_const((*token)->data, false, false),
-                un_op
+                tokens_parser(token),
+                ptr_un_op
             );
 
 /* ------------ операции с переменными ------------ */

@@ -75,7 +75,7 @@ parse_nodes(Node* n, FILE* o_fpt) {
                 parse_nodes(f->function.args[i], o_fpt);
             }
 
-            fprintf(o_fpt, ")");
+            fprintf(o_fpt, ");\n");
             break;
 
 /* ------------ FUNCTION COMMANDS ------------ */
@@ -241,15 +241,27 @@ parse_nodes(Node* n, FILE* o_fpt) {
             parse_nodes(n->op1, o_fpt);
             break;
 
-        case AST_INC:
+        case AST_INC_PREF:
             fprintf(o_fpt,"++");
             parse_nodes(n->op1, o_fpt);
             fprintf(o_fpt, ";\n");
             break;
 
-        case AST_DEC:
+        case AST_DEC_PREF:
             fprintf(o_fpt,"--");
             parse_nodes(n->op1, o_fpt);
+            fprintf(o_fpt, ";\n");
+            break;
+
+        case AST_INC_POST:
+            parse_nodes(n->op1, o_fpt);
+            fprintf(o_fpt,"++");
+            fprintf(o_fpt, ";\n");
+            break;
+
+        case AST_DEC_POST:
+            parse_nodes(n->op1, o_fpt);
+            fprintf(o_fpt,"--");
             fprintf(o_fpt, ";\n");
             break;
 
