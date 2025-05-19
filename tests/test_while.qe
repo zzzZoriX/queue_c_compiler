@@ -6,7 +6,7 @@ fun int main(){
         ++a;
     };
 
-    while(a > 0) -> (++a) --b; /- однострочный while -/
+    while(a > 0) -> --b; /- однострочный while -/
     
     ret 0;
 };
