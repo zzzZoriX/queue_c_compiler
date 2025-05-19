@@ -132,6 +132,7 @@ tokens_parser(_token** token){
             *token = NEXT_TOKEN(*token);
 
             Node* operand = make_expr_node(token);
+            *token = NEXT_TOKEN(*token);
             return make_un_operation(
                 operand,
                 op
