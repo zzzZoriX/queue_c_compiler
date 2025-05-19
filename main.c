@@ -50,8 +50,13 @@ main(int argc, char** argv){
                 "\tque <input_file> -otp <output_file_name>\n\n"
                 "  -help - print info of compiler\n\n"
                 "  -scc - determines whether the C file will be printed or not. use:\n"
-                "\tque <input_file> -scc\n"
+                "\tque <input_file> -scc\n\n"
+                "  -version - print current version of your compiler\n"
             );
+            return 0;
+
+        case _VERSION:
+            printf("%s\n", __QUEUE_VERSION__);
             return 0;
 
         case _SUCCESS:

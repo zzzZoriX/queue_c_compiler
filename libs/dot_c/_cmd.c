@@ -9,6 +9,8 @@ parse(int argc, int* start, int* end, char** args, bool* scc_flag){
         return _NO_INP_FILE;
     else if (strcmp(args[1], "-help") == 0)
         return _HELP;
+    else if (strcmp(args[1], "-version") == 0)
+        return _VERSION;
 
     *start = 1;
 
