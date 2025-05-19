@@ -333,15 +333,17 @@ parse_nodes(Node* n, FILE* o_fpt) {
             break;
 
         case AST_ASSIGN:
-            string type = NULL;
-            if (n->op1->constant.is_unsign)
-                type = "unsigned ";
+            if (n->op1->constant.type != TYPE_NULL) {
+                string type = NULL;
+                if (n->op1->constant.is_unsign)
+                    type = "unsigned ";
 
-            type = !type ? str_types[n->op1->constant.type % 7] : concat(type, str_types[n->op1->constant.type % 7]);
-            if (n->op1->constant.is_ptr)
-                type = concat_c(type, '*');
+                type = !type ? str_types[n->op1->constant.type % 7] : concat(type, str_types[n->op1->constant.type % 7]);
+                if (n->op1->constant.is_ptr)
+                    type = concat_c(type, '*');
 
-            fprintf(o_fpt, "%s ", type);
+                fprintf(o_fpt, "%s ", type);
+            }
 
             parse_nodes(n->op1, o_fpt);
             fprintf(o_fpt, "%s", str_assigns[n->node_type % 6]);

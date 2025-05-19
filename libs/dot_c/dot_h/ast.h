@@ -67,7 +67,8 @@ typedef enum _data_type {
     TYPE_FLT,
     TYPE_BOOL,
     TYPE_SHORT,
-    TYPE_LONG
+    TYPE_LONG,
+    TYPE_NULL
 } _data_type;
 
 typedef struct AST_Node AST_Node;

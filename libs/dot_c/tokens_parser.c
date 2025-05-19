@@ -462,15 +462,26 @@ tokens_parser(_token** token){
                 return post_un_op;
             }
             else if(is_assign(next_lex)){
+                *token = NEXT_TOKEN(*token);
+
                 string op = _strdup((*token)->data);
                 if(!op) exit(1);
             
                 *token = NEXT_TOKEN(*token);
             
                 Node* expr = make_expr_node(token);
+
+                Node* obj = (Node*)malloc(sizeof(Node));
+                if(!obj) exit(1);
+
+                obj->node_type = AST_LIT_CNST;
+                obj->constant.name = _strdup(var_name);
+                if (!obj->constant.name) exit(1);
+
+                obj->constant.type = TYPE_NULL;
             
                 return make_bin_operation(
-                    make_empty_literal_const(var_name, false, false),
+                    obj,
                     expr,
                     op
                 );
