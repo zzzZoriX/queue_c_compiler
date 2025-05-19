@@ -51,7 +51,8 @@ typedef enum _node_type {
     AST_CALL,
     AST_RET,
     AST_FUNCTION,
-    AST_FUNCTION_DECL
+    AST_FUNCTION_DECL,
+    AST_LPAREN
 } _node_type;
 
 

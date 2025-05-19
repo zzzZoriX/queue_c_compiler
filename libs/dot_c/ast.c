@@ -205,11 +205,12 @@ make_expr_node(_token** token){
     }
 
     else if((*token)->lex == LEX_LPAREN){
-        *token = NEXT_TOKEN(*token);
-        Node* expr = make_expr_node(token);
+        expr_node->node_type = AST_LPAREN;
 
         *token = NEXT_TOKEN(*token);
-        return expr;
+        expr_node->op1 = make_expr_node(token);
+
+        *token = NEXT_TOKEN(*token);
     }
 
     else if ((*token)->lex == LEX_CALL)
