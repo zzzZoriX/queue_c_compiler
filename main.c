@@ -17,7 +17,7 @@ main(int argc, char** argv){
     int start_inp = 0, end_inp = 0;
     bool scc_flag = false;
 
-    const _results res = parse(argc, &start_inp, &end_inp, argv, scc_flag);
+    const _results res = parse(argc, &start_inp, &end_inp, argv, &scc_flag);
     switch(res){
         case _TOO_FEW_ARGS:
             fprintf(stderr, "to few arguments. correct use: que <input_file> -otp <output_file>\n\tor\nque <input_file>\n");

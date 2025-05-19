@@ -2,7 +2,7 @@
 
 
 const _results
-parse(int argc, int* start, int* end, char** args, bool scc_flag){
+parse(int argc, int* start, int* end, char** args, bool* scc_flag){
     if(argc < 2)
         return _TOO_FEW_ARGS;
     else if(strcmp(args[1], "-otp") == 0)
@@ -21,7 +21,7 @@ parse(int argc, int* start, int* end, char** args, bool scc_flag){
             otp_flag_pos = i;
         }
         if (!strcmp(args[i], "-scc")) {
-            scc_flag = true;
+            *scc_flag = true;
             *end = i;
         }
     }
