@@ -1,4 +1,4 @@
-#include "c:/queue_c_compiler/libs/dot_h/lexer.h"
+#include "./dot_h/lexer.h"
 #include <string.h>
 
 extern long unknown_lex_offset;

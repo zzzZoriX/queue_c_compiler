@@ -1,4 +1,4 @@
-#include "c:/queue_c_compiler/libs/dot_h/debug_ast.h"
+#include "./dot_h/debug_ast.h"
 
 void
 print_ast(Node* root){

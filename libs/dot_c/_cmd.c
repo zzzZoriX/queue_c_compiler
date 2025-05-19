@@ -1,4 +1,4 @@
-#include "c:/queue_c_compiler/libs/dot_h/_cmd.h"
+#include "./dot_h/_cmd.h"
 
 
 const _results

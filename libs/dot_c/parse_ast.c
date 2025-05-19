@@ -1,4 +1,4 @@
-#include "c:/queue_c_compiler/libs/dot_h/parse_ast.h"
+#include "./dot_h/parse_ast.h"
 
 void
 code_gen(Node* h, FILE* o_fpt) {

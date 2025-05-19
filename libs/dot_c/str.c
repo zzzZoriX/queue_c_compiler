@@ -1,5 +1,4 @@
-#include "c:/queue_c_compiler/libs/dot_h/str.h"
-#include <string.h>
+#include "./dot_h/str.h"
 
 
 string

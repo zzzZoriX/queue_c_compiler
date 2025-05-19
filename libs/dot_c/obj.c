@@ -1,4 +1,4 @@
-#include "c:/queue_c_compiler/libs/dot_h/obj.h"
+#include "./dot_h/obj.h"
 
 const char
 is_valid_obj_name(const char* word){

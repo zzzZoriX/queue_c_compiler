@@ -1,4 +1,4 @@
-#include "c:/queue_c_compiler/libs/dot_h/tokens_parser.h"
+#include "./dot_h/tokens_parser.h"
 
 
 static inline bool __fastcall

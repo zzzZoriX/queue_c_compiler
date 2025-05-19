@@ -1,4 +1,4 @@
-#include "c:/queue_c_compiler/libs/dot_h/ast.h"
+#include "./libs/dot_h/ast.h"
 
 #include <math.h>
 

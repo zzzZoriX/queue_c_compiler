@@ -1,4 +1,4 @@
-#include "c:/queue_c_compiler/libs/dot_h/lexeme.h"
+#include "./dot_h/lexeme.h"
 
 _lexemes
 define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
