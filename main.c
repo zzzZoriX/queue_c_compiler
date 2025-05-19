@@ -15,8 +15,9 @@ static string otp_file_name = NULL_STR;
 int
 main(int argc, char** argv){
     int start_inp = 0, end_inp = 0;
+    bool scc_flag = false;
 
-    const _results res = parse(argc, &start_inp, &end_inp, argv); 
+    const _results res = parse(argc, &start_inp, &end_inp, argv, scc_flag);
     switch(res){
         case _TOO_FEW_ARGS:
             fprintf(stderr, "to few arguments. correct use: que <input_file> -otp <output_file>\n\tor\nque <input_file>\n");
@@ -41,6 +42,17 @@ main(int argc, char** argv){
         case _SUCCESS_BUT_WO_OTP:
             otp_file_name = concat(__DEFAULT_OTP_FILE_NAME, ".c");
             break;
+
+        case _HELP:
+            printf(
+                "\tflags:\n"
+                "  -otp - set output file. use:\n"
+                "\tque <input_file> -otp <output_file_name>\n\n"
+                "  -help - print info of compiler\n\n"
+                "  -scc - determines whether the C file will be printed or not. use:\n"
+                "\tque <input_file> -scc\n"
+            );
+            return 0;
 
         case _SUCCESS:
         default:
@@ -130,6 +142,14 @@ main(int argc, char** argv){
 
     string command = concat("gcc ", concat(otp_file_name, concat(" -o ", otp_exe_file_name)));
     system(command);
+
+    if (!scc_flag) {
+#ifdef __WIN32
+        DeleteFile(otp_file_name);
+#else
+        unlink(otp_file_name);
+#endif
+    }
 
     fprintf(stdout, "the output file - %s was created\n", otp_exe_file_name);
 

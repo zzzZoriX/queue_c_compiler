@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 #ifdef _WIN32
 static inline const char __fastcall
@@ -18,6 +19,7 @@ file_exists(const char* file_name){
 typedef enum Results: int {
     _SUCCESS = 0,
     _SUCCESS_BUT_WO_OTP = 1,
+    _HELP = 2,
     _NO_INP_FILE = -1,
     _NO_OTP_FILE = -2,
     _TOO_FEW_ARGS = -3,
@@ -31,6 +33,6 @@ typedef enum Results: int {
  * @return const _results 
  */
 const _results 
-parse(int, int*, int*, char**);
+parse(int, int*, int*, char**, bool);
 
 #endif

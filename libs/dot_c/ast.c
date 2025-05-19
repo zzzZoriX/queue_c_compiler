@@ -1,4 +1,4 @@
-#include "./libs/dot_h/ast.h"
+#include "./dot_h/ast.h"
 
 #include <math.h>
 

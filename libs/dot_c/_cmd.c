@@ -2,11 +2,13 @@
 
 
 const _results
-parse(int argc, int* start, int* end, char** args){
+parse(int argc, int* start, int* end, char** args, bool scc_flag){
     if(argc < 2)
         return _TOO_FEW_ARGS;
     else if(strcmp(args[1], "-otp") == 0)
         return _NO_INP_FILE;
+    else if (strcmp(args[1], "-help") == 0)
+        return _HELP;
 
     *start = 1;
 
@@ -18,9 +20,13 @@ parse(int argc, int* start, int* end, char** args){
 
             otp_flag_pos = i;
         }
+        if (!strcmp(args[i], "-scc")) {
+            scc_flag = true;
+            *end = i;
+        }
     }
-
-    *end = otp_flag_pos == -1 ? argc : otp_flag_pos;
+    if (*end == 0 || (*end > otp_flag_pos && otp_flag_pos != -1))
+        *end = otp_flag_pos == -1 ? argc : otp_flag_pos;
 
     for(int i = *start; i < *end; ++i){
 #ifdef _WIN32
