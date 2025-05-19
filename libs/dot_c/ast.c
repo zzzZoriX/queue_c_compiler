@@ -163,7 +163,7 @@ make_expr_node(_token** token){
 
         *token = NEXT_TOKEN(*token);
 
-        Node* lit = make_empty_literal_const((*token)->data, false);
+        Node* lit = make_empty_literal_const((*token)->data, false, false);
         *token = NEXT_TOKEN(*token);
 
         expr_node = make_un_operation(
@@ -178,7 +178,7 @@ make_expr_node(_token** token){
         if(NEXT_TOKEN(*token)->lex == LEX_POST_INC || NEXT_TOKEN(*token)->lex == LEX_POST_DEC){
             free(expr_node);
             
-            Node* empty_lit_const = make_empty_literal_const((*token)->data, false);
+            Node* empty_lit_const = make_empty_literal_const((*token)->data, false, false);
             *token = NEXT_TOKEN(*token);
 
             string op = _strdup((*token)->data);
