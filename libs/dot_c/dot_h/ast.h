@@ -130,6 +130,7 @@ typedef struct AST_Node {
         Command cmd;
         Function function;
     };
+    bool is_standalone;
     AST_Node* op1,* op2,* op3;
 } Node;
 

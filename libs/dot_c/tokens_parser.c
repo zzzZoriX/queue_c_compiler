@@ -380,7 +380,7 @@ tokens_parser(_token** token){
             }
             *token = NEXT_TOKEN(*token);
 
-            return make_un_operation(
+            Node* call_op = make_un_operation(
                 make_function_node(
                     base,
                     calling_func_args,
@@ -389,6 +389,11 @@ tokens_parser(_token** token){
                 ),
                 _CALL
             );
+
+            if ((*token)->lex == LEX_SEMIC)
+                call_op->is_standalone = true;
+
+            return call_op;
 
 /* ------------ функция call ------------ */
 

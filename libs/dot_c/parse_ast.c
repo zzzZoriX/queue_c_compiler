@@ -75,7 +75,11 @@ parse_nodes(Node* n, FILE* o_fpt) {
                 parse_nodes(f->function.args[i], o_fpt);
             }
 
-            fprintf(o_fpt, ");\n");
+            fprintf(o_fpt, ")");
+
+            if (n->is_standalone)
+                fprintf(o_fpt, ";\n");
+
             break;
 
 /* ------------ FUNCTION COMMANDS ------------ */

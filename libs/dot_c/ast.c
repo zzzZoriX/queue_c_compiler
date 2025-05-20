@@ -88,6 +88,7 @@ make_node(_node_type type){
         exit(1);
 
     new_node->node_type = type;
+    new_node->is_standalone = false;
 
     return new_node;
 }
