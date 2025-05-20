@@ -290,6 +290,8 @@ tokens_parser(_token** token){
                         make_empty_literal_const(var_name, false, false),
                         op
                     );
+
+                    iter->node_type = comp(op, "--") ? AST_DEC_POST : AST_INC_POST;
                 }
     
                 else    iter = make_empty_literal_const(var_name, false, false);
@@ -308,6 +310,8 @@ tokens_parser(_token** token){
                     operand,
                     op
                 );
+
+                iter->node_type = comp(op, "--") ? AST_DEC_PREF : AST_INC_PREF;
             }
             else{
                 iter = make_expr_node(token);

@@ -248,25 +248,21 @@ parse_nodes(Node* n, FILE* o_fpt) {
         case AST_INC_PREF:
             fprintf(o_fpt,"++");
             parse_nodes(n->op1, o_fpt);
-            fprintf(o_fpt, ";\n");
             break;
 
         case AST_DEC_PREF:
             fprintf(o_fpt,"--");
             parse_nodes(n->op1, o_fpt);
-            fprintf(o_fpt, ";\n");
             break;
 
         case AST_INC_POST:
             parse_nodes(n->op1, o_fpt);
             fprintf(o_fpt,"++");
-            fprintf(o_fpt, ";\n");
             break;
 
         case AST_DEC_POST:
             parse_nodes(n->op1, o_fpt);
             fprintf(o_fpt,"--");
-            fprintf(o_fpt, ";\n");
             break;
 
 /* ------------ UNARY OP'S. ------------ */
