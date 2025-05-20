@@ -13,7 +13,7 @@ static string str_types[] = {
 };
 
 static string str_assigns[] = {
-    "=", "+=", "-=", "/=", "*=", "%="
+    "=", "+=", "-=", "*=", "/=", "%="
 };
 
 void

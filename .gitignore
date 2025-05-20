@@ -3,6 +3,7 @@ testf.c
 testf.exe
 *.asm
 test.c
+test.exe
 .idea/
 test.qe
 main.exe
