@@ -254,69 +254,11 @@ tokens_parser(_token** token){
                 * iter
             ;
             
-            *token = NEXT_TOKEN(*token);
+            *token = NEXT_TOKEN(NEXT_TOKEN(*token));
 
             for_cond = make_expr_node(token);
 
-            *token = NEXT_TOKEN(*token);
-
-            if((*token)->lex == LEX_OBJ_NAME){
-                string var_name = _strdup((*token)->data);
-                if(!var_name) exit(1);
-
-                *token = NEXT_TOKEN(*token);
-
-                if(is_assign((*token)->lex)){
-                    string assign = _strdup((*token)->data);
-                    if(!assign) exit(1);
-
-                    *token = NEXT_TOKEN(*token);
-
-                    Node* expr = make_expr_node(token);
-
-                    iter = make_bin_operation(
-                        make_empty_literal_const(var_name, false, false),
-                        expr,
-                        assign
-                    );
-                }
-                else if((*token)->lex == LEX_POST_INC || (*token)->lex == LEX_POST_DEC){
-                    string op = _strdup((*token)->data);
-                    if(!op) exit(1);
-
-                    *token = NEXT_TOKEN(*token);
-
-                    iter = make_un_operation(
-                        make_empty_literal_const(var_name, false, false),
-                        op
-                    );
-
-                    iter->node_type = comp(op, "--") ? AST_DEC_POST : AST_INC_POST;
-                }
-    
-                else    iter = make_empty_literal_const(var_name, false, false);
-
-                free(var_name);
-            }
-            else if((*token)->lex == LEX_PREF_DEC || (*token)->lex == LEX_PREF_INC){
-                string op = _strdup((*token)->data);
-                if(!op) exit(1);
-                *token = NEXT_TOKEN(*token);
-
-                Node* operand = make_expr_node(token);
-                *token = NEXT_TOKEN(*token);
-
-                iter = make_un_operation(
-                    operand,
-                    op
-                );
-
-                iter->node_type = comp(op, "--") ? AST_DEC_PREF : AST_INC_PREF;
-            }
-            else{
-                iter = make_expr_node(token);
-                *token = NEXT_TOKEN(*token);
-            }
+            iter = tokens_parser(token);
 
             for_body = tokens_parser(token);
 
