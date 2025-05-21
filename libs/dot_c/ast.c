@@ -244,32 +244,21 @@ make_expr_node(_token** token){
         
         return make_bin_operation(expr_node, right, op);
     }
+    if (is_cond((*token)->lex))
+        return make_cond_node(expr_node, token);
 
     return expr_node;
 }
 
 Node*
-make_cond_node(_token** token){
+make_cond_node(Node* left, _token** token){
     Node* cond = make_node(0);
-    
-    if ((*token)->lex == LEX_LPAREN)
-        *token = NEXT_TOKEN(*token);
 
-    Node* left = make_expr_node(token);
+    cond->node_type = define_cond_type_by_lex((*token)->lex);
+    *token = NEXT_TOKEN(*token);
 
-    if((*token)->lex == LEX_INST_POINTER)
-        return left;
-
-    if(is_cond((*token)->lex)){
-        cond->node_type = define_cond_type_by_lex((*token)->lex);
-        *token = NEXT_TOKEN(*token);
-
-        cond->op1 = left;
-        cond->op2 = make_cond_node(token);
-    }
-    else
-         return left
-    ;
+    cond->op1 = left;
+    cond->op2 = make_expr_node(token);
 
     return cond;
 }

@@ -169,7 +169,7 @@ make_expr_node(_token**);
  * @return Node* 
  */
 Node*
-make_cond_node(_token**);
+make_cond_node(Node*, _token**);
 
 /**
  * @brief создает узел стейтмента

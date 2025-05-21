@@ -163,7 +163,7 @@ tokens_parser(_token** token){
             if((*token)->lex != LEX_ELSE){
                 *token = NEXT_TOKEN(*token);
 
-                 condition = make_cond_node(token); // парсим условие
+                 condition = make_expr_node(token); // парсим условие
             }
             *token = NEXT_TOKEN(*token);
                 
@@ -256,7 +256,7 @@ tokens_parser(_token** token){
             
             *token = NEXT_TOKEN(*token);
 
-            for_cond = make_cond_node(token);
+            for_cond = make_expr_node(token);
 
             *token = NEXT_TOKEN(*token);
 
@@ -339,7 +339,7 @@ tokens_parser(_token** token){
             
             *token = NEXT_TOKEN(*token);
             
-            while_cond = make_cond_node(token);
+            while_cond = make_expr_node(token);
             while_body = tokens_parser(token);
             
             return make_do_while_node(
