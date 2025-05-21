@@ -21,6 +21,6 @@
 #define __ERROR -1
 #define __SUCCESS 0
 #define __DEFAULT_OTP_FILE_NAME "a"
-#define __QUEUE_VERSION__ "19525.01"
+#define __QUEUE_VERSION__ "v1.21525.02"
 
 #endif
