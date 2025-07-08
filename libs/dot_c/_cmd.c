@@ -1,5 +1,7 @@
 #include "./dot_h/_cmd.h"
 
+#include "dot_h/str.h"
+
 
 const _results
 parse(int argc, int* start, int* end, char** args, bool* scc_flag){
@@ -39,4 +41,22 @@ parse(int argc, int* start, int* end, char** args, bool* scc_flag){
     }
 
     return otp_flag_pos == -1 ? _SUCCESS_BUT_WO_OTP : _SUCCESS;
+}
+
+char*
+parse_otp_file(char* s) {
+    const char* dot_pos = strchr(s, '.');
+
+    if (!dot_pos)
+        return s;
+    else {
+        const long name_length = dot_pos - s;
+
+        char* only_name = NULL_STR;
+
+        for (long i = 0; i < name_length; ++i)
+            only_name = concat_c(only_name, s[i]);
+
+        return only_name;
+    }
 }

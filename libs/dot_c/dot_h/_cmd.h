@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdbool.h>
 
 #ifdef _WIN32
@@ -35,5 +36,13 @@ typedef enum Results: int {
  */
 const _results 
 parse(int, int*, int*, char**, bool*);
+
+/**
+ *  @brief парсит выходной файл убирая из него расширение
+ *
+ * @return char*
+ */
+char*
+parse_otp_file(char*);
 
 #endif
