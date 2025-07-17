@@ -21,7 +21,7 @@ que helloworld.qe -otp helloworld => helloworld.exe/.c
 - циклы
 - операторы ветвления
 - i/o stream's
+- массивы
 
 не поддерживается:
-- массивы
 - структуры
