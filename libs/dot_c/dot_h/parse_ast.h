@@ -16,6 +16,24 @@ static string str_assigns[] = {
     "=", "+=", "-=", "*=", "/=", "%="
 };
 
+static inline string __fastcall
+DEFINE_ASSIGN(const _node_type type) {
+    switch (type) {
+        case AST_ASSIGN:
+            return str_assigns[0];
+        case AST_ADD_ASSIGN:
+            return str_assigns[1];
+        case AST_REDUCE_ASSIGN:
+            return str_assigns[2];
+        case AST_MUL_ASSIGN:
+            return str_assigns[3];
+        case AST_DIV_ASSIGN:
+            return str_assigns[4];
+        case AST_REM_ASSIGN:
+            return str_assigns[5];
+    }
+}
+
 void
 code_gen(Node*, FILE*);
 

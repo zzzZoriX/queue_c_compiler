@@ -63,6 +63,67 @@ tokens_parser(_token** token){
                 body
             );
 
+        case LEX_ARR:
+            *token = NEXT_TOKEN(*token);
+            const bool is_ptr_arr = (*token)->lex == LEX_POINTER;
+            bool is_unsign_arr = false;
+
+            while (*token && !is_data_type((*token)->data) && (*token)->lex != LEX_END) {
+                if ((*token)->lex == LEX_UNSIGN)
+                    is_unsign_arr = true;
+
+                *token = NEXT_TOKEN(*token);
+            }
+
+            if (!is_data_type((*token)->data)) exit(1);
+
+            const string type_arr = _strdup((*token)->data);
+            *token = NEXT_TOKEN(*token);
+
+            Node* array_head = make_corr_type_litcnst((*token)->data, type_arr, is_ptr_arr, is_unsign_arr);
+            *token = NEXT_TOKEN(NEXT_TOKEN(*token)); // скипаем <имя массива>[
+
+            if (atol((*token)->data) < 0) exit(1);
+            const size_t size_of_arr = atol((*token)->data);
+
+            Node** array_data = (Node**)calloc(size_of_arr, sizeof(Node*));
+            if (!array_data) exit(1);
+
+            for (size_t i = 0; i < size_of_arr; ++i)
+                array_data[i] = CREATE_EMPTY_AST();
+
+            *token = NEXT_TOKEN(NEXT_TOKEN(NEXT_TOKEN(*token))); // скипаем <размер>] =
+
+            switch ((*token)->lex) {
+                case LEX_LFPAREN:
+                    *token = NEXT_TOKEN(*token);
+
+                    for (size_t i = 0; i < size_of_arr; ++i)
+                        array_data[i] = tokens_parser(token);
+
+                    break;
+
+                case LEX_LQPAREN:
+                    while (*token && (*token)->lex != LEX_SEMIC && (*token)->lex != LEX_END) {
+                        if ((*token)->lex == LEX_LQPAREN) *token = NEXT_TOKEN(*token);
+
+                        const size_t index = atol((*token)->data);
+
+                        *token = NEXT_TOKEN(NEXT_TOKEN(NEXT_TOKEN(*token))); // скипаем <индекс>] =
+                        array_data[index] = tokens_parser(token);
+                        if ((*token)->lex != LEX_SEMIC && (*token)->lex != LEX_END)
+                            *token = NEXT_TOKEN(*token);
+                    }
+
+                case LEX_NULL_VALUE:
+                default:
+                    break;
+            }
+
+            *token = NEXT_TOKEN(*token);
+
+            return make_arr_node(array_head->constant, size_of_arr, array_data);
+
         case LEX_VAR:
             *token = NEXT_TOKEN(*token);
 
@@ -436,6 +497,24 @@ tokens_parser(_token** token){
                     expr,
                     op
                 );
+            }
+            else if (next_lex == LEX_LQPAREN) {
+                Node* node = make_empty_literal_const(var_name, NULL, NULL);
+                free(var_name);
+
+                *token = NEXT_TOKEN(NEXT_TOKEN(*token));
+
+                node->op1 = (Node*)malloc(sizeof(Node));
+                if (!node->op1) exit(1);
+
+                node->op1->constant.name = _strdup((*token)->data);
+                if (!node->op1->constant.name) exit(1);
+
+                *token = NEXT_TOKEN(*token);
+
+                node->node_type = AST_APPEAL_TO_ARR_CELL;
+
+                return node;
             }
             free(var_name);
 

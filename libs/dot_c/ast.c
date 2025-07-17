@@ -481,3 +481,30 @@ make_empty_literal_const(const string name, const bool is_ptr, const bool is_uns
 
     return new_node;
 }
+
+Node*
+make_arr_node(const LiteralConstant head, const size_t size, Node** data) {
+    Node* new_node = make_node(AST_ARRAY);
+
+    new_node->array.head = head;
+    new_node->array.data = data;
+    new_node->array.size = size;
+
+    return new_node;
+}
+
+Node* __fastcall
+CREATE_EMPTY_AST() {
+    Node* node = (Node*)malloc(sizeof(Node));
+    if (!node) return NULL;
+
+    *node = (Node){
+        .node_type = AST_UNDEF,
+        .is_standalone = false,
+        .op1 = NULL,
+        .op2 = NULL,
+        .op3 = NULL
+    };
+    return node;
+
+}

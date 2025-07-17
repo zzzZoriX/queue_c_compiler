@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 typedef enum _node_type {
+    AST_ARRAY,
     AST_LIT_CNST,
     AST_PLUS,
     AST_MINUS,
@@ -56,7 +57,9 @@ typedef enum _node_type {
     AST_RET,
     AST_FUNCTION,
     AST_FUNCTION_DECL,
-    AST_LPAREN
+    AST_LPAREN,
+    AST_APPEAL_TO_ARR_CELL,
+    AST_UNDEF = -1
 } _node_type;
 
 
@@ -75,7 +78,7 @@ typedef struct AST_Node AST_Node;
 
 // значения для типов узла
 typedef struct Statements {
-    struct AST_Node** nodes;
+    AST_Node** nodes;
     unsigned count;
 } Statements;
 
@@ -92,6 +95,12 @@ typedef struct LiteralConstant {
         bool bool_value;
     };
 } LiteralConstant;
+
+typedef struct Array {
+    LiteralConstant head;
+    unsigned size;
+    AST_Node** data;
+} Array;
 
 typedef struct Command {
     struct {
@@ -110,7 +119,7 @@ typedef struct Command {
 
     struct {
         string format;
-        struct AST_Node** args;
+        AST_Node** args;
         int args_count;
     } io;
 } Command;
@@ -127,6 +136,7 @@ typedef struct AST_Node {
 
     union {
         LiteralConstant constant;
+        Array array;
         Command cmd;
         Function function;
     };
@@ -275,5 +285,16 @@ make_short_literal_const(const string, const short, const bool, const bool);
  */
 Node*
 make_empty_literal_const(const string, const bool, const bool);
+
+/**
+ * @brief создает узел массива
+ *
+ * @return Node*
+ */
+Node*
+make_arr_node(const LiteralConstant, const size_t, Node**);
+
+Node* __fastcall
+CREATE_EMPTY_AST();
 
 #endif

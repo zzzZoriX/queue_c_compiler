@@ -65,7 +65,7 @@ parse_nodes(Node* n, FILE* o_fpt) {
             break;
 
         case AST_CALL:
-            Node* f = n->op1;
+            const Node* f = n->op1;
 
             fprintf(o_fpt, "%s(", f->function.function_header.name);
             for (int i = 0; i < f->function.count; ++i) {
@@ -351,9 +351,37 @@ parse_nodes(Node* n, FILE* o_fpt) {
             }
 
             parse_nodes(n->op1, o_fpt);
-            fprintf(o_fpt, "%s", str_assigns[n->node_type % 6]);
+            fprintf(o_fpt, "%s", DEFINE_ASSIGN(n->node_type));
             parse_nodes(n->op2, o_fpt);
             fprintf(o_fpt, ";\n");
+            break;
+
+        case AST_ARRAY:
+            string type = str_types[n->array.head.type % 7];
+
+            if (n->array.head.is_unsign) type = concat("unsigned ", type);
+            if (n->array.head.is_ptr) type = concat_c(type, '*');
+
+            fprintf(o_fpt, "%s %s[%u] = {", type, n->array.head.name, n->array.size);
+
+            for (size_t i = 0; i < n->array.size; ++i) {
+                if (n->array.data[i]->node_type != AST_UNDEF)
+                    parse_nodes(n->array.data[i], o_fpt);
+                else {
+                    int temp; // создана для воссоздания неопределенного значения
+                    fprintf(o_fpt, "%d", temp);
+                }
+                fprintf(o_fpt, ",");
+            }
+
+            fprintf(o_fpt, "};\n");
+            break;
+
+        case AST_APPEAL_TO_ARR_CELL:
+            fprintf(o_fpt, "%s[%s]", n->constant.name, n->op1->constant.name);
+            break;
+
+        default:
             break;
     }
 }
