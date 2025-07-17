@@ -19,9 +19,8 @@ file_exists(const char* file_name){
 
 typedef enum Results: int {
     _SUCCESS = 0,
-    _SUCCESS_BUT_WO_OTP = 1,
-    _HELP = 2,
-    _VERSION = 3,
+    _HELP = 1,
+    _VERSION = 2,
     _NO_INP_FILE = -1,
     _NO_OTP_FILE = -2,
     _TOO_FEW_ARGS = -3,

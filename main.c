@@ -12,12 +12,16 @@ FILE* otp_file = NULL;
 long unknown_lex_offset = 0, row = 1, column = 1;
 static string otp_file_name = NULL_STR;
 
+static bool flags[] = {
+    0, // scc
+    0, // otp
+};
+
 int
 main(int argc, char** argv){
     int start_inp = 0, end_inp = 0;
-    bool scc_flag = false;
 
-    const _results res = parse(argc, &start_inp, &end_inp, argv, &scc_flag);
+    const _results res = parse(argc, &start_inp, &end_inp, argv, flags);
     switch(res){
         case _TOO_FEW_ARGS:
             fprintf(stderr, "to few arguments. correct use: que <input_file> -otp <output_file>\n\tor\nque <input_file>\n");
@@ -39,10 +43,6 @@ main(int argc, char** argv){
             fprintf(stderr, "cant find an input files\n");
             return __ERROR;
 
-        case _SUCCESS_BUT_WO_OTP:
-            otp_file_name = concat(__DEFAULT_OTP_FILE_NAME, ".c");
-            break;
-
         case _HELP:
             printf(
                 "\tflags:\n"
@@ -61,7 +61,10 @@ main(int argc, char** argv){
 
         case _SUCCESS:
         default:
-            otp_file_name = parse_otp_file(argv[argc - 1]);
+            if (flags[1])
+                otp_file_name = parse_otp_file(argv[argc - 1]);
+            else
+                otp_file_name = __DEFAULT_OTP_FILE_NAME;
             break;
     }
 
@@ -71,7 +74,7 @@ main(int argc, char** argv){
         fprintf(stderr, "can't open output file\n");
         return __ERROR;
     }
-    
+
     for(int inp_file_num = start_inp; inp_file_num < end_inp; ++inp_file_num){
         FILE* curr_ifp = fopen(argv[inp_file_num], "r");
         if(!curr_ifp){
@@ -148,19 +151,14 @@ main(int argc, char** argv){
         ); // => gcc <otp>.c -o <otp>.exe
     system(command);
 
+    free(command);
+    
+    if (!flags[0]) DeleteFile(otp_c_file_name);
+    
+    fprintf(stdout, "the output file - %s was created\n", otp_exe_file_name);
+    
     free(otp_c_file_name);
     free(otp_exe_file_name);
-    free(command);
-
-    if (!scc_flag) {
-#ifdef __WIN32
-        DeleteFile(otp_file_name);
-#else
-        unlink(otp_file_name);
-#endif
-    }
-
-    fprintf(stdout, "the output file - %s was created\n", otp_exe_file_name);
 
     return __SUCCESS;
 }

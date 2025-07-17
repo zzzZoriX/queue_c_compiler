@@ -4,7 +4,7 @@
 
 
 const _results
-parse(int argc, int* start, int* end, char** args, bool* scc_flag){
+parse(int argc, int* start, int* end, char** args, bool* flags){
     if(argc < 2)
         return _TOO_FEW_ARGS;
     else if(strcmp(args[1], "-otp") == 0)
@@ -20,17 +20,18 @@ parse(int argc, int* start, int* end, char** args, bool* scc_flag){
     for(int i = 1; i < argc; ++i){
         if(!strcmp(args[i], "-otp")){
             if(i == argc - 1) return _NO_OTP_FILE;
-            if(otp_flag_pos != -1) return _MULTI_OTP_FLAG;
+            if(flags[1]) return _MULTI_OTP_FLAG;
 
+            flags[1] = true;
             otp_flag_pos = i;
         }
         if (!strcmp(args[i], "-scc")) {
-            *scc_flag = true;
+            flags[0] = true;
             *end = i;
         }
     }
-    if (*end == 0 || (*end > otp_flag_pos && otp_flag_pos != -1))
-        *end = otp_flag_pos == -1 ? argc : otp_flag_pos;
+    if (*end == 0 || (*end > otp_flag_pos && flags[1]))
+        *end = !flags[1] ? argc : otp_flag_pos;
 
     for(int i = *start; i < *end; ++i){
 #ifdef _WIN32
@@ -40,7 +41,7 @@ parse(int argc, int* start, int* end, char** args, bool* scc_flag){
 #endif
     }
 
-    return otp_flag_pos == -1 ? _SUCCESS_BUT_WO_OTP : _SUCCESS;
+    return _SUCCESS;
 }
 
 char*
