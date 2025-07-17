@@ -40,6 +40,8 @@ parse_nodes(Node* n, FILE* o_fpt) {
                 string type = str_types[n->function.args[i]->constant.type % 7];
                 if (n->function.args[i]->constant.is_ptr)
                     type = concat_c(type, '*');
+                if(n->function.args[i]->constant.is_unsign)
+                    type = concat("unsigned ", type);
 
                 fprintf(o_fpt, "%s ", type);
                 parse_nodes(n->function.args[i], o_fpt);
