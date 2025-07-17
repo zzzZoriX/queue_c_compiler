@@ -1,4 +1,7 @@
 #include "./dot_h/tokens_parser.h"
+#include "dot_h/ast.h"
+#include "dot_h/lexeme.h"
+#include "dot_h/tokens.h"
 
 
 static inline bool __fastcall
@@ -67,6 +70,7 @@ tokens_parser(_token** token){
             *token = NEXT_TOKEN(*token);
             const bool is_ptr_arr = (*token)->lex == LEX_POINTER;
             bool is_unsign_arr = false;
+            _node_type arr_type = AST_EMPTY_ARRAY;
 
             while (*token && !is_data_type((*token)->data) && (*token)->lex != LEX_END) {
                 if ((*token)->lex == LEX_UNSIGN)
@@ -92,7 +96,12 @@ tokens_parser(_token** token){
             for (size_t i = 0; i < size_of_arr; ++i)
                 array_data[i] = CREATE_EMPTY_AST();
 
-            *token = NEXT_TOKEN(NEXT_TOKEN(NEXT_TOKEN(*token))); // скипаем <размер>] =
+            *token = NEXT_TOKEN(NEXT_TOKEN(*token)); // скипаем <размер>]
+
+            if((*token)->lex == LEX_RPAREN)
+                return make_arr_node(array_head->constant, size_of_arr, array_data, AST_ARRAY_AS_FUNC_PARAM);
+
+            *token = NEXT_TOKEN(*token);
 
             switch ((*token)->lex) {
                 case LEX_LFPAREN:
@@ -100,6 +109,8 @@ tokens_parser(_token** token){
 
                     for (size_t i = 0; i < size_of_arr; ++i)
                         array_data[i] = tokens_parser(token);
+
+                    arr_type = AST_ARRAY_FULL_INIT;
 
                     break;
 
@@ -114,6 +125,8 @@ tokens_parser(_token** token){
                         if ((*token)->lex != LEX_SEMIC && (*token)->lex != LEX_END)
                             *token = NEXT_TOKEN(*token);
                     }
+                    
+                    arr_type = AST_ARRAY_PARTIALLY_INIT;
 
                 case LEX_NULL_VALUE:
                 default:
@@ -122,7 +135,7 @@ tokens_parser(_token** token){
 
             *token = NEXT_TOKEN(*token);
 
-            return make_arr_node(array_head->constant, size_of_arr, array_data);
+            return make_arr_node(array_head->constant, size_of_arr, array_data, arr_type);
 
         case LEX_VAR:
             *token = NEXT_TOKEN(*token);
@@ -226,12 +239,14 @@ tokens_parser(_token** token){
 
                  condition = make_expr_node(token); // парсим условие
             }
-            *token = NEXT_TOKEN(*token);
                 
             Node* if_body = tokens_parser(token); // парсим тело
 
             if((*token)->lex == LEX_ELIF || (*token)->lex == LEX_ELSE)
                 _else = tokens_parser(token);
+
+            if((*token)->lex == LEX_SEMIC) 
+                *token = NEXT_TOKEN(*token);
 
             return make_if_else_node(
                 if_else_lexeme,

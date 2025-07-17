@@ -9,7 +9,11 @@
 #include <stdlib.h>
 
 typedef enum _node_type {
-    AST_ARRAY,
+    AST_ARRAY_FULL_INIT,
+    AST_ARRAY_PARTIALLY_INIT,
+    AST_EMPTY_ARRAY,
+    AST_ARRAY_AS_FUNC_PARAM,
+    AST_APPEAL_TO_ARR_CELL,
     AST_LIT_CNST,
     AST_PLUS,
     AST_MINUS,
@@ -58,7 +62,6 @@ typedef enum _node_type {
     AST_FUNCTION,
     AST_FUNCTION_DECL,
     AST_LPAREN,
-    AST_APPEAL_TO_ARR_CELL,
     AST_UNDEF = -1
 } _node_type;
 
@@ -292,7 +295,7 @@ make_empty_literal_const(const string, const bool, const bool);
  * @return Node*
  */
 Node*
-make_arr_node(const LiteralConstant, const size_t, Node**);
+make_arr_node(const LiteralConstant, const size_t, Node**, const _node_type);
 
 Node* __fastcall
 CREATE_EMPTY_AST();

@@ -1,4 +1,6 @@
 #include "./dot_h/ast.h"
+#include "dot_h/lexeme.h"
+#include "dot_h/tokens.h"
 
 #include <math.h>
 
@@ -197,15 +199,21 @@ make_expr_node(_token** token){
             expr_node->node_type = comp(op, "--") ? AST_DEC_POST : AST_INC_POST;
         }
 
-        if(NEXT_TOKEN(*token)->lex == LEX_INST_POINTER){
+        else if(NEXT_TOKEN(*token)->lex == LEX_INST_POINTER){
             free(expr_node);
             *token = NEXT_TOKEN(NEXT_TOKEN(*token));
             expr_node = make_expr_node(token);
         }
 
+// если это обращение к ячейке массива
+        else if(NEXT_TOKEN(*token)->lex == LEX_LQPAREN)
+            expr_node = tokens_parser(token);
+
 // если не унарная операция
-        expr_node->node_type = AST_LIT_CNST;
-        expr_node->constant.name = _strdup((*token)->data);
+        else{
+            expr_node->node_type = AST_LIT_CNST;
+            expr_node->constant.name = _strdup((*token)->data);
+        }
 
         *token = NEXT_TOKEN(*token);
     }
@@ -483,8 +491,8 @@ make_empty_literal_const(const string name, const bool is_ptr, const bool is_uns
 }
 
 Node*
-make_arr_node(const LiteralConstant head, const size_t size, Node** data) {
-    Node* new_node = make_node(AST_ARRAY);
+make_arr_node(const LiteralConstant head, const size_t size, Node** data, const _node_type arr_type) {
+    Node* new_node = make_node(arr_type);
 
     new_node->array.head = head;
     new_node->array.data = data;

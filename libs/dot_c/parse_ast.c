@@ -1,4 +1,6 @@
 #include "./dot_h/parse_ast.h"
+#include "dot_h/ast.h"
+#include <stddef.h>
 
 void
 code_gen(Node* h, FILE* o_fpt) {
@@ -358,25 +360,51 @@ parse_nodes(Node* n, FILE* o_fpt) {
             fprintf(o_fpt, ";\n");
             break;
 
-        case AST_ARRAY:
-            string type = str_types[n->array.head.type % 7];
+        case AST_ARRAY_FULL_INIT:
+            string farr_type = str_types[n->array.head.type % 7];
 
-            if (n->array.head.is_unsign) type = concat("unsigned ", type);
-            if (n->array.head.is_ptr) type = concat_c(type, '*');
+            if (n->array.head.is_unsign) farr_type = concat("unsigned ", farr_type);
+            if (n->array.head.is_ptr) farr_type = concat_c(farr_type, '*');
 
-            fprintf(o_fpt, "%s %s[%u] = {", type, n->array.head.name, n->array.size);
+            fprintf(o_fpt, "%s %s[%u] = {", farr_type, n->array.head.name, n->array.size);
 
             for (size_t i = 0; i < n->array.size; ++i) {
-                if (n->array.data[i]->node_type != AST_UNDEF)
-                    parse_nodes(n->array.data[i], o_fpt);
-                else {
-                    int temp; // создана для воссоздания неопределенного значения
-                    fprintf(o_fpt, "%d", temp);
-                }
+                parse_nodes(n->array.data[i], o_fpt);
+                
                 fprintf(o_fpt, ",");
             }
 
             fprintf(o_fpt, "};\n");
+            break;
+        
+        case AST_EMPTY_ARRAY:
+            string earr_type = str_types[n->array.head.type % 7];
+            
+            if (n->array.head.is_unsign) earr_type = concat("unsigned ", earr_type);
+            if (n->array.head.is_ptr) earr_type = concat_c(earr_type, '*');
+            
+            fprintf(o_fpt, "%s %s[%u];\n", earr_type, n->array.head.name, n->array.size);
+            break;
+
+        case AST_ARRAY_AS_FUNC_PARAM:
+            fprintf(o_fpt, "%s[%u]", n->array.head.name, n->array.size);
+            break;
+
+        case AST_ARRAY_PARTIALLY_INIT:
+            string parr_type = str_types[n->array.head.type % 7];
+
+            if (n->array.head.is_unsign) parr_type = concat("unsigned ", parr_type);
+            if (n->array.head.is_ptr) parr_type = concat_c(parr_type, '*');
+
+            fprintf(o_fpt, "%s %s[%u];\n", parr_type, n->array.head.name, n->array.size);
+
+            for(size_t i = 0; i < n->array.size; ++i)
+                if(n->array.data[i]->node_type != AST_UNDEF){
+                    fprintf(o_fpt, "%s[%zu] = ", n->array.head.name, i);
+                    parse_nodes(n, o_fpt);
+                    fprintf(o_fpt, ";\n");
+                }
+
             break;
 
         case AST_APPEAL_TO_ARR_CELL:
