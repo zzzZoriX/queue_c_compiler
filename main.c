@@ -61,11 +61,12 @@ main(int argc, char** argv){
 
         case _SUCCESS:
         default:
-            otp_file_name = concat(argv[argc - 1], ".c");
+            otp_file_name = parse_otp_file(argv[argc - 1]);
             break;
     }
 
-    otp_file = fopen(otp_file_name, "w");
+    char* otp_c_file_name = concat(otp_file_name, ".c");
+    otp_file = fopen(otp_c_file_name, "w");
     if(!otp_file){
         fprintf(stderr, "can't open output file\n");
         return __ERROR;
@@ -133,20 +134,23 @@ main(int argc, char** argv){
 
     fclose(otp_file);
 
-    string name = c_concat_c(otp_file_name[0], '\0');
-    for (int i = 1; i < strlen(otp_file_name); ++i) {
-        if (otp_file_name[i] == '.') {
-            name = concat_c(name, otp_file_name[i]);
-            break;
-        }
-        name = concat_c(name, otp_file_name[i]);
-    }
+    string otp_exe_file_name = concat(otp_file_name, ".exe");
 
-    string otp_exe_file_name = concat(name, "exe");
-    free(name);
-
-    string command = concat("gcc ", concat(otp_file_name, concat(" -o ", otp_exe_file_name)));
+    string command = concat(
+        "gcc ",
+        concat(
+            otp_c_file_name,
+            concat(
+                " -o ",
+                otp_exe_file_name
+                ) // => -o <otp>.exe
+            ) // => <otp>.c -o <otp>.exe
+        ); // => gcc <otp>.c -o <otp>.exe
     system(command);
+
+    free(otp_c_file_name);
+    free(otp_exe_file_name);
+    free(command);
 
     if (!scc_flag) {
 #ifdef __WIN32
