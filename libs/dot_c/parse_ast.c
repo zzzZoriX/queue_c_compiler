@@ -1,6 +1,5 @@
 #include "./dot_h/parse_ast.h"
 #include "dot_h/ast.h"
-#include <cstdio>
 #include <stddef.h>
 #include <stdio.h>
 
