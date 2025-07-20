@@ -342,7 +342,7 @@ parse_nodes(Node* n, FILE* o_fpt) {
         case AST_MUL_ASSIGN:
         case AST_DIV_ASSIGN:
         case AST_REM_ASSIGN:
-            if (n->op1->constant.type != TYPE_NULL) {
+            if (n->op1->constant.type != TYPE_NULL && n->op1->node_type != AST_APPEAL_TO_ARR_CELL) {
                 string type = NULL;
                 if (n->op1->constant.is_unsign)
                     type = "unsigned ";

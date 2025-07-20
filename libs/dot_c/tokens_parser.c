@@ -98,7 +98,7 @@ tokens_parser(_token** token){
 
             *token = NEXT_TOKEN(NEXT_TOKEN(*token)); // скипаем <размер>]
 
-            if((*token)->lex == LEX_RPAREN)
+            if((*token)->lex == LEX_RPAREN || (*token)->lex == LEX_COMMA)
                 return make_arr_node(array_head->constant, size_of_arr, array_data, AST_ARRAY_AS_FUNC_PARAM);
 
             *token = NEXT_TOKEN(*token);
@@ -535,6 +535,19 @@ tokens_parser(_token** token){
                 *token = NEXT_TOKEN(*token);
 
                 node->node_type = AST_APPEAL_TO_ARR_CELL;
+
+                if(is_assign((*token)->next_token->lex)){
+                    *token = NEXT_TOKEN(*token);
+
+                    string op = _strdup((*token)->data);
+                    if(!op) exit(1);
+                    
+                    *token = NEXT_TOKEN(*token);
+                    
+                    Node* expr = make_expr_node(token);
+
+                    return make_bin_operation(node, expr, op);
+                }
 
                 return node;
             }
