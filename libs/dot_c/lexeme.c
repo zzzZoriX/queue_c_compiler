@@ -63,6 +63,7 @@ define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
     if(comp(word, _INST_POINTER))  return LEX_INST_POINTER;
     if(comp(word, _CALL))          return LEX_CALL;
     if(comp(word, _STRUCT_VALUE_INIT)) return LEX_STRUCT_VALUE_INIT;
+    if(comp(word, _PTR_CALL_TO_FIELD)) return LEX_PTR_CALL_TO_FIELDS;
 
     if(
         word[0] == '\'' && 
@@ -192,7 +193,8 @@ is_spec_str(const string str){
         comp(str, _AND)             ||
         comp(str, _OR)              ||
         comp(str, _DBL_TWO_DOTS)    ||
-        comp(str, _INST_POINTER)
+        comp(str, _INST_POINTER)    ||
+        comp(str, _PTR_CALL_TO_FIELD)
     );
 }
 

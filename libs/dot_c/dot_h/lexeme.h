@@ -67,6 +67,7 @@
 #define    _RFPAREN "}"
 #define    _NULL_VALUE "?"
 #define    _DBL_TWO_DOTS "::"
+#define    _PTR_CALL_TO_FIELD ":>"
 #define    _INST_POINTER "->"
 #define    _CALL "call"
 
@@ -150,7 +151,8 @@ typedef enum _lexemes: int {
     LEX_DIGIT,
     LEX_FLOAT,
     LEX_CHAR_VAL,
-    LEX_DBL_TWO_DOTS,
+    LEX_DBL_TWO_DOTS, // ::
+    LEX_PTR_CALL_TO_FIELDS, // :>
     LEX_INST_POINTER,
 
     LEX_CALL,

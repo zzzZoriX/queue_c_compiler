@@ -18,6 +18,9 @@ typedef enum _node_type {
     AST_ARRAY_WO_INIT,
     AST_LIT_CNST_WO_INIT,
 
+    AST_CALL_TO_STRUCT_FIELD_BY_NON_PTR,
+    AST_CALL_TO_STRUCT_FIELD_BY_PTR,
+
     AST_LIT_CNST,
     
     AST_PLUS,
