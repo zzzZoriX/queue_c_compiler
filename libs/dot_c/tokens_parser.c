@@ -244,17 +244,16 @@ tokens_parser(_token** token){
             Node* if_body = tokens_parser(token); // парсим тело
 
             while(
-                (*token)->lex == LEX_SEMIC ||
                 (*token)->lex == LEX_RPAREN ||
                 (*token)->lex == LEX_RQPAREN ||
                 (*token)->lex == LEX_RFPAREN
             ) *token = NEXT_TOKEN(*token);
 
-            if((*token)->lex == LEX_ELIF || (*token)->lex == LEX_ELSE)
-                _else = tokens_parser(token);
-
             if((*token)->lex == LEX_SEMIC) 
                 *token = NEXT_TOKEN(*token);
+
+            if((*token)->lex == LEX_ELIF || (*token)->lex == LEX_ELSE)
+                _else = tokens_parser(token);
 
             return make_if_else_node(
                 if_else_lexeme,
@@ -557,6 +556,7 @@ tokens_parser(_token** token){
 
 /* ------------ операции с переменными ------------ */
 
+        case LEX_RFPAREN:
         case LEX_END: return NULL;
         default: break;
     }
