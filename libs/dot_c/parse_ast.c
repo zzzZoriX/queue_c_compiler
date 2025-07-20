@@ -308,6 +308,7 @@ parse_nodes(Node* n, FILE* o_fpt) {
 
 /* ------------ EXPR'S ------------ */
 
+        case AST_LIT_CNST_W_STRUCT_VALUE:
         case AST_LIT_CNST:
             fprintf(
                 o_fpt,
@@ -356,8 +357,12 @@ parse_nodes(Node* n, FILE* o_fpt) {
             }
 
             parse_nodes(n->op1, o_fpt);
-            fprintf(o_fpt, "%s", DEFINE_ASSIGN(n->node_type));
-            parse_nodes(n->op2, o_fpt);
+            
+            if(n->op1->node_type != AST_LIT_CNST_W_STRUCT_VALUE){
+                fprintf(o_fpt, "%s", DEFINE_ASSIGN(n->node_type));
+                parse_nodes(n->op2, o_fpt);
+            }
+
             fprintf(o_fpt, ";\n");
             break;
 
@@ -414,6 +419,15 @@ parse_nodes(Node* n, FILE* o_fpt) {
 
         case AST_APPEAL_TO_ARR_CELL:
             fprintf(o_fpt, "%s[%s]", n->constant.name, n->op1->constant.name);
+            break;
+
+        case AST_ARRAY_W_STRUCT_VALUE:
+            string wsvarr_type = str_types[n->array.head.type % 7];
+
+            if (n->array.head.is_unsign) wsvarr_type = concat("unsigned ", wsvarr_type);
+            if (n->array.head.is_ptr) wsvarr_type = concat_c(wsvarr_type, '*');
+
+            fprintf(o_fpt, "%s %s[%u];\n", wsvarr_type, n->array.head.name, n->array.size);
             break;
 
 /* ------------ ARRAY'S ------------ */

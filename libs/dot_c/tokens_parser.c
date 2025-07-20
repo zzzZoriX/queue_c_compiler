@@ -23,6 +23,45 @@ tokens_parser(_token** token){
 
 /* ------------ объекты ------------ */
 
+        case LEX_STRUCT:
+            *token = NEXT_TOKEN(*token);
+
+            Node** fields = NULL;
+            int count = 0;
+            
+            string name = _strdup((*token)->data);
+            if(!name) exit(1);
+
+            *token = NEXT_TOKEN(*token); // скипаем <имя>
+
+            if((*token)->lex != LEX_SEMIC){
+                *token = NEXT_TOKEN(*token);
+
+                ++count;
+                fields = (Node**)malloc(sizeof(Node*) * count);
+                if(!fields) exit(1);
+
+                Node* field = tokens_parser(token);
+                fields[count - 1] = field;
+
+                if((*token)->lex == LEX_SEMIC) *token = NEXT_TOKEN(*token);
+
+                while((*token)->lex != LEX_RFPAREN && (*token)->lex != LEX_END){
+                    ++count;
+                    fields = (Node**)realloc(fields, sizeof(Node*) * count);
+                    if(!fields) exit(1);
+
+                    Node* field = tokens_parser(token);
+                    fields[count - 1] = field;
+
+                    if((*token)->lex == LEX_SEMIC) *token = NEXT_TOKEN(*token);
+                }
+
+                *token = NEXT_TOKEN(NEXT_TOKEN(*token));
+            }
+
+            return make_struct_node(name, fields, count);
+
         case LEX_FUNC:
             *token = NEXT_TOKEN(*token);
             
@@ -103,6 +142,10 @@ tokens_parser(_token** token){
 
             *token = NEXT_TOKEN(*token);
 
+            if((*token)->lex == LEX_STRUCT_VALUE_INIT){
+                return make_arr_node(array_head->constant, size_of_arr, array_data, AST_ARRAY_W_STRUCT_VALUE);
+            }
+
             switch ((*token)->lex) {
                 case LEX_LFPAREN:
                     *token = NEXT_TOKEN(*token);
@@ -178,7 +221,12 @@ tokens_parser(_token** token){
 
                 *token = NEXT_TOKEN(*token);
 
-                Node* expr = tokens_parser(token);
+                Node* expr = NULL;
+
+                if((*token)->lex == LEX_STRUCT_VALUE_INIT)
+                    lit_const->node_type = AST_LIT_CNST_W_STRUCT_VALUE;
+                else
+                    expr = tokens_parser(token);
 
                 *token = NEXT_TOKEN(*token);
 
