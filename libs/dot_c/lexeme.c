@@ -62,6 +62,7 @@ define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
     if(comp(word, _DBL_TWO_DOTS))  return LEX_DBL_TWO_DOTS;
     if(comp(word, _INST_POINTER))  return LEX_INST_POINTER;
     if(comp(word, _CALL))          return LEX_CALL;
+    if(comp(word, _STRUCT_VALUE_INIT)) return LEX_STRUCT_VALUE_INIT;
 
     if(
         word[0] == '\'' && 
@@ -171,7 +172,8 @@ isspec(const char c){
         c == '=' ||
         c == ',' ||
         c == '&' ||
-        c == '@'
+        c == '@' ||
+        c == ':'
     );
 }
 
