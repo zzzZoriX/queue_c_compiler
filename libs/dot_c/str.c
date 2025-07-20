@@ -158,3 +158,18 @@ tolower_str(const string str){
 
     return lower_str;
 }
+
+bool
+is_digits_from(const string str, const int index){
+    bool has_dot = false;
+
+    for(int i = index; i < strlen(str); ++i){
+        if(!isdigit(str[i]) && str[i] != '.') return false;
+        if(str[i] == '.'){
+            if(has_dot) return false;
+            else has_dot = true;
+        }
+    }
+
+    return true;
+}

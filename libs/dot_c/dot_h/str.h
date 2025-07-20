@@ -1,6 +1,7 @@
 #ifndef STR_H
 #define STR_H
 
+#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -81,5 +82,14 @@ atosh(const string);
  */
 string __cdecl
 tolower_str(const string);
+
+/**
+ * @brief проверяет строку на то, состоит ли она только из чисел начиная с определенного индекса
+ * 
+ * @return true 
+ * @return false 
+ */
+bool
+is_digits_from(const string, const int);
 
 #endif
