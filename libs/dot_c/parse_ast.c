@@ -1,6 +1,8 @@
 #include "./dot_h/parse_ast.h"
 #include "dot_h/ast.h"
+#include <cstdio>
 #include <stddef.h>
+#include <stdio.h>
 
 void
 code_gen(Node* h, FILE* o_fpt) {
@@ -360,6 +362,10 @@ parse_nodes(Node* n, FILE* o_fpt) {
             fprintf(o_fpt, ";\n");
             break;
 
+/* ------------ EXPR'S ------------ */
+
+/* ------------ ARRAY'S ------------ */
+
         case AST_ARRAY_FULL_INIT:
             string farr_type = str_types[n->array.head.type % 7];
 
@@ -410,6 +416,25 @@ parse_nodes(Node* n, FILE* o_fpt) {
         case AST_APPEAL_TO_ARR_CELL:
             fprintf(o_fpt, "%s[%s]", n->constant.name, n->op1->constant.name);
             break;
+
+/* ------------ ARRAY'S ------------ */
+
+/* ------------ STRUCT'S ------------ */
+
+        case AST_STRUCT_DECL:
+            fprintf(o_fpt, "struct %s;\n", n->_struct.name);
+            break;
+        
+        case AST_STRUCT:
+            fprintf(o_fpt, "struct %s{\n", n->_struct.name);
+
+            for(int i = 0; i < n->_struct.count; ++i)
+                parse_nodes(n->_struct.fields[i], o_fpt);
+
+            fprintf(o_fpt, "};\n");
+            break;
+
+/* ------------ STRUCT'S ------------ */
 
         default:
             break;
