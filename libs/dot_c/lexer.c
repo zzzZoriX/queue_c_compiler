@@ -1,5 +1,5 @@
 #include "./dot_h/lexer.h"
-#include <string.h>
+#include "dot_h/str.h"
 
 extern long unknown_lex_offset;
 extern long row;
@@ -25,7 +25,7 @@ lexer(FILE* ifp, _token** m_token){
         
         const char next = getc(ifp);
         ungetc(next, ifp);
-        set_state(word, c, next);
+        set_state(word, c, next, last_token);
         
         switch(state){
             case _IN_COMMENT_:
@@ -44,7 +44,7 @@ lexer(FILE* ifp, _token** m_token){
                 
                 break;
             
-            case _IN_FLOAT_:
+            case _IN_NUMBER_:
                 if(!word) word = NULL_STR;
 
                 do{
@@ -52,11 +52,15 @@ lexer(FILE* ifp, _token** m_token){
                     c = getc(ifp);
                 } while(c != EOF && (isdigit(c) || c == '.' || c == 'F' || c == 'f'));
 
-                if(!is_float(word) && !is_digits(word)) goto unknown_lexeme;
+                if(word[0] == '-'){ 
+                    if(!is_digits_from(word, 1)) goto unknown_lexeme; 
+                }
+                else
+                    if(!is_float(word) && !is_digits(word)) goto unknown_lexeme;
                 
                 _lexemes lexeme = define_lexeme(word, &last_token->lex, last_token->data);
                 if(lexeme == LEX_UNDEF) goto unknown_lexeme;
-                
+
                 _token* new_token = create_token(word, lexeme, NULL);
                 add(*m_token, new_token);
                 last_token = new_token;
@@ -237,9 +241,20 @@ unknown_lexeme:
 }
 
 void
-set_state(const string word, const char c, const char next){
+set_state(const string word, const char c, const char next, const _token* last_token){
     if(comp(word, _COMMENT_START)) state = _IN_COMMENT_;
-    else if((isdigit(c) && (isdigit(next) || c == '.')) || (c == '.' && isdigit(c))) state = _IN_FLOAT_;
+    else if(
+        (c == '-' && isdigit(next) && 
+        (
+            last_token == NULL ||
+            lex_is_operator(last_token->lex) ||
+            last_token->lex == LEX_SEMIC ||
+            last_token->lex == LEX_COMMA
+        )
+        ) || 
+        ((isdigit(c) && (isdigit(next)) || 
+        c == '.'))
+    ) state = _IN_NUMBER_;
     else if((c == '+' && next == '+') || (c == '-' && next == '-')) state = _IN_UN_OP_;
     else if(is_spec_str(c_concat_c(c, next))) state = _IN_SPEC_STR_;
     else if(c == '"') state = _IN_STR_;

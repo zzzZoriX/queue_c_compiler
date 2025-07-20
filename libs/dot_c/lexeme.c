@@ -1,4 +1,5 @@
 #include "./dot_h/lexeme.h"
+#include "dot_h/str.h"
 
 _lexemes
 define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
@@ -80,7 +81,10 @@ define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
 
     if(is_valid_obj_name(word))    return LEX_OBJ_NAME;
 
-    if(is_digits(word))            return LEX_DIGIT;
+    if(
+        is_digits(word) ||
+        (word[0] == '-' && is_digits_from(word, 1))
+    )                              return LEX_DIGIT;
     if(is_float(word))             return LEX_FLOAT;
     
     return LEX_UNDEF;
@@ -201,4 +205,29 @@ is_data_type(const string check_str){
         comp(check_str, "flt")      ||
         comp(check_str, _VOID)
     );
+}
+
+bool 
+lex_is_operator(const _lexemes lex){
+    return 
+        lex == LEX_PLUS ||
+        lex == LEX_MINUS ||
+        lex == LEX_MUL ||
+        lex == LEX_DIV ||
+        lex == LEX_REM ||
+        lex == LEX_L ||
+        lex == LEX_G ||
+        lex == LEX_LE ||
+        lex == LEX_GE ||
+        lex == LEX_EQ ||
+        lex == LEX_NEQ ||
+        lex == LEX_OR ||
+        lex == LEX_AND ||
+        lex == LEX_ASSIGN ||
+        lex == LEX_ADD_ASSIGN ||
+        lex == LEX_REM_ASSIGN ||
+        lex == LEX_REDUCE_ASSIGN ||
+        lex == LEX_DIV_ASSIGN ||
+        lex == LEX_MUL_ASSIGN
+    ;
 }

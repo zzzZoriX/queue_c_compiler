@@ -20,7 +20,7 @@ typedef enum _lexer_result: int {
 typedef enum _state {
     _NORMAL_,
     _IN_COMMENT_,
-    _IN_FLOAT_,
+    _IN_NUMBER_,
     _IN_UN_OP_, // унарный оператор ( ++ или -- )
     _IN_SPEC_STR_, // ->, ::, <=, && и т.д.
     _IN_STR_ // "мы тут"
@@ -40,6 +40,6 @@ lexer(FILE*, _token**);
  * 
  */
 void
-set_state(const string, const char, const char); 
+set_state(const string, const char, const char, const _token*); 
 
 #endif

@@ -216,4 +216,13 @@ is_spec_str(const string);
 bool
 is_data_type(const string);
 
+/**
+ * @brief проверяет является ли лексема оператором
+ * 
+ * @return true 
+ * @return false 
+ */
+bool
+lex_is_operator(const _lexemes);
+
 #endif 
