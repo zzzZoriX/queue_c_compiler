@@ -281,8 +281,7 @@ make_stmt_node(_token** token){
     statements->op2 = NULL;
 
     while((*token)->lex != LEX_RFPAREN && (*token)->lex != LEX_END){
-        Node* command = tokens_parser(token);
-        statements->op1 = command;
+        statements->op1 = tokens_parser(token);
 
         if (!*token || (*token)->lex == LEX_RFPAREN)
             break;
