@@ -143,7 +143,7 @@ tokens_parser(_token** token){
             *token = NEXT_TOKEN(*token);
 
             if((*token)->lex == LEX_STRUCT_VALUE_INIT){
-                return make_arr_node(array_head->constant, size_of_arr, array_data, AST_ARRAY_W_STRUCT_VALUE);
+                return make_arr_node(array_head->constant, size_of_arr, array_data, AST_ARRAY_WO_INIT);
             }
 
             switch ((*token)->lex) {
@@ -224,7 +224,7 @@ tokens_parser(_token** token){
                 Node* expr = NULL;
 
                 if((*token)->lex == LEX_STRUCT_VALUE_INIT)
-                    lit_const->node_type = AST_LIT_CNST_W_STRUCT_VALUE;
+                    lit_const->node_type = AST_LIT_CNST_WO_INIT;
                 else
                     expr = tokens_parser(token);
 

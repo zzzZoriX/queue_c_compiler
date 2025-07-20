@@ -308,7 +308,7 @@ parse_nodes(Node* n, FILE* o_fpt) {
 
 /* ------------ EXPR'S ------------ */
 
-        case AST_LIT_CNST_W_STRUCT_VALUE:
+        case AST_LIT_CNST_WO_INIT:
         case AST_LIT_CNST:
             fprintf(
                 o_fpt,
@@ -358,7 +358,7 @@ parse_nodes(Node* n, FILE* o_fpt) {
 
             parse_nodes(n->op1, o_fpt);
             
-            if(n->op1->node_type != AST_LIT_CNST_W_STRUCT_VALUE){
+            if(n->op1->node_type != AST_LIT_CNST_WO_INIT){
                 fprintf(o_fpt, "%s", DEFINE_ASSIGN(n->node_type));
                 parse_nodes(n->op2, o_fpt);
             }
@@ -421,7 +421,7 @@ parse_nodes(Node* n, FILE* o_fpt) {
             fprintf(o_fpt, "%s[%s]", n->constant.name, n->op1->constant.name);
             break;
 
-        case AST_ARRAY_W_STRUCT_VALUE:
+        case AST_ARRAY_WO_INIT:
             string wsvarr_type = str_types[n->array.head.type % 7];
 
             if (n->array.head.is_unsign) wsvarr_type = concat("unsigned ", wsvarr_type);
