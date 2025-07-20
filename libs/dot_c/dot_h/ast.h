@@ -15,6 +15,9 @@ typedef enum _node_type {
     AST_ARRAY_AS_FUNC_PARAM,
     AST_APPEAL_TO_ARR_CELL,
 
+    AST_ARRAY_W_STRUCT_VALUE,
+    AST_LIT_CNST_W_STRUCT_VALUE,
+
     AST_LIT_CNST,
     
     AST_PLUS,
