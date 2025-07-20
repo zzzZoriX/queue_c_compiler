@@ -14,7 +14,9 @@ typedef enum _node_type {
     AST_EMPTY_ARRAY,
     AST_ARRAY_AS_FUNC_PARAM,
     AST_APPEAL_TO_ARR_CELL,
+
     AST_LIT_CNST,
+    
     AST_PLUS,
     AST_MINUS,
     AST_MULTI,
@@ -26,6 +28,7 @@ typedef enum _node_type {
     AST_MUL_ASSIGN,
     AST_DIV_ASSIGN,
     AST_REM_ASSIGN,
+    
     AST_INC_PREF,
     AST_INC_POST,
     AST_INC,
@@ -34,12 +37,13 @@ typedef enum _node_type {
     AST_DEC,
     AST_DEREF,
     AST_GET_ADDR,
+    
     AST_NUM,
-    AST_LIT_CONST,
     AST_CHAR_VALUE,
     AST_BOOLIAN_VALUE,
     AST_NULL_VALUE,
     AST_EXPR,
+    
     AST_EQ,
     AST_NEQ,
     AST_LE,
@@ -48,19 +52,28 @@ typedef enum _node_type {
     AST_GE,
     AST_AND,
     AST_OR,
+    
     AST_IF,
     AST_ELSE_IF,
     AST_ELSE,
+    
     AST_WHILE,
     AST_FOR,
+    
     AST_OUT,
     AST_IN,
+    
     AST_SINGLE_STMT,
     AST_MULTI_STMT,
+    
     AST_CALL,
     AST_RET,
     AST_FUNCTION,
     AST_FUNCTION_DECL,
+
+    AST_STRUCT,
+    AST_STRUCT_DECL,
+    
     AST_LPAREN,
     AST_UNDEF = -1
 } _node_type;
@@ -133,6 +146,13 @@ typedef struct Function {
     int count;
 } Function;
 
+typedef struct
+Struct {
+    AST_Node** fields;
+    string name;
+    int count;
+} Struct;
+
 // узел
 typedef struct AST_Node {
     _node_type node_type;
@@ -142,6 +162,7 @@ typedef struct AST_Node {
         Array array;
         Command cmd;
         Function function;
+        Struct _struct;
     };
     bool is_standalone;
     AST_Node* op1,* op2,* op3;
@@ -296,6 +317,14 @@ make_empty_literal_const(const string, const bool, const bool);
  */
 Node*
 make_arr_node(const LiteralConstant, const size_t, Node**, const _node_type);
+
+/**
+ * @brief создает узел структуры
+ * 
+ * @return Node* 
+ */
+Node*
+make_struct_node(const string, Node**, const int);
 
 Node* __fastcall
 CREATE_EMPTY_AST();

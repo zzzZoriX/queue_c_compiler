@@ -3,6 +3,7 @@
 #include "dot_h/tokens.h"
 
 #include <math.h>
+#include <string.h>
 
 Node*
 tokens_parser(_token**);
@@ -496,6 +497,21 @@ make_arr_node(const LiteralConstant head, const size_t size, Node** data, const 
     new_node->array.head = head;
     new_node->array.data = data;
     new_node->array.size = size;
+
+    return new_node;
+}
+
+Node*
+make_struct_node(const string name, Node** fields, const int fields_count){
+    Node* new_node = make_node(
+        !fields_count ? AST_STRUCT_DECL : AST_STRUCT
+    );
+
+    new_node->_struct.name = _strdup(name);
+    if(!new_node->_struct.name) exit(1);
+
+    new_node->_struct.fields = fields;
+    new_node->_struct.count = fields_count;
 
     return new_node;
 }
