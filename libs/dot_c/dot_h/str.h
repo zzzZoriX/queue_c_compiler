@@ -60,6 +60,14 @@ const char
 comp(const string, const string);
 
 /**
+ * @brief сравнивает первые n символов строки
+ * 
+ * @return const char 
+ */
+const char
+comp_n(const string, const int, const string);
+
+/**
  * @brief читает одно слово из файлового потока
  * 
  * @return const string 

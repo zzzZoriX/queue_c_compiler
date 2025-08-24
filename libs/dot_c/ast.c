@@ -1,8 +1,7 @@
 #include "./dot_h/ast.h"
 #include "dot_h/lexeme.h"
+#include "dot_h/str.h"
 #include "dot_h/tokens.h"
-
-#include <math.h>
 #include <string.h>
 
 Node*
@@ -68,6 +67,8 @@ define_bin_op_type(string op){
     if(comp("*=", op))  return AST_MUL_ASSIGN;
     if(comp("/=", op))  return AST_DIV_ASSIGN;
     if(comp("%=", op))  return AST_REM_ASSIGN;
+    if(comp("::", op))  return AST_CALL_TO_STRUCT_FIELD_BY_NON_PTR;
+    if(comp(":>", op))  return AST_CALL_TO_STRUCT_FIELD_BY_PTR;
     if (comp(op, c_concat_c('=', '\0'))) return AST_ASSIGN;
 
     return 0;
@@ -103,6 +104,7 @@ make_bin_operation(Node* left, Node* right, string op){
     new_node->op1 = left;
     new_node->op2 = right;
     new_node->node_type = define_bin_op_type(op);
+    new_node->constant.type = TYPE_NULL;
 
     return new_node;
 }
@@ -113,6 +115,7 @@ make_un_operation(Node* operand, string op){
         
     new_node->op1 = operand;
     new_node->node_type = define_un_op_type(op);
+    new_node->constant.type = TYPE_NULL;
 
     return new_node;
 }
@@ -120,6 +123,73 @@ make_un_operation(Node* operand, string op){
 Node*
 make_expr_node(_token** token){
     Node* expr_node = make_node(AST_EXPR);
+
+    if((*token)->lex == LEX_OBJ_NAME){
+
+// если унарная операция
+        if(NEXT_TOKEN(*token)->lex == LEX_POST_INC || NEXT_TOKEN(*token)->lex == LEX_POST_DEC){
+            free(expr_node);
+            
+            Node* empty_lit_const = make_empty_literal_const((*token)->data, false, false);
+            *token = NEXT_TOKEN(*token);
+
+            string op = _strdup((*token)->data);
+            if(!op) exit(1);
+
+            *token = NEXT_TOKEN(*token);
+
+            expr_node = make_un_operation(
+                empty_lit_const,
+                op
+            );
+
+            expr_node->node_type = comp(op, "--") ? AST_DEC_POST : AST_INC_POST;
+        }
+
+        else if(NEXT_TOKEN(*token)->lex == LEX_INST_POINTER){
+            free(expr_node);
+            *token = NEXT_TOKEN(NEXT_TOKEN(*token));
+            expr_node = make_expr_node(token);
+        }
+
+// если это обращение к ячейке массива
+        else if(NEXT_TOKEN(*token)->lex == LEX_LQPAREN)
+            expr_node = tokens_parser(token);
+
+        else if(
+            NEXT_TOKEN(*token)->lex == LEX_DBL_TWO_DOTS ||
+            NEXT_TOKEN(*token)->lex == LEX_PTR_CALL_TO_FIELDS
+        ){
+            expr_node = make_empty_literal_const((*token)->data, false, false);
+            *token = NEXT_TOKEN(*token);
+
+            while(
+                (*token)->lex == LEX_DBL_TWO_DOTS ||
+                (*token)->lex == LEX_PTR_CALL_TO_FIELDS
+            ){
+                _lexemes access_type = (*token)->lex;
+                *token = NEXT_TOKEN(*token);
+
+                if((*token)->lex != LEX_OBJ_NAME)
+                    exit(1);
+
+                Node* field = make_empty_literal_const((*token)->data, false, false);
+                if((*token)->next_token->lex == LEX_PTR_CALL_TO_FIELDS || (*token)->next_token->lex == LEX_DBL_TWO_DOTS)
+                    *token = NEXT_TOKEN(*token);
+
+                string op = access_type == LEX_DBL_TWO_DOTS ? "::" : ":>";
+                expr_node = make_bin_operation(expr_node, field, op);
+            }
+        }
+
+// если не унарная операция
+        else{
+            expr_node->node_type = AST_LIT_CNST;
+            expr_node->constant.name = _strdup((*token)->data);
+        }
+
+        *token = NEXT_TOKEN(*token);
+    }
 
     if((*token)->lex == LEX_DIGIT || (*token)->lex == LEX_FLOAT){
         expr_node->node_type = AST_NUM;
@@ -178,47 +248,6 @@ make_expr_node(_token** token){
         expr_node->node_type = comp(op, "--") ? AST_DEC_PREF : AST_INC_PREF;
     }
 
-    if((*token)->lex == LEX_OBJ_NAME){
-
-// если унарная операция
-        if(NEXT_TOKEN(*token)->lex == LEX_POST_INC || NEXT_TOKEN(*token)->lex == LEX_POST_DEC){
-            free(expr_node);
-            
-            Node* empty_lit_const = make_empty_literal_const((*token)->data, false, false);
-            *token = NEXT_TOKEN(*token);
-
-            string op = _strdup((*token)->data);
-            if(!op) exit(1);
-
-            *token = NEXT_TOKEN(*token);
-
-            expr_node = make_un_operation(
-                empty_lit_const,
-                op
-            );
-
-            expr_node->node_type = comp(op, "--") ? AST_DEC_POST : AST_INC_POST;
-        }
-
-        else if(NEXT_TOKEN(*token)->lex == LEX_INST_POINTER){
-            free(expr_node);
-            *token = NEXT_TOKEN(NEXT_TOKEN(*token));
-            expr_node = make_expr_node(token);
-        }
-
-// если это обращение к ячейке массива
-        else if(NEXT_TOKEN(*token)->lex == LEX_LQPAREN)
-            expr_node = tokens_parser(token);
-
-// если не унарная операция
-        else{
-            expr_node->node_type = AST_LIT_CNST;
-            expr_node->constant.name = _strdup((*token)->data);
-        }
-
-        *token = NEXT_TOKEN(*token);
-    }
-
     else if((*token)->lex == LEX_LPAREN){
         expr_node->node_type = AST_LPAREN;
 
@@ -240,8 +269,26 @@ make_expr_node(_token** token){
     else if ((*token)->lex == LEX_CALL)
         expr_node = tokens_parser(token);
 
-    else if ((*token)->lex == LEX_POINTER_DEREF)
+    else if ((*token)->lex == LEX_POINTER_DEREF){
         expr_node = tokens_parser(token);
+
+        while(
+            (*token)->lex == LEX_DBL_TWO_DOTS ||
+            (*token)->lex == LEX_PTR_CALL_TO_FIELDS
+        ){
+            _lexemes access_type = (*token)->lex;
+            *token = NEXT_TOKEN(*token);
+
+            if((*token)->lex != LEX_OBJ_NAME)
+                exit(1);
+    
+            Node* field = make_empty_literal_const((*token)->data, false, false);
+            *token = NEXT_TOKEN(*token);
+    
+            string op = access_type == LEX_DBL_TWO_DOTS ? "::" : ":>";
+            expr_node = make_bin_operation(expr_node, field, op);
+        }
+    }
 
     if(is_operator((*token)->lex)){
         string op = _strdup((*token)->data);
@@ -486,6 +533,23 @@ make_empty_literal_const(const string name, const bool is_ptr, const bool is_uns
         exit(1);
     new_node->constant.is_ptr = is_ptr;
     new_node->constant.is_unsign = is_unsign;
+
+    return new_node;
+}
+
+Node*
+make_custom_literal_const(const string name, const string type, const bool is_ptr, const bool is_unsign){
+    Node* new_node = make_node(AST_LIT_CNST);
+
+    new_node->constant.name = _strdup(name);
+    if(!new_node->constant.name)
+        exit(1);
+    new_node->constant.type = TYPE_CUSTOM;
+    new_node->constant.is_ptr = is_ptr;
+    new_node->constant.is_unsign = is_unsign;
+    new_node->constant.str_value = _strdup(type);
+    if(!new_node->constant.str_value)
+        exit(1);
 
     return new_node;
 }

@@ -1,7 +1,4 @@
 #include "./dot_h/parse_ast.h"
-#include "dot_h/ast.h"
-#include <stddef.h>
-#include <stdio.h>
 
 void
 code_gen(Node* h, FILE* o_fpt) {
@@ -29,10 +26,16 @@ parse_nodes(Node* n, FILE* o_fpt) {
 
         case AST_FUNCTION_DECL:
         case AST_FUNCTION:
+            string type;
+            if(n->function.function_header.type == TYPE_CUSTOM)
+                type = _strdup(n->function.function_header.str_value);
+            else
+                type = str_types[n->function.function_header.type % 7],
+
             fprintf(
                 o_fpt,
                 "%s %s(",
-                str_types[n->function.function_header.type % 7],
+                type,
                 n->constant.name
             );
 
@@ -40,7 +43,12 @@ parse_nodes(Node* n, FILE* o_fpt) {
                 if (i != 0)
                     fprintf(o_fpt, ",");
 
-                string type = str_types[n->function.args[i]->constant.type % 7];
+                string type;
+                if(n->function.args[i]->constant.type == TYPE_CUSTOM)
+                    type = _strdup(n->function.args[i]->constant.str_value);
+                else
+                    type = str_types[n->function.args[i]->constant.type % 7];
+
                 if (n->function.args[i]->constant.is_ptr)
                     type = concat_c(type, '*');
                 if(n->function.args[i]->constant.is_unsign)
@@ -308,6 +316,22 @@ parse_nodes(Node* n, FILE* o_fpt) {
 
 /* ------------ EXPR'S ------------ */
 
+        case AST_CALL_TO_STRUCT_FIELD_BY_NON_PTR:   
+            if(n->op1->node_type != AST_LIT_CNST)
+                parse_nodes(n->op1, o_fpt);
+            else
+                fprintf(o_fpt, "%s", n->op1->constant.name);    
+            fprintf(o_fpt, ".%s", n->op2->constant.name);
+            break;
+        
+        case AST_CALL_TO_STRUCT_FIELD_BY_PTR:   
+            if(n->op1->node_type != AST_LIT_CNST)
+                parse_nodes(n, o_fpt);
+            else
+                fprintf(o_fpt, "%s", n->op1->constant.name);    
+            fprintf(o_fpt, "->%s", n->op2->constant.name);
+            break;
+
         case AST_LIT_CNST_WO_INIT:
         case AST_LIT_CNST:
             fprintf(
@@ -345,11 +369,15 @@ parse_nodes(Node* n, FILE* o_fpt) {
         case AST_DIV_ASSIGN:
         case AST_REM_ASSIGN:
             if (n->op1->constant.type != TYPE_NULL && n->op1->node_type != AST_APPEAL_TO_ARR_CELL) {
-                string type = NULL;
+                string type = "";
                 if (n->op1->constant.is_unsign)
                     type = "unsigned ";
 
-                type = !type ? str_types[n->op1->constant.type % 7] : concat(type, str_types[n->op1->constant.type % 7]);
+                if(n->op1->constant.type == TYPE_CUSTOM)
+                    type = concat(type, n->op1->constant.str_value);
+                else
+                    type = str_types[n->op1->constant.type % 7];
+                
                 if (n->op1->constant.is_ptr)
                     type = concat_c(type, '*');
 
@@ -371,7 +399,11 @@ parse_nodes(Node* n, FILE* o_fpt) {
 /* ------------ ARRAY'S ------------ */
 
         case AST_ARRAY_FULL_INIT:
-            string farr_type = str_types[n->array.head.type % 7];
+            string farr_type;
+            if(n->array.head.type == TYPE_CUSTOM)
+                farr_type = _strdup(n->array.head.str_value);
+            else
+                farr_type = str_types[n->array.head.type % 7];
 
             if (n->array.head.is_unsign) farr_type = concat("unsigned ", farr_type);
             if (n->array.head.is_ptr) farr_type = concat_c(farr_type, '*');
@@ -388,7 +420,11 @@ parse_nodes(Node* n, FILE* o_fpt) {
             break;
         
         case AST_EMPTY_ARRAY:
-            string earr_type = str_types[n->array.head.type % 7];
+            string earr_type;
+            if(n->array.head.type == TYPE_CUSTOM)
+                earr_type = _strdup(n->array.head.str_value);
+            else
+                earr_type = str_types[n->array.head.type % 7];
             
             if (n->array.head.is_unsign) earr_type = concat("unsigned ", earr_type);
             if (n->array.head.is_ptr) earr_type = concat_c(earr_type, '*');
@@ -401,7 +437,11 @@ parse_nodes(Node* n, FILE* o_fpt) {
             break;
 
         case AST_ARRAY_PARTIALLY_INIT:
-            string parr_type = str_types[n->array.head.type % 7];
+            string parr_type;
+            if(n->array.head.type == TYPE_CUSTOM)
+                parr_type = _strdup(n->array.head.str_value);
+            else
+                parr_type = str_types[n->array.head.type % 7];
 
             if (n->array.head.is_unsign) parr_type = concat("unsigned ", parr_type);
             if (n->array.head.is_ptr) parr_type = concat_c(parr_type, '*');
@@ -422,7 +462,11 @@ parse_nodes(Node* n, FILE* o_fpt) {
             break;
 
         case AST_ARRAY_WO_INIT:
-            string wsvarr_type = str_types[n->array.head.type % 7];
+            string wsvarr_type;
+            if(n->array.head.type == TYPE_CUSTOM)
+                wsvarr_type = _strdup(n->array.head.str_value);
+            else
+                wsvarr_type = str_types[n->array.head.type % 7];
 
             if (n->array.head.is_unsign) wsvarr_type = concat("unsigned ", wsvarr_type);
             if (n->array.head.is_ptr) wsvarr_type = concat_c(wsvarr_type, '*');

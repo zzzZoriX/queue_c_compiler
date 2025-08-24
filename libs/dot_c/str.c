@@ -102,6 +102,15 @@ comp(const string dest, const string src){
     return !strcmp(dest, src);
 }
 
+const char
+comp_n(const string dest, const int n, const string src){
+    for(int i = 0; i < n; ++i)
+        if(dest[i] != src[i])
+            return false;
+    
+    return true;
+}
+
 const string
 _read_one_word_from_stream(FILE* stream, const char separ){
     string word = "";

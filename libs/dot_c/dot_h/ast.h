@@ -93,6 +93,7 @@ typedef enum _data_type {
     TYPE_BOOL,
     TYPE_SHORT,
     TYPE_LONG,
+    TYPE_CUSTOM,
     TYPE_NULL
 } _data_type;
 
@@ -115,6 +116,7 @@ typedef struct LiteralConstant {
         char char_value;
         float flt_value;
         bool bool_value;
+        string str_value;
     };
 } LiteralConstant;
 
@@ -315,6 +317,14 @@ make_short_literal_const(const string, const short, const bool, const bool);
  */
 Node*
 make_empty_literal_const(const string, const bool, const bool);
+
+/**
+ * @brief создает узел кастомного типа
+ * 
+ * @return Node* 
+ */
+Node*
+make_custom_literal_const(const string, const string, const bool, const bool);
 
 /**
  * @brief создает узел массива

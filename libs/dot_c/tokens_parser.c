@@ -1,8 +1,8 @@
 #include "./dot_h/tokens_parser.h"
 #include "dot_h/ast.h"
 #include "dot_h/lexeme.h"
+#include "dot_h/str.h"
 #include "dot_h/tokens.h"
-
 
 static inline bool __fastcall
 is_assign(_lexemes lex){
@@ -66,10 +66,26 @@ tokens_parser(_token** token){
             *token = NEXT_TOKEN(*token);
             
             Node
-                * fun_header = tokens_parser(token),
+                * fun_header,
                 * body = NULL,
                 ** func_args = NULL
             ;
+
+            if((*token)->lex == LEX_STRUCT){
+                string fun_type = concat(
+                    (*token)->data,
+                    c_concat(' ', (*token)->next_token->data)
+                );
+
+                *token = NEXT_TOKEN(NEXT_TOKEN(*token));
+
+                fun_header = make_corr_type_litcnst((*token)->data, fun_type, false, false);
+
+                *token = NEXT_TOKEN(*token);
+            }
+            else
+                fun_header = tokens_parser(token);
+
             fun_header->node_type = AST_FUNCTION;
 
             *token = NEXT_TOKEN(*token); // скипаем (
@@ -115,13 +131,27 @@ tokens_parser(_token** token){
                 if ((*token)->lex == LEX_UNSIGN)
                     is_unsign_arr = true;
 
+                if((*token)->lex == LEX_STRUCT)
+                    break;
+
                 *token = NEXT_TOKEN(*token);
             }
 
             if (!is_data_type((*token)->data)) exit(1);
 
-            const string type_arr = _strdup((*token)->data);
-            *token = NEXT_TOKEN(*token);
+            string type_arr;
+            if((*token)->lex == LEX_STRUCT){
+                type_arr = concat(
+                    (*token)->data,
+                    c_concat(' ', (*token)->next_token->data)
+                );
+
+                *token = NEXT_TOKEN(NEXT_TOKEN(*token));
+            }
+            else{
+                type_arr = _strdup((*token)->data);
+                *token = NEXT_TOKEN(*token);
+            }
 
             Node* array_head = make_corr_type_litcnst((*token)->data, type_arr, is_ptr_arr, is_unsign_arr);
             *token = NEXT_TOKEN(NEXT_TOKEN(*token)); // скипаем <имя массива>[
@@ -203,7 +233,42 @@ tokens_parser(_token** token){
                 if ((*token)->lex == LEX_UNSIGN)
                     is_unsign = true;
 
+                if((*token)->lex == LEX_STRUCT)
+                    break;
+
                 *token = (*token)->next_token;
+            }
+
+            if((*token)->lex == LEX_STRUCT){
+                string type = concat(
+                    (*token)->data,
+                    c_concat(' ', (*token)->next_token->data)
+                );
+
+                *token = NEXT_TOKEN(NEXT_TOKEN(*token));
+
+                Node* lit_cnst = make_corr_type_litcnst((*token)->data, type, is_ptr, is_unsign);
+
+                *token = NEXT_TOKEN(*token);
+
+                string op = _strdup((*token)->data);
+                if (!op)    exit(1);
+                
+                *token = NEXT_TOKEN(*token);
+                
+                Node* expr = NULL;
+                
+                lit_cnst->node_type = AST_LIT_CNST_WO_INIT;
+                
+                *token = NEXT_TOKEN(*token);
+                
+                Node* assign = make_bin_operation(
+                    lit_cnst,
+                    expr,
+                    op
+                );
+            
+                return assign;
             }
             
             if(!is_data_type((*token)->data)) exit(1);
@@ -599,6 +664,23 @@ tokens_parser(_token** token){
 
                 return node;
             }
+            else if(next_lex == LEX_DBL_TWO_DOTS || next_lex == LEX_PTR_CALL_TO_FIELDS){
+                Node* fields_access = make_expr_node(token);
+
+                if(is_assign((*token)->lex)){
+                    string op = _strdup((*token)->data);
+                    if(!op) exit(1);
+                    
+                    *token = NEXT_TOKEN(*token);
+                    
+                    Node* expr = make_expr_node(token);
+
+                    return make_bin_operation(fields_access, expr, op);
+                }
+
+                return fields_access;
+            }
+
             free(var_name);
 
             return make_expr_node(token);
@@ -633,6 +715,7 @@ make_corr_type_litcnst(const string name, const string type, const bool is_ptr, 
     if(comp(type, "short"))     return make_short_literal_const(name, 0, is_ptr, is_unsign);
     if(comp(type, "long"))      return make_long_literal_const(name, 0, is_ptr, is_unsign);
     if(comp(type, "char"))      return make_char_literal_const(name, 0, is_ptr, is_unsign);
+    if(comp_n(type, 6, "struct")) return make_custom_literal_const(name, type, is_ptr, is_unsign);
     if (comp(type, _VOID))return make_empty_literal_const(name, is_ptr, is_unsign);
     
     return make_int_literal_const(name, 0, is_ptr, is_unsign);
