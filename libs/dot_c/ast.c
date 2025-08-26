@@ -269,7 +269,7 @@ make_expr_node(_token** token){
     else if ((*token)->lex == LEX_CALL)
         expr_node = tokens_parser(token);
 
-    else if ((*token)->lex == LEX_POINTER_DEREF){
+    else if ((*token)->lex == LEX_POINTER_DEREF || (*token)->lex == LEX_GET_ADDR){
         expr_node = tokens_parser(token);
 
         while(
