@@ -173,6 +173,7 @@ tokens_parser(_token** token){
             *token = NEXT_TOKEN(*token);
 
             if((*token)->lex == LEX_STRUCT_VALUE_INIT){
+                *token = NEXT_TOKEN(*token);
                 return make_arr_node(array_head->constant, size_of_arr, array_data, AST_ARRAY_WO_INIT);
             }
 
