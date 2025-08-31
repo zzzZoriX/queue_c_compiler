@@ -153,8 +153,24 @@ make_expr_node(_token** token){
         }
 
 // если это обращение к ячейке массива
-        else if(NEXT_TOKEN(*token)->lex == LEX_LQPAREN)
-            expr_node = tokens_parser(token);
+        else if(NEXT_TOKEN(*token)->lex == LEX_LQPAREN){
+            Node
+                * index = (Node*)malloc(sizeof(Node)),
+                * array_name = make_empty_literal_const((*token)->data, NULL, NULL)
+            ;
+            if(!index)   
+                exit(1);
+            
+            *token = NEXT_TOKEN(NEXT_TOKEN(*token));
+            
+            index->constant.long_value = atol((*token)->data);
+            
+            *token = NEXT_TOKEN(NEXT_TOKEN(*token));
+            
+            expr_node->node_type = AST_APPEAL_TO_ARR_CELL;
+            expr_node->op1 = array_name;
+            expr_node->op2 = index;
+        }
 
         else if(
             NEXT_TOKEN(*token)->lex == LEX_DBL_TWO_DOTS ||
@@ -248,7 +264,7 @@ make_expr_node(_token** token){
         expr_node->node_type = comp(op, "--") ? AST_DEC_PREF : AST_INC_PREF;
     }
 
-    else if((*token)->lex == LEX_LPAREN){
+    if((*token)->lex == LEX_LPAREN){
         expr_node->node_type = AST_LPAREN;
 
         *token = NEXT_TOKEN(*token);
@@ -266,10 +282,10 @@ make_expr_node(_token** token){
         }
     }
 
-    else if ((*token)->lex == LEX_CALL)
+    if ((*token)->lex == LEX_CALL)
         expr_node = tokens_parser(token);
 
-    else if ((*token)->lex == LEX_POINTER_DEREF || (*token)->lex == LEX_GET_ADDR){
+    if ((*token)->lex == LEX_POINTER_DEREF || (*token)->lex == LEX_GET_ADDR){
         expr_node = tokens_parser(token);
 
         while(
@@ -288,6 +304,25 @@ make_expr_node(_token** token){
             string op = access_type == LEX_DBL_TWO_DOTS ? "::" : ":>";
             expr_node = make_bin_operation(expr_node, field, op);
         }
+    }
+
+    if((*token)->lex == LEX_LQPAREN){
+        Node
+            * index = (Node*)malloc(sizeof(Node)),
+            * array = expr_node
+        ;
+        expr_node = make_node(AST_APPEAL_TO_ARR_CELL);
+        if(!index)   
+            exit(1);
+        
+        *token = NEXT_TOKEN(*token);
+        
+        index->constant.long_value = atol((*token)->data);
+        
+        *token = NEXT_TOKEN(NEXT_TOKEN(*token));
+        
+        expr_node->op1 = array;
+        expr_node->op2 = index;
     }
 
     if(is_operator((*token)->lex)){

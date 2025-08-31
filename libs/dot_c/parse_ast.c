@@ -458,7 +458,8 @@ parse_nodes(Node* n, FILE* o_fpt) {
             break;
 
         case AST_APPEAL_TO_ARR_CELL:
-            fprintf(o_fpt, "%s[%s]", n->constant.name, n->op1->constant.name);
+            parse_nodes(n->op1, o_fpt);
+            fprintf(o_fpt, "[%ld]", n->op2->constant.long_value);
             break;
 
         case AST_ARRAY_WO_INIT:

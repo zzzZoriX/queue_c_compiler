@@ -634,20 +634,7 @@ tokens_parser(_token** token){
                 );
             }
             else if (next_lex == LEX_LQPAREN) {
-                Node* node = make_empty_literal_const(var_name, NULL, NULL);
-                free(var_name);
-
-                *token = NEXT_TOKEN(NEXT_TOKEN(*token));
-
-                node->op1 = (Node*)malloc(sizeof(Node));
-                if (!node->op1) exit(1);
-
-                node->op1->constant.name = _strdup((*token)->data);
-                if (!node->op1->constant.name) exit(1);
-
-                *token = NEXT_TOKEN(*token);
-
-                node->node_type = AST_APPEAL_TO_ARR_CELL;
+                Node* node = make_expr_node(token);
 
                 if(is_assign((*token)->next_token->lex)){
                     *token = NEXT_TOKEN(*token);
