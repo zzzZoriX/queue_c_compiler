@@ -243,20 +243,39 @@ unknown_lexeme:
 void
 set_state(const string word, const char c, const char next, const _token* last_token){
     if(comp(word, _COMMENT_START)) state = _IN_COMMENT_;
-    else if(
-        (c == '-' && isdigit(next) && 
-        (
-            last_token == NULL ||
-            lex_is_operator(last_token->lex) ||
-            last_token->lex == LEX_SEMIC ||
-            last_token->lex == LEX_COMMA
-        )
-        ) || 
-        ((isdigit(c) && (isdigit(next)) || 
-        c == '.'))
-    ) state = _IN_NUMBER_;
+    else if(is_num(word, c, next)) state = _IN_NUMBER_;
     else if((c == '+' && next == '+') || (c == '-' && next == '-')) state = _IN_UN_OP_;
     else if(is_spec_str(c_concat_c(c, next))) state = _IN_SPEC_STR_;
     else if(c == '"') state = _IN_STR_;
     else state = _NORMAL_;
+}
+
+bool 
+is_num(const string w, const char c, const char n){
+
+// если word не пуст и не является только числами, то это точно уже не число(т.к. может быть переменная с именем a123)
+    if(
+        !is_digits(w) &&
+        (w[0] == '-' && !is_digits_from(w, 1))
+    ) return false;
+
+    if(comp(w, NULL_STR) && !isdigit(c)) return false;
+    
+    if(c == '\\' && n == 'b') return true; // 2-ичные числа
+    if(c == '\\' && n == 'x') return true; // 16-ричные числа
+    if(isdigit(c)) return true; // целые числа
+    if(
+        (
+            isdigit(c) &&
+            (n == '.' || n == 'f' || n == 'F' || isdigit(n))
+        ) ||
+        (
+            is_digits(w) &&
+            (c == '.' || c == 'f' || c == 'F' || isdigit(c))
+        )
+    ) return true; // числа с плавающей точкой
+
+    if(c == '-' && isdigit(n)) return true; // отрицательные числа
+    
+    return false;
 }

@@ -42,4 +42,13 @@ lexer(FILE*, _token**);
 void
 set_state(const string, const char, const char, const _token*); 
 
+/**
+ * @brief проверяет, являются ли символы началом числа
+ * 
+ * @return true 
+ * @return false 
+ */
+bool
+is_num(const string, const char, const char);
+
 #endif

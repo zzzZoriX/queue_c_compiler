@@ -252,24 +252,28 @@ tokens_parser(_token** token){
 
                 *token = NEXT_TOKEN(*token);
 
-                string op = _strdup((*token)->data);
-                if (!op)    exit(1);
+                if(is_assign((*token)->lex)){
+                    string op = _strdup((*token)->data);
+                    if (!op)    exit(1);
+                    
+                    *token = NEXT_TOKEN(*token);
+                    
+                    Node* expr = NULL;
+                    
+                    lit_cnst->node_type = AST_LIT_CNST_WO_INIT;
+                    
+                    *token = NEXT_TOKEN(*token);
+                    
+                    Node* assign = make_bin_operation(
+                        lit_cnst,
+                        expr,
+                        op
+                    );
                 
-                *token = NEXT_TOKEN(*token);
-                
-                Node* expr = NULL;
-                
-                lit_cnst->node_type = AST_LIT_CNST_WO_INIT;
-                
-                *token = NEXT_TOKEN(*token);
-                
-                Node* assign = make_bin_operation(
-                    lit_cnst,
-                    expr,
-                    op
-                );
-            
-                return assign;
+                    return assign;
+                }
+
+                return lit_cnst;
             }
             
             if(!is_data_type((*token)->data)) exit(1);
