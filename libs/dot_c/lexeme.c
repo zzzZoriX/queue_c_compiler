@@ -85,7 +85,8 @@ define_lexeme(const string word, _lexemes* last_lexeme, const string last_word){
 
     if(
         is_digits(word) ||
-        (word[0] == '-' && is_digits_from(word, 1))
+        (word[0] == '-' && is_digits_from(word, 1)) ||
+        (word[0] == '\\' && is_digits_from(word, 2))
     )                              return LEX_DIGIT;
     if(is_float(word))             return LEX_FLOAT;
     

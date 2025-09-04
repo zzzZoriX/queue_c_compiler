@@ -1,5 +1,6 @@
 #include "./dot_h/lexer.h"
 #include "dot_h/str.h"
+#include <stdbool.h>
 
 extern long unknown_lex_offset;
 extern long row;
@@ -50,16 +51,21 @@ lexer(FILE* ifp, _token** m_token){
                 do{
                     word = concat_c(word, c);
                     c = getc(ifp);
-                } while(c != EOF && (isdigit(c) || c == '.' || c == 'F' || c == 'f'));
+                } while(c != EOF && (isdigit(c) || c == '.' || c == 'F' || c == 'f' || is_hex(c)));
 
-                if(word[0] == '-'){ 
+                if(word[0] == '-'){
                     if(!is_digits_from(word, 1)) goto unknown_lexeme; 
+                }
+                else if(word[0] == '\\'){
+                    if(!is_digits_from(word, 2)) goto unknown_lexeme; 
                 }
                 else
                     if(!is_float(word) && !is_digits(word)) goto unknown_lexeme;
                 
                 _lexemes lexeme = define_lexeme(word, &last_token->lex, last_token->data);
                 if(lexeme == LEX_UNDEF) goto unknown_lexeme;
+
+                if(word[0] == '\\') word[0] = '0';
 
                 _token* new_token = create_token(word, lexeme, NULL);
                 add(*m_token, new_token);
@@ -263,6 +269,7 @@ is_num(const string w, const char c, const char n){
     
     if(c == '\\' && n == 'b') return true; // 2-ичные числа
     if(c == '\\' && n == 'x') return true; // 16-ричные числа
+
     if(isdigit(c)) return true; // целые числа
     if(
         (

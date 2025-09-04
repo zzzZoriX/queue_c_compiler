@@ -100,4 +100,13 @@ tolower_str(const string);
 bool
 is_digits_from(const string, const int);
 
+/**
+ * @brief проверяет является ли символ частью 16-ричного числа
+ * 
+ * @return true 
+ * @return false 
+ */
+bool
+is_hex(const char);
+
 #endif

@@ -173,7 +173,7 @@ is_digits_from(const string str, const int index){
     bool has_dot = false;
 
     for(int i = index; i < strlen(str); ++i){
-        if(!isdigit(str[i]) && str[i] != '.') return false;
+        if(!isdigit(str[i]) && str[i] != '.' && !is_hex(str[i])) return false;
         if(str[i] == '.'){
             if(has_dot) return false;
             else has_dot = true;
@@ -181,4 +181,33 @@ is_digits_from(const string str, const int index){
     }
 
     return true;
+}
+
+bool
+is_hex(const char c){
+    return
+        c == '0' ||
+        c == '1' ||
+        c == '2' ||
+        c == '3' ||
+        c == '4' ||
+        c == '5' ||
+        c == '6' ||
+        c == '7' ||
+        c == '8' ||
+        c == '9' ||
+
+        c == 'a' ||
+        c == 'A' ||
+        c == 'b' ||
+        c == 'B' ||
+        c == 'c' ||
+        c == 'C' ||
+        c == 'd' ||
+        c == 'D' ||
+        c == 'e' ||
+        c == 'E' ||
+        c == 'f' ||
+        c == 'F'
+    ;
 }
