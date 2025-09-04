@@ -222,6 +222,22 @@ make_expr_node(_token** token){
         *token = NEXT_TOKEN(*token);
     }
 
+    if((*token)->lex == LEX_HEX_VAL){
+        expr_node->node_type = AST_HEX_NUM;
+        expr_node->constant.str_value = _strdup((*token)->data);
+        if(!expr_node->constant.str_value) exit(1);
+
+        *token = NEXT_TOKEN(*token);
+    }
+
+    if((*token)->lex == LEX_BIN_VAL){
+        expr_node->node_type = AST_BIN_NUM;
+        expr_node->constant.str_value = _strdup((*token)->data);
+        if(!expr_node->constant.str_value) exit(1);
+
+        *token = NEXT_TOKEN(*token);
+    }
+
     if((*token)->lex == LEX_CHAR_VAL){
         expr_node->node_type = AST_CHAR_VALUE;
         expr_node->constant.type = TYPE_CHAR;

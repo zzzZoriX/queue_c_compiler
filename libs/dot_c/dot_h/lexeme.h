@@ -151,6 +151,9 @@ typedef enum _lexemes: int {
     LEX_DIGIT,
     LEX_FLOAT,
     LEX_CHAR_VAL,
+    LEX_HEX_VAL,
+    LEX_BIN_VAL,
+
     LEX_DBL_TWO_DOTS, // ::
     LEX_PTR_CALL_TO_FIELDS, // :>
     LEX_INST_POINTER,

@@ -317,6 +317,8 @@ tokens_parser(_token** token){
 
         case LEX_LPAREN:
         case LEX_DIGIT:
+        case LEX_HEX_VAL:
+        case LEX_BIN_VAL:
         case LEX_FLOAT:
         case LEX_CHAR_VAL:
         case LEX_TRUE:

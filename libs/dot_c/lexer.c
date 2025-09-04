@@ -51,7 +51,7 @@ lexer(FILE* ifp, _token** m_token){
                 do{
                     word = concat_c(word, c);
                     c = getc(ifp);
-                } while(c != EOF && (isdigit(c) || c == '.' || c == 'F' || c == 'f' || is_hex(c)));
+                } while(c != EOF && (isdigit(c) || c == '.' || c == 'F' || c == 'f' || is_hex(c) || c == 'x' || c == 'b'));
 
                 if(word[0] == '-'){
                     if(!is_digits_from(word, 1)) goto unknown_lexeme; 
@@ -258,14 +258,14 @@ set_state(const string word, const char c, const char next, const _token* last_t
 
 bool 
 is_num(const string w, const char c, const char n){
-
 // если word не пуст и не является только числами, то это точно уже не число(т.к. может быть переменная с именем a123)
     if(
-        !is_digits(w) &&
-        (w[0] == '-' && !is_digits_from(w, 1))
+        (comp(w, NULL_STR) && !is_hex(c)) && 
+        (
+            !is_digits(w) &&
+            (w[0] == '-' && !is_digits_from(w, 1))
+        )
     ) return false;
-
-    if(comp(w, NULL_STR) && !isdigit(c)) return false;
     
     if(c == '\\' && n == 'b') return true; // 2-ичные числа
     if(c == '\\' && n == 'x') return true; // 16-ричные числа
@@ -274,11 +274,11 @@ is_num(const string w, const char c, const char n){
     if(
         (
             isdigit(c) &&
-            (n == '.' || n == 'f' || n == 'F' || isdigit(n))
+            (n == '.' || isdigit(n))
         ) ||
         (
             is_digits(w) &&
-            (c == '.' || c == 'f' || c == 'F' || isdigit(c))
+            (c == '.' || isdigit(c))
         )
     ) return true; // числа с плавающей точкой
 

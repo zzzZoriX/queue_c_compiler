@@ -45,6 +45,8 @@ typedef enum _node_type {
     AST_GET_ADDR,
     
     AST_NUM,
+    AST_HEX_NUM,
+    AST_BIN_NUM,
     AST_CHAR_VALUE,
     AST_BOOLIAN_VALUE,
     AST_NULL_VALUE,

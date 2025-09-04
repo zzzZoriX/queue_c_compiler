@@ -1,4 +1,5 @@
 #include "./dot_h/parse_ast.h"
+#include "dot_h/ast.h"
 
 void
 code_gen(Node* h, FILE* o_fpt) {
@@ -348,6 +349,11 @@ parse_nodes(Node* n, FILE* o_fpt) {
                 fprintf(o_fpt, "%ld", n->constant.long_value);
             else if (n->constant.type == TYPE_FLT)
                 fprintf(o_fpt, "%f", n->constant.flt_value);
+            break;
+
+        case AST_HEX_NUM:
+        case AST_BIN_NUM:
+            fprintf(o_fpt, "%s", n->constant.str_value);
             break;
 
         case AST_NULL_VALUE:
