@@ -123,6 +123,8 @@ parse_string(const string str){
             else if (comp(specifier, "%sdf"))                       otp_str = concat(otp_str, "%f");
             else if (comp(specifier, "%pch"))                       otp_str = concat(otp_str, "%c");
             else if (comp(specifier, "%udi"))                       otp_str = concat(otp_str, "%u");
+            else if (comp(specifier, "%sxi"))                       otp_str = concat(otp_str, "%x");
+            else if (comp(specifier, "%sXi"))                       otp_str = concat(otp_str, "%X");
             else                                                    otp_str = concat(otp_str, specifier);
 
             proc_has_been = false;
